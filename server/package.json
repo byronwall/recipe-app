@@ -1,0 +1,31 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "server": "nodemon --watch '*.ts' --exec \"ts-node src/index.ts\"",
+    "client": "cd ../client && yarn start",
+    "dev": "concurrently \"yarn server\" \"yarn client\"",
+    "start": "node build/index.js",
+    "build": "tsc && cd ../client && yarn deploy",
+    "build_run": "tsc && yarn start",
+    "deploy-copy": "rsync -a ./ root@byroni.us:/root/recipe-app",
+    "deploy": "yarn build && yarn deploy-copy"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.7",
+    "@types/nedb": "^1.8.10",
+    "@types/node": "^14.0.22",
+    "@types/request-promise": "^4.1.46",
+    "nodemon": "^2.0.4",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.6"
+  },
+  "dependencies": {
+    "concurrently": "^5.2.0",
+    "express": "^4.17.1",
+    "nedb": "^1.8.0",
+    "request-promise": "^4.2.5"
+  }
+}
