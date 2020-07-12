@@ -10,7 +10,7 @@
     "start": "node build/index.js",
     "build": "tsc && cd ../client && yarn deploy",
     "build_run": "tsc && yarn start",
-    "deploy-copy": "rsync -a ./ root@byroni.us:/root/recipe-app",
+    "deploy-copy": "rsync -rvz ./ root@byroni.us:/root/recipe-app",
     "deploy": "yarn build && yarn deploy-copy"
   },
   "devDependencies": {
