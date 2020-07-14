@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "server": "nodemon --watch '*.ts' --exec \"ts-node src/index.ts\"",
+    "server": "nodemon --watch 'src/*.ts' -e ts --exec \"yarn build_run\"",
     "client": "cd ../client && yarn start",
     "dev": "concurrently \"yarn server\" \"yarn client\"",
     "start": "node build/index.js",
@@ -16,7 +16,7 @@
   "devDependencies": {
     "@types/express": "^4.17.7",
     "@types/nedb": "^1.8.10",
-    "@types/node": "^14.0.22",
+    "@types/node": "^14.0.23",
     "@types/request-promise": "^4.1.46",
     "nodemon": "^2.0.4",
     "ts-node": "^8.10.2",

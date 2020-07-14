@@ -9,6 +9,7 @@ import { Ingredients } from "./Ingredients"
 import { Navigation } from "./Navigation"
 import { RecipeViewer } from "./Recipes/ReceipeViewer"
 import { RecipeList } from "./Recipes/RecipeList"
+import { GLOBAL_DATA_LAYER } from "."
 
 export class App extends React.Component {
     render() {
@@ -36,7 +37,14 @@ export class App extends React.Component {
                                 ></Route>
 
                                 <Route path="/ingredients">
-                                    <Ingredients />
+                                    <Ingredients
+                                        ingredients={data.state.ingredients}
+                                        onSaveNewIngredient={(newIngredient) =>
+                                            GLOBAL_DATA_LAYER.addIngredient(
+                                                newIngredient
+                                            )
+                                        }
+                                    />
                                 </Route>
 
                                 <Route path="/" exact>

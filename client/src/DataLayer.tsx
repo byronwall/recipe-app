@@ -1,7 +1,8 @@
+import axios from "axios"
 import _ from "lodash"
 import { Container } from "unstated"
 
-import { Ingredient, Recipe } from "./models"
+import { Ingredient, Recipe, SavedDb } from "./models"
 
 interface DataLayerState {
     ingredients: Ingredient[]
@@ -16,8 +17,6 @@ const defaultIngredients: Ingredient[] = [
 ]
 
 export class DataLayer extends Container<DataLayerState> {
-    pendingReadItems: number[] = []
-
     constructor() {
         super()
 
@@ -25,6 +24,9 @@ export class DataLayer extends Container<DataLayerState> {
             ingredients: defaultIngredients,
             recipes: [],
         }
+
+        // after init-- fire off db query
+        this.getDb()
     }
 
     addNewRecipe(newRecipe: Recipe) {
@@ -33,5 +35,35 @@ export class DataLayer extends Container<DataLayerState> {
         newRecipes.push(newRecipe)
 
         this.setState({ recipes: newRecipes })
+    }
+
+    reloadFromServer(newDb: SavedDb) {
+        console.log("new datA", newDb)
+        this.setState({
+            recipes: newDb.recipes,
+            ingredients: newDb.ingredients,
+        })
+    }
+
+    async addIngredient(newIngredient: Ingredient) {
+        const res = await axios.post("/api/add_ingredient", newIngredient)
+
+        const newDb = res.data as SavedDb
+
+        console.log("new data", newDb)
+
+        // this will fire off state updates
+        this.reloadFromServer(newDb)
+    }
+
+    async getDb() {
+        const res = await axios.get("/api/db")
+
+        const newDb = res.data as SavedDb
+
+        console.log("new data", newDb)
+
+        // this will fire off state updates
+        this.reloadFromServer(newDb)
     }
 }

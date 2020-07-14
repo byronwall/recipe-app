@@ -40,3 +40,8 @@ export interface Ingredient {
     plu: string
     id: number
 }
+
+export interface SavedDb {
+    recipes: Recipe[]
+    ingredients: Ingredient[]
+}
