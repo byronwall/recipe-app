@@ -1,25 +1,25 @@
-import { FormGroup, InputGroup, Button } from "@blueprintjs/core"
-import _ from "lodash"
-import React from "react"
+import { FormGroup, InputGroup, Button } from "@blueprintjs/core";
+import _ from "lodash";
+import React from "react";
 
-import { handleStringChange } from "../helpers"
-import { createDefaultRecipe, Recipe } from "../models"
-import { IngredientsEditor } from "./IngredientsEditor"
-import { StepsEditor } from "./StepsEditor"
-import { GLOBAL_DATA_LAYER } from ".."
+import { handleStringChange } from "../helpers";
+import { createDefaultRecipe, Recipe } from "../models";
+import { IngredientsEditor } from "./IngredientsEditor";
+import { StepsEditor } from "./StepsEditor";
+import { GLOBAL_DATA_LAYER } from "..";
 
 interface NewRecipeProps {}
 interface NewRecipeState {
-    editRecipe: Recipe
+    editRecipe: Recipe;
 }
 
 export class NewRecipe extends React.Component<NewRecipeProps, NewRecipeState> {
     constructor(props: NewRecipeProps) {
-        super(props)
+        super(props);
 
-        const editRecipe = createDefaultRecipe()
+        const editRecipe = createDefaultRecipe();
 
-        this.state = { editRecipe }
+        this.state = { editRecipe };
     }
 
     componentDidMount() {}
@@ -27,15 +27,15 @@ export class NewRecipe extends React.Component<NewRecipeProps, NewRecipeState> {
     componentDidUpdate(prevProps: NewRecipeProps, prevState: NewRecipeState) {}
 
     handleRecipeEdit<K extends keyof Recipe>(key: K, value: Recipe[K]) {
-        const newRecipe = _.cloneDeep(this.state.editRecipe)
+        const newRecipe = _.cloneDeep(this.state.editRecipe);
 
-        newRecipe[key] = value
+        newRecipe[key] = value;
 
-        this.setState({ editRecipe: newRecipe })
+        this.setState({ editRecipe: newRecipe });
     }
 
     render() {
-        const recipe = this.state.editRecipe
+        const recipe = this.state.editRecipe;
         return (
             <div>
                 <p>NewRecipe</p>
@@ -80,9 +80,11 @@ export class NewRecipe extends React.Component<NewRecipeProps, NewRecipeState> {
                     onClick={() => this.saveNewRecipe()}
                 />
             </div>
-        )
+        );
     }
     saveNewRecipe() {
-        GLOBAL_DATA_LAYER.addNewRecipe(this.state.editRecipe)
+        GLOBAL_DATA_LAYER.saveNewRecipe(this.state.editRecipe);
+
+        this.setState({ editRecipe: createDefaultRecipe() });
     }
 }

@@ -1,17 +1,18 @@
-import { Button, HTMLTable, InputGroup, NumericInput } from "@blueprintjs/core"
-import _ from "lodash"
-import React from "react"
+import { Button, HTMLTable, InputGroup, NumericInput } from "@blueprintjs/core";
+import _ from "lodash";
+import React from "react";
 
-import { handleStringChange } from "../helpers"
-import { IngredientAmount } from "../models"
-import { IngredientChooser } from "./IngredientChooser"
+import { handleStringChange } from "../helpers";
+import { IngredientAmount } from "../models";
+import { IngredientChooser } from "./IngredientChooser";
+import { GLOBAL_DATA_LAYER } from "..";
 
 interface IngredientsEditorProps {
-    ingredientsList: IngredientAmount[]
-    onIngredientsChange(newList: IngredientAmount[]): void
+    ingredientsList: IngredientAmount[];
+    onIngredientsChange(newList: IngredientAmount[]): void;
 }
 interface IngredientsEditorState {
-    newIngredient: IngredientAmount
+    newIngredient: IngredientAmount;
 }
 
 export class IngredientsEditor extends React.Component<
@@ -19,16 +20,16 @@ export class IngredientsEditor extends React.Component<
     IngredientsEditorState
 > {
     constructor(props: IngredientsEditorProps) {
-        super(props)
+        super(props);
 
         const newIngredient: IngredientAmount = {
             amount: 0,
             ingredientId: 0,
             modifier: "",
             unit: "",
-        }
+        };
 
-        this.state = { newIngredient }
+        this.state = { newIngredient };
     }
 
     componentDidMount() {}
@@ -43,27 +44,27 @@ export class IngredientsEditor extends React.Component<
         key: K,
         value: IngredientAmount[K]
     ) {
-        const newItems = _.cloneDeep(this.props.ingredientsList)
-        const newItem = newItems[index]
+        const newItems = _.cloneDeep(this.props.ingredientsList);
+        const newItem = newItems[index];
 
-        newItem[key] = value
+        newItem[key] = value;
 
-        this.props.onIngredientsChange(newItems)
+        this.props.onIngredientsChange(newItems);
     }
 
     handleNewIngredientAmountEdit<K extends keyof IngredientAmount>(
         key: K,
         value: IngredientAmount[K]
     ) {
-        const newItem = _.cloneDeep(this.state.newIngredient)
+        const newItem = _.cloneDeep(this.state.newIngredient);
 
-        newItem[key] = value
+        newItem[key] = value;
 
-        this.setState({ newIngredient: newItem })
+        this.setState({ newIngredient: newItem });
     }
 
     render() {
-        const newIngredient = this.state.newIngredient
+        const newIngredient = this.state.newIngredient;
         return (
             <div>
                 <p>IngredientsEditor</p>
@@ -108,13 +109,16 @@ export class IngredientsEditor extends React.Component<
                                 </td>
                                 <td>
                                     <IngredientChooser
-                                        onItemChange={(newIngredient) =>
+                                        onItemChange={(newIngredient) => {
+                                            GLOBAL_DATA_LAYER.addNewIngredient(
+                                                newIngredient
+                                            );
                                             this.handleIngredientAmountEdit(
                                                 index,
                                                 "ingredientId",
                                                 newIngredient.id
-                                            )
-                                        }
+                                            );
+                                        }}
                                     />
                                 </td>
                                 <td>
@@ -168,22 +172,22 @@ export class IngredientsEditor extends React.Component<
                     </tbody>
                 </HTMLTable>
             </div>
-        )
+        );
     }
     removeIngredient(index: number) {
-        const newItems = _.cloneDeep(this.props.ingredientsList)
+        const newItems = _.cloneDeep(this.props.ingredientsList);
 
-        newItems.splice(index, 1)
+        newItems.splice(index, 1);
 
-        this.props.onIngredientsChange(newItems)
+        this.props.onIngredientsChange(newItems);
     }
     addNewToRecipe() {
         // add the state one to the list
-        const newItems = _.cloneDeep(this.props.ingredientsList)
+        const newItems = _.cloneDeep(this.props.ingredientsList);
 
-        newItems.push(this.state.newIngredient)
+        newItems.push(this.state.newIngredient);
 
-        this.props.onIngredientsChange(newItems)
+        this.props.onIngredientsChange(newItems);
 
         // blank out the new one
     }

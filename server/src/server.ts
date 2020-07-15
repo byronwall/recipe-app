@@ -2,12 +2,13 @@ import express from "express";
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import * as path from "path";
 
-import { Ingredient, SavedDb } from "./model";
+import { Ingredient, SavedDb, Recipe } from "./model";
 
 let db: SavedDb = { recipes: [], ingredients: [] };
 const dbPath = "db.json";
 
 let idIngredient = 1;
+let idRecipe = 1;
 
 function reloadDatabase() {
   if (!existsSync(dbPath)) {
@@ -15,12 +16,18 @@ function reloadDatabase() {
   }
   db = JSON.parse(readFileSync(dbPath, "utf8")) as SavedDb;
 
-  idIngredient = (Math.max(...db.ingredients.map((c) => c.id)) || 0) + 1;
+  idIngredient = (Math.max(...db.ingredients.map((c) => c.id)) || 1) + 1;
+  idRecipe = (Math.max(...db.recipes.map((c) => c.id)) || 1) + 1;
 }
 
 function saveDatabase() {
   const data = JSON.stringify(db);
   writeFileSync(dbPath, data);
+}
+
+interface NewRecipeReq {
+  recipe: Recipe;
+  newIngredients: Ingredient[];
 }
 
 export class Server {
@@ -47,7 +54,28 @@ export class Server {
 
     app.post("/api/add_recipe", (req: any, res: any) => {
       console.log(new Date(), "add recipe");
-      res.json({ result: true });
+
+      const { recipe, newIngredients } = req.body as NewRecipeReq;
+
+      // add any new ingredients to the list
+      recipe.ingredients.forEach((ingredToCheck) => {
+        const matchingNew = newIngredients.find(
+          (c) => c.id === ingredToCheck.ingredientId
+        );
+
+        if (matchingNew) {
+          addIngredientWithNewId(matchingNew);
+        }
+      });
+
+      recipe.id = idRecipe++;
+
+      // check if any new ingredients
+
+      db.recipes.push(recipe);
+      saveDatabase();
+
+      res.json({ ...db });
 
       // find that type...
     });
@@ -55,11 +83,9 @@ export class Server {
     app.post("/api/add_ingredient", (req: any, res: any) => {
       console.log(new Date(), "add ingredient");
 
-      const ingred = req.body as Ingredient;
+      const ingredient = req.body as Ingredient;
 
-      ingred.id = idIngredient++;
-
-      db.ingredients.push(ingred);
+      addIngredientWithNewId(ingredient);
       saveDatabase();
 
       res.json({ ...db });
@@ -74,4 +100,9 @@ export class Server {
 
     console.log("server is running on port: " + port);
   }
+}
+function addIngredientWithNewId(ingredient: Ingredient) {
+  ingredient.id = idIngredient++;
+
+  db.ingredients.push(ingredient);
 }

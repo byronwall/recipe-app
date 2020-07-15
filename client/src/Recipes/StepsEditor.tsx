@@ -1,14 +1,14 @@
-import { Button, HTMLTable, InputGroup } from "@blueprintjs/core"
-import _ from "lodash"
-import React from "react"
+import { Button, HTMLTable, InputGroup } from "@blueprintjs/core";
+import _ from "lodash";
+import React from "react";
 
-import { handleStringChange } from "../helpers"
-import { RecipeStep } from "../models"
+import { handleStringChange } from "../helpers";
+import { RecipeStep } from "../models";
 
 interface StepsEditorProps {
-    steps: RecipeStep[]
+    steps: RecipeStep[];
 
-    onStepsChange(newSteps: RecipeStep[]): void
+    onStepsChange(newSteps: RecipeStep[]): void;
 }
 interface StepsEditorState {}
 
@@ -17,9 +17,9 @@ export class StepsEditor extends React.Component<
     StepsEditorState
 > {
     constructor(props: StepsEditorProps) {
-        super(props)
+        super(props);
 
-        this.state = {}
+        this.state = {};
     }
 
     componentDidMount() {}
@@ -34,12 +34,12 @@ export class StepsEditor extends React.Component<
         key: K,
         value: RecipeStep[K]
     ) {
-        const newSteps = _.cloneDeep(this.props.steps)
-        const newStep = newSteps[index]
+        const newSteps = _.cloneDeep(this.props.steps);
+        const newStep = newSteps[index];
 
-        newStep[key] = value
+        newStep[key] = value;
 
-        this.props.onStepsChange(newSteps)
+        this.props.onStepsChange(newSteps);
     }
 
     render() {
@@ -58,7 +58,7 @@ export class StepsEditor extends React.Component<
                     </thead>
                     <tbody>
                         {this.props.steps.map((step, index) => (
-                            <tr>
+                            <tr key={index}>
                                 <td>{index + 1}</td>
                                 <td>
                                     {
@@ -114,24 +114,24 @@ export class StepsEditor extends React.Component<
                     </tbody>
                 </HTMLTable>
             </div>
-        )
+        );
     }
     addBlankStep() {
-        const newSteps = _.cloneDeep(this.props.steps)
+        const newSteps = _.cloneDeep(this.props.steps);
 
         newSteps.push({
             description: "",
             duration: "",
             subSteps: undefined,
-        })
+        });
 
-        this.props.onStepsChange(newSteps)
+        this.props.onStepsChange(newSteps);
     }
     removeStep(index: number) {
-        const newSteps = _.cloneDeep(this.props.steps)
+        const newSteps = _.cloneDeep(this.props.steps);
 
-        newSteps.splice(index, 1)
+        newSteps.splice(index, 1);
 
-        this.props.onStepsChange(newSteps)
+        this.props.onStepsChange(newSteps);
     }
 }

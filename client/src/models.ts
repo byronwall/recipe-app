@@ -17,7 +17,7 @@ export function createDefaultRecipe(): Recipe {
     }
 }
 
-function getNewId() {
+export function getNewId() {
     return new Date().getTime()
 }
 

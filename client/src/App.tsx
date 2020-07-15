@@ -1,22 +1,30 @@
-import { Card } from "@blueprintjs/core"
-import React from "react"
-import { Route, Switch } from "react-router-dom"
-import { Subscribe } from "unstated"
+import { Card } from "@blueprintjs/core";
+import React from "react";
+import { Route, Switch } from "react-router-dom";
+import { Subscribe } from "unstated";
 
-import { DataLayer } from "./DataLayer"
-import { HomePage } from "./HomePage"
-import { Ingredients } from "./Ingredients"
-import { Navigation } from "./Navigation"
-import { RecipeViewer } from "./Recipes/ReceipeViewer"
-import { RecipeList } from "./Recipes/RecipeList"
-import { GLOBAL_DATA_LAYER } from "."
+import { DataLayer } from "./DataLayer";
+import { HomePage } from "./HomePage";
+import { Ingredients } from "./Ingredients";
+import { Navigation } from "./Navigation";
+import { RecipeViewer } from "./Recipes/ReceipeViewer";
+import { RecipeList } from "./Recipes/RecipeList";
+import { GLOBAL_DATA_LAYER } from ".";
 
 export class App extends React.Component {
     render() {
         return (
             <Subscribe to={[DataLayer]}>
                 {(data: DataLayer) => (
-                    <div style={{ width: 960, margin: "auto", marginTop: 10 }}>
+                    <div
+                        style={{
+                            maxWidth: 960,
+                            margin: "auto",
+                            marginTop: 10,
+                            paddingLeft: 10,
+                            paddingRight: 10,
+                        }}
+                    >
                         <Navigation />
 
                         <Card style={{ marginTop: 10 }}>
@@ -28,11 +36,11 @@ export class App extends React.Component {
                                 <Route
                                     path="/recipe/:id"
                                     render={(props) => {
-                                        const id = +props.match.params["id"]
+                                        const id = +props.match.params["id"];
                                         const recipe = data.state.recipes.find(
                                             (c) => c.id === id
-                                        )
-                                        return <RecipeViewer recipe={recipe} />
+                                        );
+                                        return <RecipeViewer recipe={recipe} />;
                                     }}
                                 ></Route>
 
@@ -55,6 +63,6 @@ export class App extends React.Component {
                     </div>
                 )}
             </Subscribe>
-        )
+        );
     }
 }

@@ -26,6 +26,8 @@ export class RecipeViewer extends React.Component<
 
     render() {
         const recipe = this.props.recipe
+
+        console.log("receipt", recipe)
         if (recipe === undefined) {
             return "bad id for recipe"
         }
