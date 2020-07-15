@@ -31,7 +31,7 @@
         "eject": "react-scripts eject",
         "copy-build": "rsync -ruv ./build/ ../server/build/static",
         "deploy": "yarn build && yarn copy-build",
-        "pretty": "npx prettier "
+        "pretty": "npx prettier --write src/**"
     },
     "eslintConfig": {
         "extends": "react-app"
