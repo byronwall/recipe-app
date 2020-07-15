@@ -1,10 +1,10 @@
 export interface Recipe {
-    name: string
-    description: string
-    id: number
+    name: string;
+    description: string;
+    id: number;
 
-    ingredients: IngredientAmount[]
-    steps: RecipeStep[]
+    ingredients: IngredientAmount[];
+    steps: RecipeStep[];
 }
 
 export function createDefaultRecipe(): Recipe {
@@ -14,34 +14,34 @@ export function createDefaultRecipe(): Recipe {
         id: getNewId(),
         ingredients: [],
         steps: [],
-    }
+    };
 }
 
 export function getNewId() {
-    return new Date().getTime()
+    return new Date().getTime();
 }
 
 export interface RecipeStep {
-    description: string
-    duration: string
+    description: string;
+    duration: string;
 
-    subSteps: RecipeStep[] | undefined
+    subSteps: RecipeStep[] | undefined;
 }
 
 export interface IngredientAmount {
-    ingredientId: number
-    amount: string | number
-    unit: string
-    modifier: string
+    ingredientId: number;
+    amount: string | number;
+    unit: string;
+    modifier: string;
 }
 
 export interface Ingredient {
-    name: string
-    plu: string
-    id: number
+    name: string;
+    plu: string;
+    id: number;
 }
 
 export interface SavedDb {
-    recipes: Recipe[]
-    ingredients: Ingredient[]
+    recipes: Recipe[];
+    ingredients: Ingredient[];
 }

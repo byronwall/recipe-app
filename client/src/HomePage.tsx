@@ -4,21 +4,21 @@ interface HomePageProps {}
 interface HomePageState {}
 
 export class HomePage extends React.Component<HomePageProps, HomePageState> {
-  constructor(props: HomePageProps) {
-    super(props);
+    constructor(props: HomePageProps) {
+        super(props);
 
-    this.state = {};
-  }
+        this.state = {};
+    }
 
-  componentDidMount() {}
+    componentDidMount() {}
 
-  componentDidUpdate(prevProps: HomePageProps, prevState: HomePageState) {}
+    componentDidUpdate(prevProps: HomePageProps, prevState: HomePageState) {}
 
-  render() {
-    return (
-      <div>
-        <p>HomePage</p>
-      </div>
-    );
-  }
+    render() {
+        return (
+            <div>
+                <p>HomePage</p>
+            </div>
+        );
+    }
 }

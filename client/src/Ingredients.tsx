@@ -1,15 +1,15 @@
-import React from "react"
-import { Card, FormGroup, InputGroup, Button } from "@blueprintjs/core"
-import { Ingredient } from "./models"
-import _ from "lodash"
-import { handleStringChange } from "./helpers"
+import React from "react";
+import { Card, FormGroup, InputGroup, Button } from "@blueprintjs/core";
+import { Ingredient } from "./models";
+import _ from "lodash";
+import { handleStringChange } from "./helpers";
 
 interface IngredientsProps {
-    ingredients: Ingredient[]
-    onSaveNewIngredient(newIngredient: Ingredient): void
+    ingredients: Ingredient[];
+    onSaveNewIngredient(newIngredient: Ingredient): void;
 }
 interface IngredientsState {
-    newIngredient: Ingredient
+    newIngredient: Ingredient;
 }
 
 export class Ingredients extends React.Component<
@@ -17,9 +17,9 @@ export class Ingredients extends React.Component<
     IngredientsState
 > {
     constructor(props: IngredientsProps) {
-        super(props)
+        super(props);
 
-        this.state = { newIngredient: { id: 0, name: "", plu: "" } }
+        this.state = { newIngredient: { id: 0, name: "", plu: "" } };
     }
 
     componentDidMount() {}
@@ -33,11 +33,11 @@ export class Ingredients extends React.Component<
         key: K,
         value: Ingredient[K]
     ) {
-        const newIngredient = _.cloneDeep(this.state.newIngredient)
+        const newIngredient = _.cloneDeep(this.state.newIngredient);
 
-        newIngredient[key] = value
+        newIngredient[key] = value;
 
-        this.setState({ newIngredient: newIngredient })
+        this.setState({ newIngredient: newIngredient });
     }
 
     render() {
@@ -89,6 +89,6 @@ export class Ingredients extends React.Component<
                     ))}
                 </Card>
             </div>
-        )
+        );
     }
 }
