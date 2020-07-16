@@ -66,7 +66,10 @@ export class RecipeList extends React.Component<
                         <div>
                             <H4>old recipes</H4>
                             {old_recipes.recipes.map((old) => (
-                                <div style={{ display: "flex" }}>
+                                <div
+                                    style={{ display: "flex" }}
+                                    key={old.url.url}
+                                >
                                     <p>{old.url.title}</p>
                                     <Button
                                         onClick={() =>

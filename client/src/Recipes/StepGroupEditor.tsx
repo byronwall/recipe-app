@@ -49,7 +49,7 @@ export class StepGroupEditor extends React.Component<
                 <p>StepGroupEditor</p>
 
                 {this.props.stepGroups.map((grp, index) => (
-                    <div>
+                    <div key={index}>
                         <EditableText
                             onChange={(newValue) =>
                                 this.handleGroupEdit(index, "title", newValue)

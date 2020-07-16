@@ -1,17 +1,13 @@
-import React from "react";
-
 import {
-    Navbar,
-    NavbarGroup,
     Alignment,
-    NavbarHeading,
-    NavbarDivider,
-    Button,
-    Classes,
     H3,
+    Navbar,
+    NavbarDivider,
+    NavbarGroup,
+    NavbarHeading,
 } from "@blueprintjs/core";
-
-import { NavLink, Link } from "react-router-dom";
+import React from "react";
+import { Link, NavLink } from "react-router-dom";
 
 export class Navigation extends React.Component {
     render() {

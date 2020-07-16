@@ -10,6 +10,7 @@ interface IngredientGroupEditorProps {
 
     onGroupChange(newGroups: IngredientGroup[]): void;
 }
+
 interface IngredientGroupEditorState {}
 
 export class IngredientGroupEditor extends React.Component<
@@ -49,7 +50,7 @@ export class IngredientGroupEditor extends React.Component<
                 <p>IngredientGroupEditor</p>
 
                 {this.props.ingredientGroups.map((grp, index) => (
-                    <div>
+                    <div key={index}>
                         <EditableText
                             onChange={(newValue) =>
                                 this.handleGroupEdit(index, "title", newValue)
