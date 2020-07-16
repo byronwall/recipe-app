@@ -1,12 +1,12 @@
-import { FormGroup, InputGroup, Button } from "@blueprintjs/core";
+import { Button, FormGroup, InputGroup } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
 
+import { GLOBAL_DATA_LAYER } from "..";
 import { handleStringChange } from "../helpers";
 import { createDefaultRecipe, Recipe } from "../models";
-import { IngredientsEditor } from "./IngredientsEditor";
-import { StepsEditor } from "./StepsEditor";
-import { GLOBAL_DATA_LAYER } from "..";
+import { IngredientGroupEditor } from "./IngredientGroupEditor";
+import { StepGroupEditor } from "./StepGroupEditor";
 
 interface NewRecipeProps {}
 interface NewRecipeState {
@@ -60,17 +60,17 @@ export class NewRecipe extends React.Component<NewRecipeProps, NewRecipeState> {
                     />
                 </FormGroup>
 
-                <IngredientsEditor
-                    ingredientsList={recipe.ingredients}
-                    onIngredientsChange={(newList) =>
-                        this.handleRecipeEdit("ingredients", newList)
+                <IngredientGroupEditor
+                    ingredientGroups={recipe.ingredientGroups}
+                    onGroupChange={(newList) =>
+                        this.handleRecipeEdit("ingredientGroups", newList)
                     }
                 />
 
-                <StepsEditor
-                    steps={recipe.steps}
-                    onStepsChange={(newSteps) =>
-                        this.handleRecipeEdit("steps", newSteps)
+                <StepGroupEditor
+                    stepGroups={recipe.stepGroups}
+                    onGroupChange={(newSteps) =>
+                        this.handleRecipeEdit("stepGroups", newSteps)
                     }
                 />
 

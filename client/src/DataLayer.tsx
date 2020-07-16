@@ -75,9 +75,12 @@ export class DataLayer extends Container<DataLayerState> {
         });
 
         // remove any new ingredients client side since they'll be saved on server
-        const usedIngredientIds = newRecipe.ingredients.map(
-            (d) => d.ingredientId
+        const usedIngredientIds = _.flatten(
+            newRecipe.ingredientGroups.map((grp) =>
+                grp.ingredients.map((d) => d.ingredientId)
+            )
         );
+
         const filterNewIngred = this.state.newIngredients.filter(
             (i) => usedIngredientIds.find((c) => c === i.id) === undefined
         );

@@ -1,8 +1,8 @@
 import express from "express";
-import { readFileSync, writeFileSync, existsSync } from "fs";
+import { existsSync, readFileSync, writeFileSync } from "fs";
 import * as path from "path";
 
-import { Ingredient, SavedDb, Recipe } from "./model";
+import { Ingredient, Recipe, SavedDb } from "./model";
 
 let db: SavedDb = { recipes: [], ingredients: [] };
 const dbPath = "db.json";
@@ -58,15 +58,17 @@ export class Server {
       const { recipe, newIngredients } = req.body as NewRecipeReq;
 
       // add any new ingredients to the list
-      recipe.ingredients.forEach((ingredToCheck) => {
-        const matchingNew = newIngredients.find(
-          (c) => c.id === ingredToCheck.ingredientId
-        );
+      recipe.ingredientGroups.forEach((grp) =>
+        grp.ingredients.forEach((ingredToCheck) => {
+          const matchingNew = newIngredients.find(
+            (c) => c.id === ingredToCheck.ingredientId
+          );
 
-        if (matchingNew) {
-          addIngredientWithNewId(matchingNew);
-        }
-      });
+          if (matchingNew) {
+            addIngredientWithNewId(matchingNew);
+          }
+        })
+      );
 
       recipe.id = idRecipe++;
 

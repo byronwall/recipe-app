@@ -3,7 +3,17 @@ export interface Recipe {
     description: string;
     id: number;
 
+    ingredientGroups: IngredientGroup[];
+    stepGroups: RecipeStepGroup[];
+}
+
+export interface IngredientGroup {
+    title: string;
     ingredients: IngredientAmount[];
+}
+
+export interface RecipeStepGroup {
+    title: string;
     steps: RecipeStep[];
 }
 
@@ -12,8 +22,8 @@ export function createDefaultRecipe(): Recipe {
         name: "new recipe",
         description: "desc",
         id: getNewId(),
-        ingredients: [],
-        steps: [],
+        ingredientGroups: [{ title: "group", ingredients: [] }],
+        stepGroups: [{ title: "group", steps: [] }],
     };
 }
 
