@@ -1,0 +1,10 @@
+Ability to import an existing recipe from Pepperplate:
+    ☐ Parse the HTML into pieces
+    ☐ Figure out best way to parse/store the ingredients
+    ☐ Create details for all of the meta data
+    ☐ Once it works - run it on all the recipes to see what happens
+
+First version needs:
+    ☐ Cooking mode for a recipe
+    ☐ Ability to edit a recipe
+    ☐ Ability to edit recipe using a simple text interface -- map it all back to data structures (use Ohm for this?)
