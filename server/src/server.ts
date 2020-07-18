@@ -109,6 +109,11 @@ export class Server {
       // find that type...
     });
 
+    const indexPaths = ["/", "/recipe"];
+    app.get(indexPaths, function (req, res) {
+      res.sendFile(path.join(staticPath, "index.html"));
+    });
+
     var port = process.env.PORT || 3001;
     app.listen(port);
 
