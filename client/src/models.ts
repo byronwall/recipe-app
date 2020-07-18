@@ -34,8 +34,6 @@ export function getNewId() {
 export interface RecipeStep {
     description: string;
     duration: string;
-
-    subSteps: RecipeStep[] | undefined;
 }
 
 export interface IngredientAmount {

@@ -1,1 +1,130 @@
-{"recipes":[{"name":"new recipe12121","description":"desc","id":null,"ingredients":[],"steps":[]},{"name":"new recipeadsasd","description":"desc","id":2,"ingredients":[],"steps":[]},{"name":"new recipe with new stuff","description":"desc","id":3,"ingredients":[{"amount":0,"ingredientId":1594780889167,"modifier":"","unit":""},{"amount":0,"ingredientId":1594780893256,"modifier":"","unit":""}],"steps":[]},{"name":"new recipe","description":"desc","id":4,"ingredients":[{"amount":0,"ingredientId":1594780944792,"modifier":"","unit":""}],"steps":[]},{"name":"new recipeaaaa","description":"desc","id":5,"ingredients":[{"amount":0,"ingredientId":5,"modifier":"","unit":""}],"steps":[]},{"name":"new recipe","description":"desc","id":6,"ingredientGroups":[{"title":"group","ingredients":[]}],"stepGroups":[{"title":"group","steps":[]}]}],"ingredients":[{"id":null,"name":"test","plu":""},{"id":null,"name":"test2","plu":""},{"id":1,"name":"test6","plu":""},{"id":2,"name":"another one!","plu":""},{"id":3,"name":"some ne wthing","plu":""},{"id":4,"name":"and one more","plu":""},{"id":5,"name":"aaaa","plu":""}]}
+{
+  "recipes": [
+    {
+      "name": "Honey Dijon Chicken",
+      "description": "desc",
+      "id": 8,
+      "ingredientGroups": [
+        {
+          "title": "group",
+          "ingredients": [
+            { "amount": "", "ingredientId": 17, "modifier": "", "unit": "" },
+            { "amount": "", "ingredientId": 18, "modifier": "", "unit": "" },
+            { "amount": "", "ingredientId": 19, "modifier": "", "unit": "" },
+            { "amount": "", "ingredientId": 20, "modifier": "", "unit": "" },
+            { "amount": "", "ingredientId": 21, "modifier": "", "unit": "" },
+            { "amount": "", "ingredientId": 22, "modifier": "", "unit": "" },
+            { "amount": "", "ingredientId": 23, "modifier": "", "unit": "" },
+            { "amount": "", "ingredientId": 24, "modifier": "", "unit": "" },
+            { "amount": "", "ingredientId": 25, "modifier": "", "unit": "" },
+            { "amount": "", "ingredientId": 26, "modifier": "", "unit": "" },
+            { "amount": "", "ingredientId": 27, "modifier": "", "unit": "" }
+          ]
+        }
+      ],
+      "stepGroups": [
+        {
+          "title": "To Freeze and Cook Later",
+          "steps": [
+            {
+              "description": "Label your freezer bag with the name of the recipe, cooking instructions, and“use-by” date (which will be three months from the prep date).",
+              "duration": "0"
+            },
+            {
+              "description": "Add all ingredients to your freezer bag except water and potatoes.",
+              "duration": "0"
+            },
+            {
+              "description": "Remove as much air as possible, seal, and freeze.",
+              "duration": "0"
+            },
+            {
+              "description": "Place bag of potatoes in freezer.",
+              "duration": "0"
+            }
+          ]
+        },
+        {
+          "title": "To Cook",
+          "steps": [
+            {
+              "description": "Thaw freezer bag overnight in refrigerator or in water in the morning.",
+              "duration": "0"
+            },
+            {
+              "description": "The morning of cooking, pour contents into your crockpot; add water and frozen potatoes. (I don’t thaw my potatoes because I worry about them getting brown while cooking.)",
+              "duration": "0"
+            },
+            {
+              "description": "Cook on “low” setting for 4 hours in a 6-quart crockpot or 8 hours in a 4-quart crockpot.",
+              "duration": "0"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "ingredients": [
+    { "id": null, "name": "test", "plu": "" },
+    { "id": null, "name": "test2", "plu": "" },
+    { "id": 1, "name": "test6", "plu": "" },
+    { "id": 2, "name": "another one!", "plu": "" },
+    { "id": 3, "name": "some ne wthing", "plu": "" },
+    { "id": 4, "name": "and one more", "plu": "" },
+    { "id": 5, "name": "aaaa", "plu": "" },
+    {
+      "id": 6,
+      "name": "2 pounds of boneless, skinless chicken breasts",
+      "plu": ""
+    },
+    { "id": 7, "name": "1/4 cup honey", "plu": "" },
+    {
+      "id": 8,
+      "name": "2 tablespoons Dijon mustard (or whole grain mustard)",
+      "plu": ""
+    },
+    { "id": 9, "name": "2 teaspoons black pepper", "plu": "" },
+    { "id": 10, "name": "1/2 teaspoon salt", "plu": "" },
+    { "id": 11, "name": "1/2 teaspoon ground thyme", "plu": "" },
+    {
+      "id": 12,
+      "name": "1/2 cup water (not needed until day of cooking)",
+      "plu": ""
+    },
+    {
+      "id": 13,
+      "name": "16 oz bag of baby red potatoes (I buy the bags of fresh baby potatoes sold in the produce section)",
+      "plu": ""
+    },
+    { "id": 14, "name": "1 gallon-sized plastic freezer bag", "plu": "" },
+    { "id": 15, "name": "steamed broccoli", "plu": "" },
+    { "id": 16, "name": "salad", "plu": "" },
+    {
+      "id": 17,
+      "name": "2 pounds of boneless, skinless chicken breasts",
+      "plu": ""
+    },
+    { "id": 18, "name": "1/4 cup honey", "plu": "" },
+    {
+      "id": 19,
+      "name": "2 tablespoons Dijon mustard (or whole grain mustard)",
+      "plu": ""
+    },
+    { "id": 20, "name": "2 teaspoons black pepper", "plu": "" },
+    { "id": 21, "name": "1/2 teaspoon salt", "plu": "" },
+    { "id": 22, "name": "1/2 teaspoon ground thyme", "plu": "" },
+    {
+      "id": 23,
+      "name": "1/2 cup water (not needed until day of cooking)",
+      "plu": ""
+    },
+    {
+      "id": 24,
+      "name": "16 oz bag of baby red potatoes (I buy the bags of fresh baby potatoes sold in the produce section)",
+      "plu": ""
+    },
+    { "id": 25, "name": "1 gallon-sized plastic freezer bag", "plu": "" },
+    { "id": 26, "name": "steamed broccoli", "plu": "" },
+    { "id": 27, "name": "salad", "plu": "" }
+  ]
+}

@@ -8,6 +8,7 @@ import { Ingredient, getNewId } from "../models";
 import { GLOBAL_DATA_LAYER } from "..";
 
 interface IngredientChooserProps {
+    chosenItem: Ingredient | undefined;
     onItemChange(newIngredient: Ingredient): void;
 }
 interface IngredientChooserState {}
@@ -33,8 +34,9 @@ export class IngredientChooser extends React.Component<
 
     render() {
         console.log(
-            "new ingreds from state",
-            GLOBAL_DATA_LAYER.state.newIngredients
+            "ingred chooser render",
+            GLOBAL_DATA_LAYER.state.newIngredients,
+            this.props.chosenItem
         );
         return (
             <Subscribe to={[DataLayer]}>
@@ -52,6 +54,7 @@ export class IngredientChooser extends React.Component<
                             itemPredicate={filterFilm}
                             createNewItemFromQuery={createIngredient}
                             createNewItemRenderer={renderCreateFilmOption}
+                            selectedItem={this.props.chosenItem}
                         />
                     </div>
                 )}

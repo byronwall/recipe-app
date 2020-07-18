@@ -57,6 +57,10 @@ export class Server {
 
       const { recipe, newIngredients } = req.body as NewRecipeReq;
 
+      const existingRecipeIndex = db.recipes.findIndex(
+        (c) => c.id === recipe.id
+      );
+
       // add any new ingredients to the list
       recipe.ingredientGroups.forEach((grp) =>
         grp.ingredients.forEach((ingredToCheck) => {
@@ -66,15 +70,25 @@ export class Server {
 
           if (matchingNew) {
             addIngredientWithNewId(matchingNew);
+
+            ingredToCheck.ingredientId = matchingNew.id;
           }
         })
       );
 
-      recipe.id = idRecipe++;
+      if (existingRecipeIndex === -1) {
+        /// need to create
+
+        recipe.id = idRecipe++;
+        db.recipes.push(recipe);
+      } else {
+        // replace the entry
+
+        db.recipes[existingRecipeIndex] = recipe;
+      }
 
       // check if any new ingredients
 
-      db.recipes.push(recipe);
       saveDatabase();
 
       res.json({ ...db });

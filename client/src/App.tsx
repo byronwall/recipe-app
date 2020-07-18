@@ -7,7 +7,7 @@ import { DataLayer } from "./DataLayer";
 import { HomePage } from "./HomePage";
 import { Ingredients } from "./Ingredients";
 import { Navigation } from "./Navigation";
-import { RecipeViewer } from "./Recipes/ReceipeViewer";
+import { RecipeViewer } from "./Recipes/RecipeViewer";
 import { RecipeList } from "./Recipes/RecipeList";
 import { GLOBAL_DATA_LAYER } from ".";
 

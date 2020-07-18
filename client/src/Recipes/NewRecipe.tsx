@@ -8,7 +8,11 @@ import { createDefaultRecipe, Recipe } from "../models";
 import { IngredientGroupEditor } from "./IngredientGroupEditor";
 import { StepGroupEditor } from "./StepGroupEditor";
 
-interface NewRecipeProps {}
+interface NewRecipeProps {
+    defaultRecipe?: Recipe;
+
+    onSaveRecipe(newRecipe: Recipe): void;
+}
 interface NewRecipeState {
     editRecipe: Recipe;
 }
@@ -19,12 +23,22 @@ export class NewRecipe extends React.Component<NewRecipeProps, NewRecipeState> {
 
         const editRecipe = createDefaultRecipe();
 
-        this.state = { editRecipe };
+        this.state = { editRecipe: this.props.defaultRecipe ?? editRecipe };
     }
 
     componentDidMount() {}
 
-    componentDidUpdate(prevProps: NewRecipeProps, prevState: NewRecipeState) {}
+    componentDidUpdate(prevProps: NewRecipeProps, prevState: NewRecipeState) {
+        const didPropsRecipeChange = !_.isEqual(
+            this.props.defaultRecipe,
+            prevProps.defaultRecipe
+        );
+
+        if (didPropsRecipeChange && this.props.defaultRecipe !== undefined) {
+            // TODO: should probably clone this?
+            this.setState({ editRecipe: this.props.defaultRecipe });
+        }
+    }
 
     handleRecipeEdit<K extends keyof Recipe>(key: K, value: Recipe[K]) {
         const newRecipe = _.cloneDeep(this.state.editRecipe);
@@ -77,14 +91,11 @@ export class NewRecipe extends React.Component<NewRecipeProps, NewRecipeState> {
                 <Button
                     text="save"
                     icon="floppy-disk"
-                    onClick={() => this.saveNewRecipe()}
+                    onClick={() =>
+                        this.props.onSaveRecipe(this.state.editRecipe)
+                    }
                 />
             </div>
         );
-    }
-    saveNewRecipe() {
-        GLOBAL_DATA_LAYER.saveNewRecipe(this.state.editRecipe);
-
-        this.setState({ editRecipe: createDefaultRecipe() });
     }
 }

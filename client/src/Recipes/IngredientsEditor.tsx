@@ -119,6 +119,9 @@ export class IngredientsEditor extends React.Component<
                                                 newIngredient.id
                                             );
                                         }}
+                                        chosenItem={GLOBAL_DATA_LAYER.getIngredient(
+                                            inAmt.ingredientId
+                                        )}
                                     />
                                 </td>
                                 <td>

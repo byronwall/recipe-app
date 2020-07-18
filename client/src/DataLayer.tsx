@@ -44,9 +44,20 @@ export class DataLayer extends Container<DataLayerState> {
             return;
         }
 
-        const newIngredients = this.state.newIngredients.concat(newIngredient);
+        this.setState((prevState) => {
+            return {
+                newIngredients: prevState.newIngredients.concat(newIngredient),
+            };
+        });
+    }
 
-        this.setState({ newIngredients });
+    getIngredient(id: number): Ingredient | undefined {
+        // search known ingredients... then new ones
+
+        return (
+            this.state.ingredients.find((c) => c.id === id) ??
+            this.state.newIngredients.find((c) => c.id === id)
+        );
     }
 
     reloadFromServer(newDb: SavedDb) {

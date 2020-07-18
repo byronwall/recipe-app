@@ -122,7 +122,6 @@ export class StepsEditor extends React.Component<
         newSteps.push({
             description: "",
             duration: "",
-            subSteps: undefined,
         });
 
         this.props.onStepsChange(newSteps);

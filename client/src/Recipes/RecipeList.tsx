@@ -7,6 +7,8 @@ import { NewRecipe } from "./NewRecipe";
 import { Link } from "react-router-dom";
 
 import old_recipes from "../recipes.json";
+import { Recipe } from "../models";
+import { GLOBAL_DATA_LAYER } from "..";
 
 interface RecipeListProps {}
 interface RecipeListState {
@@ -32,6 +34,10 @@ export class RecipeList extends React.Component<
         prevState: RecipeListState
     ) {}
 
+    saveNewRecipe(newRecipe: Recipe) {
+        GLOBAL_DATA_LAYER.saveNewRecipe(newRecipe);
+    }
+
     render() {
         return (
             <Subscribe to={[DataLayer]}>
@@ -49,7 +55,13 @@ export class RecipeList extends React.Component<
                                 }
                             />
 
-                            {this.state.showNewRecipeForm && <NewRecipe />}
+                            {this.state.showNewRecipeForm && (
+                                <NewRecipe
+                                    onSaveRecipe={(newRecipe) =>
+                                        this.saveNewRecipe(newRecipe)
+                                    }
+                                />
+                            )}
 
                             <H3>recipe list</H3>
 
