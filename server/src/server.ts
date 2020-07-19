@@ -109,7 +109,7 @@ export class Server {
       // find that type...
     });
 
-    const indexPaths = ["/", "/recipe"];
+    const indexPaths = ["/", "/recipe/:id"];
     app.get(indexPaths, function (req, res) {
       res.sendFile(path.join(staticPath, "index.html"));
     });
