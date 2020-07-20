@@ -1,11 +1,12 @@
-import React from "react";
-import { Recipe } from "../models";
-import { H2, H3, H5, Button, Checkbox } from "@blueprintjs/core";
-import { GLOBAL_DATA_LAYER } from "..";
-import { NewRecipe } from "./NewRecipe";
-import SplitPane from "react-split-pane";
+import { Button, Checkbox, H2, H3, H5 } from "@blueprintjs/core";
 import _ from "lodash";
+import React from "react";
+import SplitPane from "react-split-pane";
+
+import { GLOBAL_DATA_LAYER } from "..";
 import { handleBooleanChange } from "../helpers";
+import { Recipe } from "../models";
+import { NewRecipe } from "./NewRecipe";
 
 interface RecipeViewerProps {
     recipe: Recipe | undefined;

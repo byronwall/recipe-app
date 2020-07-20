@@ -1,12 +1,14 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
+import Fuse from "fuse.js";
 import _ from "lodash";
 import { Container } from "unstated";
 
-import { Ingredient, Recipe, SavedDb } from "./models";
+import { getNewId, Ingredient, PlannedMeal, Recipe, SavedDb } from "./models";
 
 interface DataLayerState {
     ingredients: Ingredient[];
     recipes: Recipe[];
+    plannedMeals: PlannedMeal[];
 
     newIngredients: Ingredient[];
 }
@@ -26,6 +28,7 @@ export class DataLayer extends Container<DataLayerState> {
             ingredients: defaultIngredients,
             recipes: [],
             newIngredients: [],
+            plannedMeals: [],
         };
 
         // after init-- fire off db query
@@ -62,21 +65,24 @@ export class DataLayer extends Container<DataLayerState> {
 
     reloadFromServer(newDb: SavedDb) {
         console.log("new datA", newDb);
+
+        // force all dates to be dates
+
+        newDb.plannedMeals.forEach((meal) => {
+            meal.date = new Date(meal.date);
+        });
+
         this.setState({
             recipes: newDb.recipes,
             ingredients: newDb.ingredients,
+            plannedMeals: newDb.plannedMeals,
         });
     }
 
     async addIngredient(newIngredient: Ingredient) {
         const res = await axios.post("/api/add_ingredient", newIngredient);
 
-        const newDb = res.data as SavedDb;
-
-        console.log("new data", newDb);
-
-        // this will fire off state updates
-        this.reloadFromServer(newDb);
+        this.handleResponse(res);
     }
 
     async saveNewRecipe(newRecipe: Recipe) {
@@ -98,7 +104,17 @@ export class DataLayer extends Container<DataLayerState> {
 
         this.setState({ newIngredients: filterNewIngred });
 
-        const newDb = res.data as SavedDb;
+        this.handleResponse(res);
+    }
+
+    async getDb() {
+        const res = await axios.get<SavedDb>("/api/db");
+
+        this.handleResponse(res);
+    }
+
+    private handleResponse(res: AxiosResponse<SavedDb>) {
+        const newDb = res.data;
 
         console.log("new data", newDb);
 
@@ -106,14 +122,42 @@ export class DataLayer extends Container<DataLayerState> {
         this.reloadFromServer(newDb);
     }
 
-    async getDb() {
-        const res = await axios.get("/api/db");
+    fuzzyMatchRecipe(_query: string): Recipe[] {
+        // 2. Set up the Fuse instance
+        const fuse = new Fuse(this.state.recipes, {
+            keys: ["name"],
+        });
 
-        const newDb = res.data as SavedDb;
+        // 3. Now search!
+        return fuse.search(_query).map((c) => c.item);
+    }
 
-        console.log("new data", newDb);
+    async addMealPlanItem(date: Date | undefined, recipe: Recipe) {
+        if (date === undefined) {
+            return;
+        }
 
-        // this will fire off state updates
-        this.reloadFromServer(newDb);
+        const meal: PlannedMeal = {
+            date: date,
+            recipeId: recipe.id,
+            isMade: false,
+            isOnShoppingList: false,
+            scale: 1,
+            id: getNewId(),
+        };
+
+        const res = await axios.post("/api/add_meal", {
+            meal,
+        });
+
+        this.handleResponse(res);
+    }
+
+    async deletePlannedMeal(meal: PlannedMeal) {
+        const res = await axios.post("/api/delete_meal", {
+            meal,
+        });
+
+        this.handleResponse(res);
     }
 }

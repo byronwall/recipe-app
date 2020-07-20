@@ -52,4 +52,16 @@ export interface Ingredient {
 export interface SavedDb {
     recipes: Recipe[];
     ingredients: Ingredient[];
+    plannedMeals: PlannedMeal[];
+}
+
+export interface PlannedMeal {
+    date: Date;
+    recipeId: number;
+    scale: number;
+
+    isMade: boolean;
+    isOnShoppingList: boolean;
+
+    id: number;
 }

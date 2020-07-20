@@ -2,9 +2,9 @@ import express from "express";
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import * as path from "path";
 
-import { Ingredient, Recipe, SavedDb } from "./model";
+import { Ingredient, Recipe, SavedDb, PlannedMeal } from "./model";
 
-let db: SavedDb = { recipes: [], ingredients: [] };
+let db: SavedDb = { recipes: [], ingredients: [], plannedMeals: [] };
 const dbPath = "db.json";
 
 let idIngredient = 1;
@@ -15,6 +15,10 @@ function reloadDatabase() {
     saveDatabase();
   }
   db = JSON.parse(readFileSync(dbPath, "utf8")) as SavedDb;
+
+  if (!(("plannedMeals" in db) as any)) {
+    db.plannedMeals = [];
+  }
 
   idIngredient = (Math.max(...db.ingredients.map((c) => c.id)) || 1) + 1;
   idRecipe = (Math.max(...db.recipes.map((c) => c.id)) || 1) + 1;
@@ -102,6 +106,30 @@ export class Server {
       const ingredient = req.body as Ingredient;
 
       addIngredientWithNewId(ingredient);
+      saveDatabase();
+
+      res.json({ ...db });
+
+      // find that type...
+    });
+    app.post("/api/add_meal", (req: any, res: any) => {
+      console.log(new Date(), "add meal");
+
+      const meal = req.body.meal as PlannedMeal;
+
+      db.plannedMeals.push(meal);
+      saveDatabase();
+
+      res.json({ ...db });
+
+      // find that type...
+    });
+    app.post("/api/delete_meal", (req: any, res: any) => {
+      console.log(new Date(), "delete meal");
+
+      const meal = req.body.meal as PlannedMeal;
+
+      db.plannedMeals = db.plannedMeals.filter((c) => c.id !== meal.id);
       saveDatabase();
 
       res.json({ ...db });

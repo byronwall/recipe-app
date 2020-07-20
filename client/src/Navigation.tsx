@@ -38,6 +38,13 @@ export class Navigation extends React.Component {
                     >
                         ingredients
                     </NavLink>
+                    <NavLink
+                        to="/plan"
+                        className="bp3-button bp3-minimal  header-link"
+                        activeClassName="bp3-active bp3-intent-primary"
+                    >
+                        plan
+                    </NavLink>
                 </NavbarGroup>
             </Navbar>
         );

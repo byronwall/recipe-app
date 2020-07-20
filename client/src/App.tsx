@@ -3,13 +3,14 @@ import React from "react";
 import { Route, Switch } from "react-router-dom";
 import { Subscribe } from "unstated";
 
+import { GLOBAL_DATA_LAYER } from ".";
 import { DataLayer } from "./DataLayer";
 import { HomePage } from "./HomePage";
 import { Ingredients } from "./Ingredients";
+import { MealPlan } from "./MealPlan/MealPlan";
 import { Navigation } from "./Navigation";
-import { RecipeViewer } from "./Recipes/RecipeViewer";
 import { RecipeList } from "./Recipes/RecipeList";
-import { GLOBAL_DATA_LAYER } from ".";
+import { RecipeViewer } from "./Recipes/RecipeViewer";
 
 export class App extends React.Component {
     render() {
@@ -53,6 +54,10 @@ export class App extends React.Component {
                                             )
                                         }
                                     />
+                                </Route>
+
+                                <Route path="/plan">
+                                    <MealPlan meals={data.state.plannedMeals} />
                                 </Route>
 
                                 <Route path="/" exact>
