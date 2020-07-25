@@ -85,10 +85,11 @@ export class DataLayer extends Container<DataLayerState> {
         this.handleResponse(res);
     }
 
-    async saveNewRecipe(newRecipe: Recipe) {
+    async saveNewRecipe(newRecipe: Recipe, newIngredients?: Ingredient[]) {
+        console.log("save new", this.state.newIngredients);
         const res = await axios.post("/api/add_recipe", {
             recipe: newRecipe,
-            newIngredients: this.state.newIngredients,
+            newIngredients: newIngredients ?? this.state.newIngredients,
         });
 
         // remove any new ingredients client side since they'll be saved on server

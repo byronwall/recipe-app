@@ -8,3 +8,12 @@ First version needs:
     ☐ Cooking mode for a recipe
     ☐ Ability to edit a recipe
     ☐ Ability to edit recipe using a simple text interface -- map it all back to data structures (use Ohm for this?)
+
+
+Meal planning:
+    ☐ Start the scrolling on today
+    ☐ Add ability to change the scale
+    ☐ Add a shopping list creation
+    ☐ Ability to show something as made
+    ☐ Add the store aisle to the ingredients info
+    ☐ Hitting <ENTER> should select the first search item
