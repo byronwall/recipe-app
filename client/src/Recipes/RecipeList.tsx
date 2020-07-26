@@ -1,22 +1,19 @@
 import { Button, H3, H4 } from "@blueprintjs/core";
 import React from "react";
+import { Link } from "react-router-dom";
 import { Subscribe } from "unstated";
 
+import { GLOBAL_DATA_LAYER } from "..";
 import { DataLayer } from "../DataLayer";
-import { NewRecipe } from "./NewRecipe";
-import { Link } from "react-router-dom";
-
-import old_recipes from "../recipes.json";
 import {
-    Recipe,
     createDefaultRecipe,
-    IngredientGroup,
     getNewId,
     Ingredient,
+    IngredientGroup,
+    Recipe,
 } from "../models";
-import { GLOBAL_DATA_LAYER } from "..";
-
-import Xray from "x-ray";
+import old_recipes from "../recipes.json";
+import { NewRecipe } from "./NewRecipe";
 
 interface RecipeListProps {}
 interface RecipeListState {
@@ -74,12 +71,22 @@ export class RecipeList extends React.Component<
                             <H3>recipe list</H3>
 
                             {data.state.recipes.map((recipe) => (
-                                <Link
+                                <div
+                                    style={{ display: "flex" }}
                                     key={recipe.id}
-                                    to={"/recipe/" + recipe.id}
                                 >
-                                    <div>{recipe.name}</div>
-                                </Link>
+                                    <Link to={"/recipe/" + recipe.id}>
+                                        <div>{recipe.name}</div>
+                                    </Link>
+                                    <Button
+                                        icon="cross"
+                                        intent="danger"
+                                        onClick={() =>
+                                            this.removeRecipe(recipe.id)
+                                        }
+                                        minimal
+                                    />
+                                </div>
                             ))}
                         </div>
 
@@ -117,6 +124,10 @@ export class RecipeList extends React.Component<
             </Subscribe>
         );
     }
+    removeRecipe(id: number) {
+        GLOBAL_DATA_LAYER.deleteRecipe(id);
+    }
+
     convertAllOldRecipes() {
         old_recipes.recipes.forEach((recipe, index) => {
             if (index > 0) {
@@ -191,6 +202,7 @@ export class RecipeList extends React.Component<
                         id: getNewId() - Math.random() * 10000,
                         name: item.textContent?.trim() ?? "",
                         plu: "",
+                        isGoodName: false,
                     };
 
                     newIngreds.push(newIngred);

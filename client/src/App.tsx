@@ -48,6 +48,7 @@ export class App extends React.Component {
                                 <Route path="/ingredients">
                                     <Ingredients
                                         ingredients={data.state.ingredients}
+                                        recipes={data.state.recipes}
                                         onSaveNewIngredient={(newIngredient) =>
                                             GLOBAL_DATA_LAYER.addIngredient(
                                                 newIngredient

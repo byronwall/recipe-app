@@ -13,19 +13,12 @@ interface DataLayerState {
     newIngredients: Ingredient[];
 }
 
-const defaultIngredients: Ingredient[] = [
-    { id: 1, name: "onion", plu: "234" },
-    { id: 2, name: "apple", plu: "22" },
-    { id: 3, name: "flour", plu: "445" },
-    { id: 4, name: "banana", plu: "5567" },
-];
-
 export class DataLayer extends Container<DataLayerState> {
     constructor() {
         super();
 
         this.state = {
-            ingredients: defaultIngredients,
+            ingredients: [],
             recipes: [],
             newIngredients: [],
             plannedMeals: [],
@@ -157,6 +150,14 @@ export class DataLayer extends Container<DataLayerState> {
     async deletePlannedMeal(meal: PlannedMeal) {
         const res = await axios.post("/api/delete_meal", {
             meal,
+        });
+
+        this.handleResponse(res);
+    }
+
+    async deleteRecipe(id: number) {
+        const res = await axios.post("/api/delete_recipe", {
+            id,
         });
 
         this.handleResponse(res);

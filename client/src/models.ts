@@ -47,6 +47,8 @@ export interface Ingredient {
     name: string;
     plu: string;
     id: number;
+
+    isGoodName: boolean;
 }
 
 export interface SavedDb {

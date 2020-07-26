@@ -97,6 +97,7 @@ export class IngredientGroupEditor extends React.Component<
                 id: getNewId() - Math.random() * 10000,
                 name: line,
                 plu: "",
+                isGoodName: false,
             };
 
             GLOBAL_DATA_LAYER.addNewIngredient(newIngred);

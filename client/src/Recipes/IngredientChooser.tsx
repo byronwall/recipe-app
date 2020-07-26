@@ -118,10 +118,11 @@ export const filterFilm: ItemPredicate<Ingredient> = (
 };
 
 function createIngredient(name: string): Ingredient {
-    const newIngredient = {
+    const newIngredient: Ingredient = {
         id: getNewId(),
         name,
         plu: "",
+        isGoodName: false,
     };
 
     console.log("new ingred", newIngredient);
