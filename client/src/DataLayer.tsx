@@ -3,7 +3,16 @@ import Fuse from "fuse.js";
 import _ from "lodash";
 import { Container } from "unstated";
 
-import { getNewId, Ingredient, PlannedMeal, Recipe, SavedDb } from "./models";
+import {
+    getNewId,
+    Ingredient,
+    PlannedMeal,
+    Recipe,
+    SavedDb,
+    API_RecipeIngredParam,
+    API_RecipeParam,
+} from "./models";
+import FuzzySet from "fuzzyset";
 
 interface DataLayerState {
     ingredients: Ingredient[];
@@ -11,6 +20,8 @@ interface DataLayerState {
     plannedMeals: PlannedMeal[];
 
     newIngredients: Ingredient[];
+
+    fuzzyIngredientNames: FuzzySet;
 }
 
 export class DataLayer extends Container<DataLayerState> {
@@ -22,10 +33,32 @@ export class DataLayer extends Container<DataLayerState> {
             recipes: [],
             newIngredients: [],
             plannedMeals: [],
+            fuzzyIngredientNames: FuzzySet(),
         };
 
         // after init-- fire off db query
         this.getDb();
+    }
+
+    async updateRecipeAndIngredient(newRecipe: Recipe, newIngred: Ingredient) {
+        const postData: API_RecipeIngredParam = {
+            recipe: newRecipe,
+            ingredient: newIngred,
+        };
+
+        const res = await axios.post("/api/update_recipe_ingredient", postData);
+
+        this.handleResponse(res);
+    }
+
+    async updateRecipe(newRecipe: Recipe) {
+        const postData: API_RecipeParam = {
+            recipe: newRecipe,
+        };
+
+        const res = await axios.post("/api/update_recipe", postData);
+
+        this.handleResponse(res);
     }
 
     addNewIngredient(newIngredient: Ingredient) {
@@ -65,10 +98,17 @@ export class DataLayer extends Container<DataLayerState> {
             meal.date = new Date(meal.date);
         });
 
+        const goodNames = newDb.ingredients
+            .filter((c) => c.isGoodName)
+            .map((c) => c.name + "|||" + c.id);
+
+        const ingredFuzzy = FuzzySet(goodNames, false, 5, 9);
+
         this.setState({
             recipes: newDb.recipes,
             ingredients: newDb.ingredients,
             plannedMeals: newDb.plannedMeals,
+            fuzzyIngredientNames: ingredFuzzy,
         });
     }
 

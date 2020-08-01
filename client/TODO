@@ -1,3 +1,6 @@
+☐ Add the edit ingredient so that recommendations are better
+☐ Find a better text search library
+
 Ability to import an existing recipe from Pepperplate:
     ☐ Parse the HTML into pieces
     ☐ Figure out best way to parse/store the ingredients

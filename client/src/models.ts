@@ -67,3 +67,11 @@ export interface PlannedMeal {
 
     id: number;
 }
+
+export interface API_RecipeIngredParam {
+    recipe: Recipe;
+    ingredient: Ingredient;
+}
+export interface API_RecipeParam {
+    recipe: Recipe;
+}

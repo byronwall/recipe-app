@@ -2,7 +2,14 @@ import express from "express";
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import * as path from "path";
 
-import { Ingredient, Recipe, SavedDb, PlannedMeal } from "./model";
+import {
+  Ingredient,
+  Recipe,
+  SavedDb,
+  PlannedMeal,
+  API_RecipeIngredParam,
+  API_RecipeParam,
+} from "./model";
 
 let db: SavedDb = { recipes: [], ingredients: [], plannedMeals: [] };
 const dbPath = "db.json";
@@ -98,6 +105,59 @@ export class Server {
       res.json({ ...db });
 
       // find that type...
+    });
+
+    app.post("/api/update_recipe_ingredient", (req: any, res: any) => {
+      const postData = req.body as API_RecipeIngredParam;
+      console.log(new Date(), "update recipe and ingredient", postData);
+
+      const recipeIndex = db.recipes.findIndex(
+        (c) => c.id === postData.recipe.id
+      );
+
+      const ingredientIndex = db.ingredients.findIndex(
+        (c) => c.id === postData.ingredient.id
+      );
+
+      if (recipeIndex > -1 && ingredientIndex > -1) {
+        // send back the current database
+
+        // do some updates
+
+        // find the recipe -- update it
+
+        // find the ingredient -- update it
+        db.ingredients[ingredientIndex] = postData.ingredient;
+        db.recipes[recipeIndex] = postData.recipe;
+
+        saveDatabase();
+      }
+
+      res.json({ ...db });
+    });
+
+    app.post("/api/update_recipe", (req: any, res: any) => {
+      const postData = req.body as API_RecipeParam;
+      console.log(new Date(), "update recipe and ingredient", postData);
+
+      const recipeIndex = db.recipes.findIndex(
+        (c) => c.id === postData.recipe.id
+      );
+
+      if (recipeIndex > -1) {
+        // send back the current database
+
+        // do some updates
+
+        // find the recipe -- update it
+
+        // find the ingredient -- update it
+
+        db.recipes[recipeIndex] = postData.recipe;
+        saveDatabase();
+      }
+
+      res.json({ ...db });
     });
 
     app.post("/api/add_ingredient", (req: any, res: any) => {
