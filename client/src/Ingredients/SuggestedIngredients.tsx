@@ -1,4 +1,4 @@
-import { Button, Card, H4, HTMLTable } from "@blueprintjs/core";
+import { Button, Card, H4, HTMLTable, InputGroup } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
 
@@ -8,6 +8,8 @@ import {
     NewIngAmt,
 } from "../Recipes/ingredient_processing";
 import { GLOBAL_DATA_LAYER } from "..";
+import { handleStringChange } from "../helpers";
+import { SuggestedIngredientRow } from "./SuggestedIngredientRow";
 
 type IngredientHash = {
     [key: number]: IngredientAmount | null;
@@ -20,9 +22,10 @@ interface SuggestedIngredientsProps {
 interface SuggestedIngredientsState {
     ingredientHash: IngredientHash;
     suggestions: SuggestedIngredient[];
+    searchText: string;
 }
 
-interface SuggestedIngredient {
+export interface SuggestedIngredient {
     originalIngredient: Ingredient;
     suggestions: NewIngAmt;
     matchingIngred: Ingredient | undefined;
@@ -35,7 +38,7 @@ export class SuggestedIngredients extends React.Component<
     constructor(props: SuggestedIngredientsProps) {
         super(props);
 
-        this.state = { ingredientHash: {}, suggestions: [] };
+        this.state = { ingredientHash: {}, suggestions: [], searchText: "" };
     }
 
     componentDidMount() {}
@@ -54,62 +57,75 @@ export class SuggestedIngredients extends React.Component<
             prevProps.ingredients
         );
 
-        if (didRecipesChange || didIngredientsChange) {
-            const ingredientHash: IngredientHash = {};
+        const didSearchChange = this.state.searchText !== prevState.searchText;
 
-            this.props.recipes.forEach((r) => {
-                r.ingredientGroups.forEach((g) => {
-                    g.ingredients.forEach((i) => {
-                        if (ingredientHash[i.ingredientId] === undefined) {
-                            ingredientHash[i.ingredientId] = i;
-                        } else {
-                            ingredientHash[i.ingredientId] = null;
-                        }
-                    });
+        if (didRecipesChange || didIngredientsChange || didSearchChange) {
+            this.updateSuggestions();
+        }
+    }
+
+    private updateSuggestions() {
+        const ingredientHash: IngredientHash = {};
+
+        this.props.recipes.forEach((r) => {
+            r.ingredientGroups.forEach((g) => {
+                g.ingredients.forEach((i) => {
+                    if (ingredientHash[i.ingredientId] === undefined) {
+                        ingredientHash[i.ingredientId] = i;
+                    } else {
+                        ingredientHash[i.ingredientId] = null;
+                    }
                 });
             });
+        });
 
-            const suggestions = _.values(ingredientHash)
-                .filter((c) => c !== null)
-                .map((c) => c as IngredientAmount)
-                .reduce<SuggestedIngredient[]>((acc, c) => {
-                    const ingred = this.props.ingredients.find(
-                        (d) => d.id === c?.ingredientId
-                    );
+        const suggestions = _.values(ingredientHash)
+            .filter((c) => c !== null)
 
-                    if (acc.length > 30) {
-                        return acc;
-                    }
+            .map((c) => c as IngredientAmount)
+            .reduce<SuggestedIngredient[]>((acc, c) => {
+                const ingred = this.props.ingredients.find(
+                    (d) => d.id === c?.ingredientId
+                );
 
-                    const newIng = guessIngredientParts(c);
-                    if (
-                        ingred === undefined ||
-                        newIng === undefined ||
-                        ingred.isGoodName
-                    ) {
-                        return acc;
-                    }
-
-                    const newSugg: SuggestedIngredient = {
-                        originalIngredient: ingred,
-                        suggestions: newIng,
-                        matchingIngred:
-                            newIng.newName === undefined
-                                ? this.props.ingredients.find(
-                                      (c) => c.id === newIng.newIng.ingredientId
-                                  )
-                                : undefined,
-                    };
-
-                    acc.push(newSugg);
-
+                if (acc.length > 30 || ingred === undefined) {
                     return acc;
-                }, [])
-                .filter((c) => c !== undefined)
-                .map((c) => c as SuggestedIngredient);
+                }
 
-            this.setState({ suggestions });
-        }
+                const doesMatchSearch =
+                    this.state.searchText === "" ||
+                    ingred?.name
+                        .toUpperCase()
+                        .indexOf(this.state.searchText.toUpperCase()) > -1;
+
+                if (!doesMatchSearch) {
+                    return acc;
+                }
+
+                const newIng = guessIngredientParts(c);
+                if (newIng === undefined || ingred.isGoodName) {
+                    return acc;
+                }
+
+                const newSugg: SuggestedIngredient = {
+                    originalIngredient: ingred,
+                    suggestions: newIng,
+                    matchingIngred:
+                        newIng.newName === undefined
+                            ? this.props.ingredients.find(
+                                  (c) => c.id === newIng.newIng.ingredientId
+                              )
+                            : undefined,
+                };
+
+                acc.push(newSugg);
+
+                return acc;
+            }, [])
+            .filter((c) => c !== undefined)
+            .map((c) => c as SuggestedIngredient);
+
+        this.setState({ suggestions });
     }
 
     keepSuggestedIngredient(suggestion: SuggestedIngredient) {
@@ -179,6 +195,13 @@ export class SuggestedIngredients extends React.Component<
                     which have not been tagged as "good"
                 </p>
 
+                <InputGroup
+                    value={this.state.searchText}
+                    onChange={handleStringChange((searchText) =>
+                        this.setState({ searchText })
+                    )}
+                />
+
                 <HTMLTable striped condensed bordered>
                     <thead>
                         <tr>
@@ -186,39 +209,20 @@ export class SuggestedIngredients extends React.Component<
                             <th>new name</th>
                             <th>new amt</th>
                             <th>new unit</th>
+                            <th>new modifier</th>
                             <th>actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.suggestions.map((c) => {
-                            const ingred = c.originalIngredient;
-
-                            const newIng = c.suggestions;
-
-                            const color =
-                                newIng.newName === undefined ? "red" : "white";
-
-                            return (
-                                <tr>
-                                    <td>{ingred?.name}</td>
-                                    <td style={{ backgroundColor: color }}>
-                                        {newIng?.newName ??
-                                            c.matchingIngred?.name}
-                                    </td>
-                                    <td>{newIng?.newIng.amount}</td>
-                                    <td>{newIng?.newIng.unit}</td>
-                                    <td>
-                                        <Button
-                                            text="keep"
-                                            onClick={() =>
-                                                this.keepSuggestedIngredient(c)
-                                            }
-                                            minimal
-                                        />
-                                    </td>
-                                </tr>
-                            );
-                        })}
+                        {this.state.suggestions.map((c, index) => (
+                            <SuggestedIngredientRow
+                                key={index}
+                                onSaveSuggestion={(sugInged) =>
+                                    this.keepSuggestedIngredient(sugInged)
+                                }
+                                sugIngred={c}
+                            />
+                        ))}
                     </tbody>
                 </HTMLTable>
             </Card>

@@ -5,6 +5,8 @@ import React from "react";
 import { handleStringChange } from "./helpers";
 import { SuggestedIngredients } from "./Ingredients/SuggestedIngredients";
 import { Ingredient, Recipe } from "./models";
+import { IngredientViewEdit } from "./Ingredients/IngredientViewEdit";
+import { GLOBAL_DATA_LAYER } from ".";
 
 interface IngredientsProps {
     ingredients: Ingredient[];
@@ -13,6 +15,10 @@ interface IngredientsProps {
 }
 interface IngredientsState {
     newIngredient: Ingredient;
+
+    searchText: string;
+
+    filteredIngredients: Ingredient[];
 }
 
 export class Ingredients extends React.Component<
@@ -24,6 +30,8 @@ export class Ingredients extends React.Component<
 
         this.state = {
             newIngredient: { id: 0, name: "", plu: "", isGoodName: false },
+            searchText: "",
+            filteredIngredients: props.ingredients.slice(0, 20),
         };
     }
 
@@ -32,7 +40,23 @@ export class Ingredients extends React.Component<
     componentDidUpdate(
         prevProps: IngredientsProps,
         prevState: IngredientsState
-    ) {}
+    ) {
+        const didSearchChange = this.state.searchText !== prevState.searchText;
+
+        if (didSearchChange) {
+            const filteredIngredients = this.props.ingredients
+                .filter(
+                    (c) =>
+                        this.state.searchText === "" ||
+                        c.name
+                            .toUpperCase()
+                            .indexOf(this.state.searchText.toUpperCase()) > -1
+                )
+                .slice(0, 20);
+
+            this.setState({ filteredIngredients });
+        }
+    }
 
     handleIngredientEdit<K extends keyof Ingredient>(
         key: K,
@@ -46,6 +70,7 @@ export class Ingredients extends React.Component<
     }
 
     render() {
+        console.log("ingred render", this.state.filteredIngredients);
         return (
             <div>
                 <p>Ingredients</p>
@@ -95,19 +120,36 @@ export class Ingredients extends React.Component<
                     {this.props.ingredients
                         .filter((c) => c.isGoodName)
                         .map((ingredient) => (
-                            <div key={ingredient.id}>
-                                {ingredient.id}|{ingredient.name}|
-                                {ingredient.plu}
-                            </div>
+                            <IngredientViewEdit
+                                ingredient={ingredient}
+                                onSaveChanges={(newIngredient) =>
+                                    GLOBAL_DATA_LAYER.updateIngredient(
+                                        newIngredient
+                                    )
+                                }
+                            />
                         ))}
 
                     <b>current ingredients</b>
 
-                    {this.props.ingredients.map((ingredient) => (
-                        <div key={ingredient.id}>
-                            {ingredient.id}|{ingredient.name}|{ingredient.plu}
-                        </div>
-                    ))}
+                    <InputGroup
+                        value={this.state.searchText}
+                        onChange={handleStringChange((searchText) =>
+                            this.setState({ searchText: searchText })
+                        )}
+                    />
+
+                    <div>
+                        {this.state.filteredIngredients.map((ingredient) => (
+                            <IngredientViewEdit
+                                key={ingredient.id}
+                                ingredient={ingredient}
+                                onSaveChanges={
+                                    GLOBAL_DATA_LAYER.updateIngredient
+                                }
+                            />
+                        ))}
+                    </div>
                 </Card>
             </div>
         );

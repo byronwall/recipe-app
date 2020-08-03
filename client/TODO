@@ -1,6 +1,8 @@
 ☐ Add the edit ingredient so that recommendations are better
 ☐ Find a better text search library
 
+☐ Need to remove orphaned ingredients which have no recipe linked
+
 Ability to import an existing recipe from Pepperplate:
     ☐ Parse the HTML into pieces
     ☐ Figure out best way to parse/store the ingredients

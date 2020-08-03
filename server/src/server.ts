@@ -9,6 +9,7 @@ import {
   PlannedMeal,
   API_RecipeIngredParam,
   API_RecipeParam,
+  API_IngredParam,
 } from "./model";
 
 let db: SavedDb = { recipes: [], ingredients: [], plannedMeals: [] };
@@ -26,6 +27,32 @@ function reloadDatabase() {
   if (!(("plannedMeals" in db) as any)) {
     db.plannedMeals = [];
   }
+
+  // clean up bad whitespace
+
+  db.ingredients.forEach((ingred) => {
+    ingred.name = ingred.name.replace(/\s+/g, " ");
+  });
+
+  // remove bad ingredients
+
+  const goodIngIds: { [key: number]: true } = {};
+
+  db.recipes.forEach((recipe) => {
+    recipe.ingredientGroups.forEach((grp) => {
+      grp.ingredients.forEach((ing) => {
+        goodIngIds[ing.ingredientId] = true;
+      });
+    });
+  });
+
+  db.ingredients = db.ingredients.filter((c) => {
+    const wasFound = goodIngIds[c.id];
+    if (!wasFound) {
+      console.log("missing ingred", c);
+    }
+    return wasFound;
+  });
 
   idIngredient = (Math.max(...db.ingredients.map((c) => c.id)) || 1) + 1;
   idRecipe = (Math.max(...db.recipes.map((c) => c.id)) || 1) + 1;
@@ -136,6 +163,23 @@ export class Server {
       res.json({ ...db });
     });
 
+    app.post("/api/update_ingredient", (req: any, res: any) => {
+      const postData = req.body as API_IngredParam;
+      console.log(new Date(), "update recipe and ingredient", postData);
+
+      const ingredientIndex = db.ingredients.findIndex(
+        (c) => c.id === postData.ingredient.id
+      );
+
+      if (ingredientIndex > -1) {
+        db.ingredients[ingredientIndex] = postData.ingredient;
+
+        saveDatabase();
+      }
+
+      res.json({ ...db });
+    });
+
     app.post("/api/update_recipe", (req: any, res: any) => {
       const postData = req.body as API_RecipeParam;
       console.log(new Date(), "update recipe and ingredient", postData);
@@ -145,14 +189,6 @@ export class Server {
       );
 
       if (recipeIndex > -1) {
-        // send back the current database
-
-        // do some updates
-
-        // find the recipe -- update it
-
-        // find the ingredient -- update it
-
         db.recipes[recipeIndex] = postData.recipe;
         saveDatabase();
       }

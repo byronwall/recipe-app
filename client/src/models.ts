@@ -75,3 +75,7 @@ export interface API_RecipeIngredParam {
 export interface API_RecipeParam {
     recipe: Recipe;
 }
+
+export interface API_IngredParam {
+    ingredient: Ingredient;
+}

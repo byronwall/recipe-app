@@ -11,6 +11,7 @@ import {
     SavedDb,
     API_RecipeIngredParam,
     API_RecipeParam,
+    API_IngredParam,
 } from "./models";
 import FuzzySet from "fuzzyset";
 
@@ -57,6 +58,16 @@ export class DataLayer extends Container<DataLayerState> {
         };
 
         const res = await axios.post("/api/update_recipe", postData);
+
+        this.handleResponse(res);
+    }
+
+    async updateIngredient(newIngredient: Ingredient) {
+        const postData: API_IngredParam = {
+            ingredient: newIngredient,
+        };
+
+        const res = await axios.post("/api/update_ingredient", postData);
 
         this.handleResponse(res);
     }
