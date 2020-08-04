@@ -45,8 +45,13 @@ export interface IngredientAmount {
 
 export interface Ingredient {
     name: string;
+
+    comments: string; // meant to hold extra detail beyond the name
+
     plu: string;
     id: number;
+
+    aisle: string;
 
     isGoodName: boolean;
 }

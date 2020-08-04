@@ -6,12 +6,13 @@ import { IngredientAmount, Recipe, Ingredient } from "../models";
 import {
     guessIngredientParts,
     NewIngAmt,
+    getSuggestionsFromLists,
 } from "../Recipes/ingredient_processing";
 import { GLOBAL_DATA_LAYER } from "..";
 import { handleStringChange } from "../helpers";
 import { SuggestedIngredientRow } from "./SuggestedIngredientRow";
 
-type IngredientHash = {
+export type IngredientHash = {
     [key: number]: IngredientAmount | null;
 };
 
@@ -38,7 +39,13 @@ export class SuggestedIngredients extends React.Component<
     constructor(props: SuggestedIngredientsProps) {
         super(props);
 
-        this.state = { ingredientHash: {}, suggestions: [], searchText: "" };
+        const suggestions = getSuggestionsFromLists(
+            props.recipes,
+            props.ingredients,
+            ""
+        );
+
+        this.state = { ingredientHash: {}, suggestions, searchText: "" };
     }
 
     componentDidMount() {}
@@ -65,65 +72,15 @@ export class SuggestedIngredients extends React.Component<
     }
 
     private updateSuggestions() {
-        const ingredientHash: IngredientHash = {};
+        const ingredients = this.props.ingredients;
+        const recipes = this.props.recipes;
+        const searchText = this.state.searchText.toUpperCase();
 
-        this.props.recipes.forEach((r) => {
-            r.ingredientGroups.forEach((g) => {
-                g.ingredients.forEach((i) => {
-                    if (ingredientHash[i.ingredientId] === undefined) {
-                        ingredientHash[i.ingredientId] = i;
-                    } else {
-                        ingredientHash[i.ingredientId] = null;
-                    }
-                });
-            });
-        });
-
-        const suggestions = _.values(ingredientHash)
-            .filter((c) => c !== null)
-
-            .map((c) => c as IngredientAmount)
-            .reduce<SuggestedIngredient[]>((acc, c) => {
-                const ingred = this.props.ingredients.find(
-                    (d) => d.id === c?.ingredientId
-                );
-
-                if (acc.length > 30 || ingred === undefined) {
-                    return acc;
-                }
-
-                const doesMatchSearch =
-                    this.state.searchText === "" ||
-                    ingred?.name
-                        .toUpperCase()
-                        .indexOf(this.state.searchText.toUpperCase()) > -1;
-
-                if (!doesMatchSearch) {
-                    return acc;
-                }
-
-                const newIng = guessIngredientParts(c);
-                if (newIng === undefined || ingred.isGoodName) {
-                    return acc;
-                }
-
-                const newSugg: SuggestedIngredient = {
-                    originalIngredient: ingred,
-                    suggestions: newIng,
-                    matchingIngred:
-                        newIng.newName === undefined
-                            ? this.props.ingredients.find(
-                                  (c) => c.id === newIng.newIng.ingredientId
-                              )
-                            : undefined,
-                };
-
-                acc.push(newSugg);
-
-                return acc;
-            }, [])
-            .filter((c) => c !== undefined)
-            .map((c) => c as SuggestedIngredient);
+        const suggestions = getSuggestionsFromLists(
+            recipes,
+            ingredients,
+            searchText
+        );
 
         this.setState({ suggestions });
     }
@@ -186,13 +143,17 @@ export class SuggestedIngredients extends React.Component<
     }
 
     render() {
+        const ingredientsToCheck = this.props.ingredients.filter(
+            (c) => !c.isGoodName
+        ).length;
+
         return (
             <Card>
-                <H4>ingredients to check</H4>
+                <H4>ingredients to check ({ingredientsToCheck})</H4>
 
                 <p>
                     All of these are ingredients which are only used once and
-                    which have not been tagged as "good"
+                    which have not been tagged as good.
                 </p>
 
                 <InputGroup

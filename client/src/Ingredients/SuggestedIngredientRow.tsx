@@ -2,10 +2,11 @@ import { Button, EditableText } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
 
-import { IngredientAmount } from "../models";
+import { IngredientAmount, Ingredient } from "../models";
 import { NewIngAmt } from "../Recipes/ingredient_processing";
 import { SuggestedIngredient } from "./SuggestedIngredients";
 import { GLOBAL_DATA_LAYER } from "..";
+import { IngredientChooserOverlay } from "./IngredientChooserOverlay";
 
 interface SuggestedIngredientRowProps {
     sugIngred: SuggestedIngredient;
@@ -14,6 +15,8 @@ interface SuggestedIngredientRowProps {
 }
 interface SuggestedIngredientRowState {
     editSugIngred: SuggestedIngredient;
+
+    isOverlayOpen: boolean;
 }
 
 export class SuggestedIngredientRow extends React.Component<
@@ -23,7 +26,7 @@ export class SuggestedIngredientRow extends React.Component<
     constructor(props: SuggestedIngredientRowProps) {
         super(props);
 
-        this.state = { editSugIngred: props.sugIngred };
+        this.state = { editSugIngred: props.sugIngred, isOverlayOpen: false };
     }
 
     componentDidMount() {}
@@ -75,14 +78,28 @@ export class SuggestedIngredientRow extends React.Component<
         const newIng = c.suggestions;
 
         const editableName = (
-            <EditableText
-                value={newIng.newName}
-                onChange={(newName) =>
-                    this.handleNewIngAmtChange("newName", newName)
-                }
-                multiline
-                maxLines={4}
-            />
+            <div className="flex">
+                <EditableText
+                    value={newIng.newName}
+                    onChange={(newName) =>
+                        this.handleNewIngAmtChange("newName", newName)
+                    }
+                    multiline
+                    maxLines={4}
+                />
+                <Button
+                    icon="search"
+                    minimal
+                    onClick={() => this.setState({ isOverlayOpen: true })}
+                />
+                <IngredientChooserOverlay
+                    isOpen={this.state.isOverlayOpen}
+                    onClose={() => this.setState({ isOverlayOpen: false })}
+                    onItemChosen={(newIngred) =>
+                        this.updateIngredientFromOverlay(newIngred)
+                    }
+                />
+            </div>
         );
 
         const didMatchExisting = newIng.newName === undefined;
@@ -121,6 +138,7 @@ export class SuggestedIngredientRow extends React.Component<
                         onChange={(amount) =>
                             this.handleSuggestionChange("amount", amount)
                         }
+                        placeholder="amt"
                     />
                 </td>
                 <td>
@@ -129,6 +147,7 @@ export class SuggestedIngredientRow extends React.Component<
                         onChange={(unit) =>
                             this.handleSuggestionChange("unit", unit)
                         }
+                        placeholder="unit"
                     />
                 </td>
 
@@ -138,6 +157,7 @@ export class SuggestedIngredientRow extends React.Component<
                         onChange={(modifier) =>
                             this.handleSuggestionChange("modifier", modifier)
                         }
+                        placeholder="mod"
                     />
                 </td>
                 <td>
@@ -149,6 +169,19 @@ export class SuggestedIngredientRow extends React.Component<
                 </td>
             </tr>
         );
+    }
+    updateIngredientFromOverlay(newIngred: Ingredient): void {
+        console.log("chosen from chooser", newIngred);
+        // update the edit ingredient
+        const newSug = _.cloneDeep(this.state.editSugIngred);
+
+        newSug.matchingIngred = newIngred;
+        newSug.suggestions.newIng.ingredientId = newIngred.id;
+        newSug.suggestions.newName = undefined;
+
+        // close the overlay
+
+        this.setState({ isOverlayOpen: false, editSugIngred: newSug });
     }
     private keepOriginal() {
         const newIngred = _.cloneDeep(this.props.sugIngred.originalIngredient);

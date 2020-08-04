@@ -55,6 +55,7 @@ export class IngredientChooser extends React.Component<
                             createNewItemFromQuery={createIngredient}
                             createNewItemRenderer={renderCreateFilmOption}
                             selectedItem={this.props.chosenItem}
+                            popoverProps={{ minimal: true }}
                         />
                     </div>
                 )}
@@ -123,6 +124,8 @@ function createIngredient(name: string): Ingredient {
         name,
         plu: "",
         isGoodName: false,
+        aisle: "",
+        comments: "",
     };
 
     console.log("new ingred", newIngredient);

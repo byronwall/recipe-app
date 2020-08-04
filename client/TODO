@@ -1,7 +1,6 @@
-☐ Add the edit ingredient so that recommendations are better
-☐ Find a better text search library
+☐ Create fuzzy lists based on the modifiers and units
+☐ Provide a standard name for units - convert all in one shot
 
-☐ Need to remove orphaned ingredients which have no recipe linked
 
 Ability to import an existing recipe from Pepperplate:
     ☐ Parse the HTML into pieces

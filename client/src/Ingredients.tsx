@@ -1,4 +1,11 @@
-import { Button, Card, FormGroup, InputGroup, H4 } from "@blueprintjs/core";
+import {
+    Button,
+    Card,
+    FormGroup,
+    InputGroup,
+    H4,
+    HTMLTable,
+} from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
 
@@ -29,7 +36,14 @@ export class Ingredients extends React.Component<
         super(props);
 
         this.state = {
-            newIngredient: { id: 0, name: "", plu: "", isGoodName: false },
+            newIngredient: {
+                id: 0,
+                name: "",
+                plu: "",
+                isGoodName: false,
+                aisle: "",
+                comments: "",
+            },
             searchText: "",
             filteredIngredients: props.ingredients.slice(0, 20),
         };
@@ -42,17 +56,25 @@ export class Ingredients extends React.Component<
         prevState: IngredientsState
     ) {
         const didSearchChange = this.state.searchText !== prevState.searchText;
+        const didIngredientsChange = !_.isEqual(
+            this.props.ingredients,
+            prevProps.ingredients
+        );
 
-        if (didSearchChange) {
-            const filteredIngredients = this.props.ingredients
-                .filter(
-                    (c) =>
-                        this.state.searchText === "" ||
-                        c.name
-                            .toUpperCase()
-                            .indexOf(this.state.searchText.toUpperCase()) > -1
-                )
-                .slice(0, 20);
+        if (didSearchChange || didIngredientsChange) {
+            const filteredIngredients = _.sortBy(
+                _.shuffle(
+                    this.props.ingredients.filter(
+                        (c) =>
+                            this.state.searchText === "" ||
+                            c.name
+                                .toUpperCase()
+                                .indexOf(this.state.searchText.toUpperCase()) >
+                                -1
+                    )
+                ),
+                (c) => c.isGoodName
+            ).slice(0, 20);
 
             this.setState({ filteredIngredients });
         }
@@ -115,22 +137,9 @@ export class Ingredients extends React.Component<
                 />
 
                 <Card>
-                    <H4>good ingredients</H4>
-
-                    {this.props.ingredients
-                        .filter((c) => c.isGoodName)
-                        .map((ingredient) => (
-                            <IngredientViewEdit
-                                ingredient={ingredient}
-                                onSaveChanges={(newIngredient) =>
-                                    GLOBAL_DATA_LAYER.updateIngredient(
-                                        newIngredient
-                                    )
-                                }
-                            />
-                        ))}
-
-                    <b>current ingredients</b>
+                    <H4>
+                        current ingredients ({this.props.ingredients.length})
+                    </H4>
 
                     <InputGroup
                         value={this.state.searchText}
@@ -140,15 +149,33 @@ export class Ingredients extends React.Component<
                     />
 
                     <div>
-                        {this.state.filteredIngredients.map((ingredient) => (
-                            <IngredientViewEdit
-                                key={ingredient.id}
-                                ingredient={ingredient}
-                                onSaveChanges={
-                                    GLOBAL_DATA_LAYER.updateIngredient
-                                }
-                            />
-                        ))}
+                        <HTMLTable condensed striped bordered>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>name</th>
+                                    <th>comments</th>
+                                    <th>plu</th>
+                                    <th>aisle</th>
+                                    <th>actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {this.state.filteredIngredients.map(
+                                    (ingredient) => (
+                                        <IngredientViewEdit
+                                            key={ingredient.id}
+                                            ingredient={ingredient}
+                                            onSaveChanges={(newIngred) =>
+                                                GLOBAL_DATA_LAYER.updateIngredient(
+                                                    newIngred
+                                                )
+                                            }
+                                        />
+                                    )
+                                )}
+                            </tbody>
+                        </HTMLTable>
                     </div>
                 </Card>
             </div>

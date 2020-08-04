@@ -1,19 +1,19 @@
 import axios, { AxiosResponse } from "axios";
 import Fuse from "fuse.js";
+import FuzzySet from "fuzzyset";
 import _ from "lodash";
 import { Container } from "unstated";
 
 import {
+    API_IngredParam,
+    API_RecipeIngredParam,
+    API_RecipeParam,
     getNewId,
     Ingredient,
     PlannedMeal,
     Recipe,
     SavedDb,
-    API_RecipeIngredParam,
-    API_RecipeParam,
-    API_IngredParam,
 } from "./models";
-import FuzzySet from "fuzzyset";
 
 interface DataLayerState {
     ingredients: Ingredient[];
@@ -113,11 +113,11 @@ export class DataLayer extends Container<DataLayerState> {
             .filter((c) => c.isGoodName)
             .map((c) => c.name + "|||" + c.id);
 
-        const ingredFuzzy = FuzzySet(goodNames, false, 5, 9);
+        const ingredFuzzy = FuzzySet(goodNames, false, 3, 9);
 
         this.setState({
             recipes: newDb.recipes,
-            ingredients: newDb.ingredients,
+            ingredients: _.sortBy(newDb.ingredients, (c) => c.isGoodName),
             plannedMeals: newDb.plannedMeals,
             fuzzyIngredientNames: ingredFuzzy,
         });

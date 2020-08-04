@@ -61,7 +61,7 @@ export class IngredientGroupEditor extends React.Component<
 
         let activeGroup: IngredientGroup | undefined = undefined;
 
-        for (let _line of lines) {
+        for (const _line of lines) {
             const line = _line.trim();
 
             // skip blank
@@ -98,6 +98,8 @@ export class IngredientGroupEditor extends React.Component<
                 name: line,
                 plu: "",
                 isGoodName: false,
+                aisle: "",
+                comments: "",
             };
 
             GLOBAL_DATA_LAYER.addNewIngredient(newIngred);

@@ -36,6 +36,13 @@ function reloadDatabase() {
 
   // remove bad ingredients
 
+  removeMissingIngredientsFromDb();
+
+  idIngredient = (Math.max(...db.ingredients.map((c) => c.id)) || 1) + 1;
+  idRecipe = (Math.max(...db.recipes.map((c) => c.id)) || 1) + 1;
+}
+
+function removeMissingIngredientsFromDb() {
   const goodIngIds: { [key: number]: true } = {};
 
   db.recipes.forEach((recipe) => {
@@ -53,12 +60,10 @@ function reloadDatabase() {
     }
     return wasFound;
   });
-
-  idIngredient = (Math.max(...db.ingredients.map((c) => c.id)) || 1) + 1;
-  idRecipe = (Math.max(...db.recipes.map((c) => c.id)) || 1) + 1;
 }
 
 function saveDatabase() {
+  removeMissingIngredientsFromDb();
   const data = JSON.stringify(db);
   writeFileSync(dbPath, data);
 }

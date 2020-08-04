@@ -1,7 +1,8 @@
-import React from "react";
-import { Ingredient } from "../models";
+import { Button, EditableText, Icon } from "@blueprintjs/core";
 import _ from "lodash";
-import { EditableText, Button } from "@blueprintjs/core";
+import React from "react";
+
+import { Ingredient } from "../models";
 
 interface IngredientViewEditProps {
     ingredient: Ingredient;
@@ -55,30 +56,68 @@ export class IngredientViewEdit extends React.Component<
         this.setState({ editIngredient: newEditIngredient });
     }
 
-    render() {
-        return (
-            <div className="flex">
-                <div>
-                    <EditableText
-                        value={this.state.editIngredient.name.trim()}
-                        onChange={(name) =>
-                            this.handleIngredientEdit("name", name)
-                        }
-                    />
-                </div>
-
-                {this.isDirty && (
-                    <Button
-                        icon="floppy-disk"
-                        minimal
-                        onClick={() => this.saveChanges()}
-                    />
-                )}
-            </div>
-        );
-    }
     saveChanges(): void {
         console.log("save changes", this.state.editIngredient);
         this.props.onSaveChanges(this.state.editIngredient);
+    }
+
+    render() {
+        return (
+            <tr>
+                <td>
+                    {this.state.editIngredient.isGoodName && (
+                        <Icon icon="star" intent="warning" />
+                    )}
+                </td>
+                <td>
+                    <EditableText
+                        value={this.state.editIngredient.name}
+                        onChange={(name) =>
+                            this.handleIngredientEdit("name", name)
+                        }
+                        multiline
+                        maxLines={2}
+                    />
+                </td>
+                <td>
+                    <EditableText
+                        value={this.state.editIngredient.comments}
+                        onChange={(comments) =>
+                            this.handleIngredientEdit("comments", comments)
+                        }
+                        placeholder="comments"
+                        multiline
+                        maxLines={2}
+                    />
+                </td>
+                <td>
+                    <EditableText
+                        value={this.state.editIngredient.plu ?? ""}
+                        onChange={(plu) =>
+                            this.handleIngredientEdit("plu", plu)
+                        }
+                        placeholder="plu"
+                    />
+                </td>
+                <td>
+                    <EditableText
+                        value={this.state.editIngredient.aisle ?? ""}
+                        onChange={(aisle) =>
+                            this.handleIngredientEdit("aisle", aisle)
+                        }
+                        placeholder="aisle"
+                    />
+                </td>
+                <td>
+                    {this.isDirty && (
+                        <Button
+                            icon="floppy-disk"
+                            minimal
+                            onClick={() => this.saveChanges()}
+                        />
+                    )}
+                </td>
+            </tr>
+        );
     }
 }

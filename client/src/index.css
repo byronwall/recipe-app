@@ -2,6 +2,14 @@
     display: flex;
 }
 
+.grid-center {
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    height: 100vh;
+    width: 100vw;
+}
+
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",

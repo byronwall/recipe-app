@@ -2,9 +2,23 @@ import FuzzySet from "fuzzyset";
 import _ from "lodash";
 
 import { GLOBAL_DATA_LAYER } from "..";
-import { IngredientAmount } from "../models";
+import { IngredientAmount, Recipe, Ingredient } from "../models";
+import {
+    SuggestedIngredient,
+    IngredientHash,
+} from "../Ingredients/SuggestedIngredients";
 
-const possibleUnits = ["cup", "teaspoon", "tablespoon", "tsp", "tbsp", "pound"];
+const possibleUnits = [
+    "cup",
+    "teaspoon",
+    "tablespoon",
+    "tsp",
+    "tbsp",
+    "pound",
+    "can",
+    "oz can",
+    "pinch",
+];
 const fuzzySet = FuzzySet(possibleUnits, false, 3, 5);
 
 export interface NewIngAmt {
@@ -88,4 +102,67 @@ export function guessIngredientParts(
         result.newName = newNameWithoutUnit;
     }
     return result;
+}
+
+export function getSuggestionsFromLists(
+    recipes: Recipe[],
+    ingredients: Ingredient[],
+    searchText: string
+) {
+    const ingredientHash: IngredientHash = {};
+
+    recipes.forEach((r) => {
+        r.ingredientGroups.forEach((g) => {
+            g.ingredients.forEach((i) => {
+                if (ingredientHash[i.ingredientId] === undefined) {
+                    ingredientHash[i.ingredientId] = i;
+                } else {
+                    ingredientHash[i.ingredientId] = null;
+                }
+            });
+        });
+    });
+
+    const suggestions = _.values(ingredientHash)
+        .filter((c) => c !== null)
+
+        .map((c) => c as IngredientAmount)
+        .reduce<SuggestedIngredient[]>((acc, c) => {
+            const ingred = ingredients.find((d) => d.id === c?.ingredientId);
+
+            if (acc.length > 30 || ingred === undefined) {
+                return acc;
+            }
+
+            const doesMatchSearch =
+                searchText === "" ||
+                ingred?.name.toUpperCase().indexOf(searchText) > -1;
+
+            if (!doesMatchSearch) {
+                return acc;
+            }
+
+            const newIng = guessIngredientParts(c);
+            if (newIng === undefined || ingred.isGoodName) {
+                return acc;
+            }
+
+            const newSugg: SuggestedIngredient = {
+                originalIngredient: ingred,
+                suggestions: newIng,
+                matchingIngred:
+                    newIng.newName === undefined
+                        ? ingredients.find(
+                              (c) => c.id === newIng.newIng.ingredientId
+                          )
+                        : undefined,
+            };
+
+            acc.push(newSugg);
+
+            return acc;
+        }, [])
+        .filter((c) => c !== undefined)
+        .map((c) => c as SuggestedIngredient);
+    return suggestions;
 }

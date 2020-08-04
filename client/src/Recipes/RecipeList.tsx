@@ -203,6 +203,8 @@ export class RecipeList extends React.Component<
                         name: item.textContent?.trim() ?? "",
                         plu: "",
                         isGoodName: false,
+                        aisle: "",
+                        comments: "",
                     };
 
                     newIngreds.push(newIngred);
@@ -224,7 +226,7 @@ export class RecipeList extends React.Component<
 }
 
 export function htmlToElement(html: string): DocumentFragment {
-    var template = document.createElement("template");
+    const template = document.createElement("template");
     html = html.trim();
     template.innerHTML = html;
     return template.content;
