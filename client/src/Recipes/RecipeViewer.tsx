@@ -128,7 +128,7 @@ export class RecipeViewer extends React.Component<
                                                 }}
                                             />
                                         ) : (
-                                            ingredient?.name
+                                            `${inAmt.amount} (${inAmt.unit}) ${ingredient?.name}, ${inAmt.modifier}`
                                         )}
                                     </li>
                                 );

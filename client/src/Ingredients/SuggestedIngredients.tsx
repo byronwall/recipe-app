@@ -119,6 +119,7 @@ export class SuggestedIngredients extends React.Component<
             grp.ingredients.forEach((ingAmt) => {
                 if (ingAmt.ingredientId === ingredId) {
                     // need to update
+                    ingAmt.modifier = suggestion.suggestions.newIng.modifier;
                     ingAmt.amount = suggestion.suggestions.newIng.amount;
                     ingAmt.unit = suggestion.suggestions.newIng.unit;
                     ingAmt.ingredientId =

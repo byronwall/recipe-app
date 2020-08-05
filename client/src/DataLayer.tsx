@@ -23,6 +23,8 @@ interface DataLayerState {
     newIngredients: Ingredient[];
 
     fuzzyIngredientNames: FuzzySet;
+    fuzzyIngredientMods: FuzzySet;
+    fuzzyIngredientUnits: FuzzySet;
 }
 
 export class DataLayer extends Container<DataLayerState> {
@@ -35,6 +37,8 @@ export class DataLayer extends Container<DataLayerState> {
             newIngredients: [],
             plannedMeals: [],
             fuzzyIngredientNames: FuzzySet(),
+            fuzzyIngredientMods: FuzzySet(),
+            fuzzyIngredientUnits: FuzzySet(),
         };
 
         // after init-- fire off db query
@@ -109,17 +113,39 @@ export class DataLayer extends Container<DataLayerState> {
             meal.date = new Date(meal.date);
         });
 
+        // add the ID which is parsed later
+        // add the comments to help ID longer names
         const goodNames = newDb.ingredients
             .filter((c) => c.isGoodName)
-            .map((c) => c.name + "|||" + c.id);
+            .map((c) => c.name + "|||" + c.id + "|||" + c.comments);
 
         const ingredFuzzy = FuzzySet(goodNames, false, 3, 9);
+
+        let goodUnits: string[] = [];
+        let goodMods: string[] = [];
+        newDb.recipes.forEach((rec) =>
+            rec.ingredientGroups.forEach((grp) =>
+                grp.ingredients.forEach((ing) => {
+                    goodMods.push(ing.modifier);
+                    goodUnits.push(ing.unit);
+                })
+            )
+        );
+        goodMods = _.uniq(goodMods);
+        goodUnits = _.uniq(goodUnits);
+
+        console.log("modifiers", goodMods);
+
+        const modFuzzy = FuzzySet(goodMods, false, 3, 9);
+        const unitsFuzzy = FuzzySet(goodUnits, false, 3, 9);
 
         this.setState({
             recipes: newDb.recipes,
             ingredients: _.sortBy(newDb.ingredients, (c) => c.isGoodName),
             plannedMeals: newDb.plannedMeals,
             fuzzyIngredientNames: ingredFuzzy,
+            fuzzyIngredientMods: modFuzzy,
+            fuzzyIngredientUnits: unitsFuzzy,
         });
     }
 

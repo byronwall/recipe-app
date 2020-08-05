@@ -1,4 +1,4 @@
-import { Button, H3, H4 } from "@blueprintjs/core";
+import { Button, H3, H4, HTMLTable } from "@blueprintjs/core";
 import React from "react";
 import { Link } from "react-router-dom";
 import { Subscribe } from "unstated";
@@ -70,54 +70,42 @@ export class RecipeList extends React.Component<
 
                             <H3>recipe list</H3>
 
-                            {data.state.recipes.map((recipe) => (
-                                <div
-                                    style={{ display: "flex" }}
-                                    key={recipe.id}
-                                >
-                                    <Link to={"/recipe/" + recipe.id}>
-                                        <div>{recipe.name}</div>
-                                    </Link>
-                                    <Button
-                                        icon="cross"
-                                        intent="danger"
-                                        onClick={() =>
-                                            this.removeRecipe(recipe.id)
-                                        }
-                                        minimal
-                                    />
-                                </div>
-                            ))}
-                        </div>
+                            <HTMLTable striped condensed bordered>
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>name</th>
+                                        <th>actions</th>
+                                    </tr>
+                                </thead>
 
-                        <div>
-                            <H4>old recipes</H4>
-                            <Button
-                                text="process all"
-                                onClick={() => this.convertAllOldRecipes()}
-                            />
-                            {old_recipes.recipes.map((old) => (
-                                <div
-                                    style={{ display: "flex" }}
-                                    key={old.url.url}
-                                >
-                                    <p>{old.url.title}</p>
-                                    <Button
-                                        onClick={() =>
-                                            this.setState({
-                                                oldRecipeText: old.content,
-                                            })
-                                        }
-                                        icon="zoom-in"
-                                    />
-                                </div>
-                            ))}
-
-                            <div
-                                dangerouslySetInnerHTML={{
-                                    __html: this.state.oldRecipeText,
-                                }}
-                            />
+                                <tbody>
+                                    {data.state.recipes.map((recipe) => (
+                                        <tr key={recipe.id}>
+                                            <td>{recipe.id}</td>
+                                            <td>
+                                                <Link
+                                                    to={"/recipe/" + recipe.id}
+                                                >
+                                                    <div>{recipe.name}</div>
+                                                </Link>
+                                            </td>
+                                            <td>
+                                                <Button
+                                                    icon="cross"
+                                                    intent="danger"
+                                                    onClick={() =>
+                                                        this.removeRecipe(
+                                                            recipe.id
+                                                        )
+                                                    }
+                                                    minimal
+                                                />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </HTMLTable>
                         </div>
                     </div>
                 )}

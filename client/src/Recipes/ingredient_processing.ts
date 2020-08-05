@@ -8,19 +8,6 @@ import {
     IngredientHash,
 } from "../Ingredients/SuggestedIngredients";
 
-const possibleUnits = [
-    "cup",
-    "teaspoon",
-    "tablespoon",
-    "tsp",
-    "tbsp",
-    "pound",
-    "can",
-    "oz can",
-    "pinch",
-];
-const fuzzySet = FuzzySet(possibleUnits, false, 3, 5);
-
 export interface NewIngAmt {
     newName: string | undefined;
     newIng: IngredientAmount;
@@ -64,7 +51,8 @@ export function guessIngredientParts(
         .trim()
         .toLowerCase();
 
-    const unitSearch = (fuzzySet.get as any)(newName, null, 0.1) ?? [];
+    const fuzzyUnits = GLOBAL_DATA_LAYER.state.fuzzyIngredientUnits;
+    const unitSearch = (fuzzyUnits.get as any)(newName, null, 0.25) ?? [];
 
     if (unitSearch.length) {
         newIngredient.unit = unitSearch[0][1];
@@ -74,7 +62,38 @@ export function guessIngredientParts(
 
     // now remove the unit from the name
 
-    const newNameWithoutUnit = newName.replace(newIngredient.unit, "").trim();
+    const newNameWithoutUnit = strReplaceAll(
+        newName,
+        newIngredient.unit,
+        ""
+    ).trim();
+
+    console.log("test unit removal", { newName, newNameWithoutUnit });
+
+    // process the modifier
+
+    const fuzzyMod = GLOBAL_DATA_LAYER.state.fuzzyIngredientMods;
+    const modSearch =
+        (fuzzyMod.get as any)(newNameWithoutUnit, null, 0.25) ?? [];
+
+    if (modSearch.length) {
+        newIngredient.modifier = modSearch[0][1];
+    }
+
+    // now remove the unit from the name
+
+    let newNameWithoutMod = strReplaceAll(
+        newNameWithoutUnit,
+        newIngredient.modifier,
+        ""
+    ).trim();
+
+    // clean up the name if possible
+    if (newNameWithoutMod.endsWith(",")) {
+        newNameWithoutMod = newNameWithoutMod
+            .substr(0, newNameWithoutMod.length - 1)
+            .trim();
+    }
 
     // console.log("ingred search", newNameWithoutUnit);
 
@@ -90,16 +109,15 @@ export function guessIngredientParts(
 
     const fuzzyIngred = GLOBAL_DATA_LAYER.state.fuzzyIngredientNames;
     const nameSearch =
-        (fuzzyIngred.get as any)(newNameWithoutUnit, null, 0.15) ?? [];
+        (fuzzyIngred.get as any)(newNameWithoutMod, null, 0.15) ?? [];
 
     if (nameSearch.length) {
-        console.log("name search", newNameWithoutUnit, nameSearch);
         const hit = nameSearch[0][1] as string;
         const ingredId = +hit.split("|||")[1];
 
         newIngredient.ingredientId = ingredId;
     } else {
-        result.newName = newNameWithoutUnit;
+        result.newName = newNameWithoutMod;
     }
     return result;
 }
@@ -165,4 +183,15 @@ export function getSuggestionsFromLists(
         .filter((c) => c !== undefined)
         .map((c) => c as SuggestedIngredient);
     return suggestions;
+}
+
+export function strReplaceAll(
+    input: string,
+    strReplace: string,
+    strWith: string
+) {
+    // See http://stackoverflow.com/a/3561711/556609
+    const esc = strReplace.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
+    const reg = new RegExp(esc, "ig");
+    return input.replace(reg, strWith);
 }
