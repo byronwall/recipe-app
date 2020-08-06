@@ -2,15 +2,19 @@ import { Button, EditableText, Icon } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
 
-import { Ingredient } from "../models";
+import { Ingredient, Recipe } from "../models";
+import { Link } from "react-router-dom";
 
 interface IngredientViewEditProps {
     ingredient: Ingredient;
+
+    recipes: Recipe[];
 
     onSaveChanges(newIngredient: Ingredient): void;
 }
 interface IngredientViewEditState {
     editIngredient: Ingredient;
+    matchingRecipe: Recipe[];
 }
 
 export class IngredientViewEdit extends React.Component<
@@ -20,14 +24,16 @@ export class IngredientViewEdit extends React.Component<
     constructor(props: IngredientViewEditProps) {
         super(props);
 
-        this.state = { editIngredient: props.ingredient };
+        this.state = { editIngredient: props.ingredient, matchingRecipe: [] };
     }
 
     get isDirty() {
         return !_.isEqual(this.props.ingredient, this.state.editIngredient);
     }
 
-    componentDidMount() {}
+    componentDidMount() {
+        this.updateMatchingRecipes();
+    }
 
     componentDidUpdate(
         prevProps: IngredientViewEditProps,
@@ -39,10 +45,28 @@ export class IngredientViewEdit extends React.Component<
         );
 
         if (didPropsChange) {
+            this.updateMatchingRecipes();
             this.setState({
                 editIngredient: _.cloneDeep(this.props.ingredient),
             });
         }
+    }
+
+    updateMatchingRecipes() {
+        let matches: Recipe[] = [];
+        this.props.recipes.forEach((rec) =>
+            rec.ingredientGroups.forEach((grp) =>
+                grp.ingredients.forEach((ing) => {
+                    if (ing.ingredientId === this.props.ingredient.id) {
+                        matches.push(rec);
+                    }
+                })
+            )
+        );
+
+        matches = _.uniqBy(matches, (c) => c.id);
+
+        this.setState({ matchingRecipe: matches });
     }
 
     handleIngredientEdit<K extends keyof Ingredient>(
@@ -107,6 +131,13 @@ export class IngredientViewEdit extends React.Component<
                         }
                         placeholder="aisle"
                     />
+                </td>
+                <td>
+                    {this.state.matchingRecipe.slice(0, 3).map((rec) => (
+                        <p key={rec.id}>
+                            <Link to={"/recipe/" + rec.id}>{rec.name}</Link>
+                        </p>
+                    ))}
                 </td>
                 <td>
                     {this.isDirty && (

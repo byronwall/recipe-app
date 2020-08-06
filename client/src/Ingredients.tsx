@@ -157,6 +157,7 @@ export class Ingredients extends React.Component<
                                     <th>comments</th>
                                     <th>plu</th>
                                     <th>aisle</th>
+                                    <th>recipes</th>
                                     <th>actions</th>
                                 </tr>
                             </thead>
@@ -166,6 +167,7 @@ export class Ingredients extends React.Component<
                                         <IngredientViewEdit
                                             key={ingredient.id}
                                             ingredient={ingredient}
+                                            recipes={this.props.recipes}
                                             onSaveChanges={(newIngred) =>
                                                 GLOBAL_DATA_LAYER.updateIngredient(
                                                     newIngred

@@ -104,7 +104,7 @@ export class SuggestedIngredientRow extends React.Component<
 
         const didMatchExisting = newIng.newName === undefined;
 
-        const color = didMatchExisting ? "red" : "white";
+        const color = didMatchExisting ? "#f2b195" : undefined;
 
         const sugName = (
             <div>
