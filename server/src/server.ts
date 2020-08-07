@@ -10,9 +10,19 @@ import {
   API_RecipeIngredParam,
   API_RecipeParam,
   API_IngredParam,
+  ShoppingListItem,
+  API_ShoppingAdd,
+  API_ShoppingDelete,
+  API_ShoppingUpdate,
 } from "./model";
+import _ from "lodash";
 
-let db: SavedDb = { recipes: [], ingredients: [], plannedMeals: [] };
+let db: SavedDb = {
+  recipes: [],
+  ingredients: [],
+  plannedMeals: [],
+  shoppingList: [],
+};
 const dbPath = "db.json";
 
 let idIngredient = 1;
@@ -26,6 +36,11 @@ function reloadDatabase() {
 
   if (!(("plannedMeals" in db) as any)) {
     db.plannedMeals = [];
+  }
+
+  // ensure old data has the shopping list
+  if (!(("shoppingList" in db) as any)) {
+    db.shoppingList = [];
   }
 
   // clean up bad whitespace
@@ -213,6 +228,50 @@ export class Server {
 
       // find that type...
     });
+
+    app.post("/api/add_shopping", (req: any, res: any) => {
+      console.log(new Date(), "add shopping items");
+
+      const list = req.body as API_ShoppingAdd;
+
+      db.shoppingList = db.shoppingList.concat(list.items);
+      saveDatabase();
+
+      res.json({ ...db });
+
+      // find that type...
+    });
+
+    app.post("/api/delete_shopping", (req: any, res: any) => {
+      console.log(new Date(), "delete shopping items");
+
+      const list = req.body as API_ShoppingDelete;
+
+      _.remove(db.shoppingList, (c) => _.includes(list.ids, c.id));
+      saveDatabase();
+
+      res.json({ ...db });
+
+      // find that type...
+    });
+
+    app.post("/api/update_shopping", (req: any, res: any) => {
+      console.log(new Date(), "update shopping items");
+
+      const postData = req.body as API_ShoppingUpdate;
+
+      const index = db.shoppingList.findIndex((c) => c.id === postData.item.id);
+
+      if (index > -1) {
+        db.shoppingList[index] = postData.item;
+        saveDatabase();
+      }
+
+      res.json({ ...db });
+
+      // find that type...
+    });
+
     app.post("/api/add_meal", (req: any, res: any) => {
       console.log(new Date(), "add meal");
 

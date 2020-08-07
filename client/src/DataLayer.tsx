@@ -13,12 +13,19 @@ import {
     PlannedMeal,
     Recipe,
     SavedDb,
+    ShoppingListItem,
+    API_ShoppingAdd,
+    API_ShoppingDelete,
+    API_ShoppingUpdate,
 } from "./models";
+import { ShoppingList } from "./ShoppingList/ShoppingList";
 
 interface DataLayerState {
     ingredients: Ingredient[];
     recipes: Recipe[];
     plannedMeals: PlannedMeal[];
+
+    shoppingList: ShoppingListItem[];
 
     newIngredients: Ingredient[];
 
@@ -36,6 +43,7 @@ export class DataLayer extends Container<DataLayerState> {
             recipes: [],
             newIngredients: [],
             plannedMeals: [],
+            shoppingList: [],
             fuzzyIngredientNames: FuzzySet(),
             fuzzyIngredientMods: FuzzySet(),
             fuzzyIngredientUnits: FuzzySet(),
@@ -104,6 +112,43 @@ export class DataLayer extends Container<DataLayerState> {
         );
     }
 
+    getRecipe(id: number): Recipe | undefined {
+        // search known ingredients... then new ones
+
+        return this.state.recipes.find((c) => c.id === id);
+    }
+
+    async addItemsToShoppingList(newItems: ShoppingListItem[]) {
+        console.log("add new items", newItems);
+        const postData: API_ShoppingAdd = {
+            items: newItems,
+        };
+
+        const res = await axios.post("/api/add_shopping", postData);
+
+        this.handleResponse(res);
+    }
+
+    async deleteShoppingListItems(ids: number[]) {
+        const postData: API_ShoppingDelete = {
+            ids,
+        };
+
+        const res = await axios.post("/api/delete_shopping", postData);
+
+        this.handleResponse(res);
+    }
+
+    async updateShoppingListItem(newItem: ShoppingListItem) {
+        const postData: API_ShoppingUpdate = {
+            item: newItem,
+        };
+
+        const res = await axios.post("/api/update_shopping", postData);
+
+        this.handleResponse(res);
+    }
+
     reloadFromServer(newDb: SavedDb) {
         console.log("new datA", newDb);
 
@@ -143,6 +188,7 @@ export class DataLayer extends Container<DataLayerState> {
             recipes: newDb.recipes,
             ingredients: _.sortBy(newDb.ingredients, (c) => c.isGoodName),
             plannedMeals: newDb.plannedMeals,
+            shoppingList: newDb.shoppingList,
             fuzzyIngredientNames: ingredFuzzy,
             fuzzyIngredientMods: modFuzzy,
             fuzzyIngredientUnits: unitsFuzzy,

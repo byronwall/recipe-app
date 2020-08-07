@@ -11,6 +11,7 @@ import { MealPlan } from "./MealPlan/MealPlan";
 import { Navigation } from "./Navigation";
 import { RecipeList } from "./Recipes/RecipeList";
 import { RecipeViewer } from "./Recipes/RecipeViewer";
+import { ShoppingList } from "./ShoppingList/ShoppingList";
 
 export class App extends React.Component {
     render() {
@@ -59,6 +60,12 @@ export class App extends React.Component {
 
                                 <Route path="/plan">
                                     <MealPlan meals={data.state.plannedMeals} />
+                                </Route>
+
+                                <Route path="/list">
+                                    <ShoppingList
+                                        shoppingList={data.state.shoppingList}
+                                    />
                                 </Route>
 
                                 <Route path="/" exact>

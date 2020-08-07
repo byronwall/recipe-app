@@ -1,9 +1,10 @@
 import React from "react";
 
-import { PlannedMeal, Recipe } from "../models";
+import { PlannedMeal, Recipe, ShoppingListItem, getNewId } from "../models";
 import { MealPlanDay } from "./MealPlanDay";
 import { RecipeChooser } from "./RecipeChooser";
 import { GLOBAL_DATA_LAYER } from "..";
+import { Button } from "@blueprintjs/core";
 
 interface MealPlanProps {
     meals: PlannedMeal[];
@@ -12,13 +13,29 @@ interface MealPlanState {
     isRecipeChooserOpen: boolean;
 
     dateToAddRecipe: Date | undefined;
+
+    viewSettings: MealPlanViewSettings;
 }
+
+interface MealPlanViewSettings {
+    today: Date;
+    startOfView: Date;
+    endOfView: Date;
+
+    daysToShow: Date[];
+}
+
+const msInDay = 24 * 3600 * 1000;
 
 export class MealPlan extends React.Component<MealPlanProps, MealPlanState> {
     constructor(props: MealPlanProps) {
         super(props);
 
-        this.state = { isRecipeChooserOpen: false, dateToAddRecipe: undefined };
+        this.state = {
+            isRecipeChooserOpen: false,
+            dateToAddRecipe: undefined,
+            viewSettings: createDefaultView(),
+        };
     }
 
     componentDidMount() {}
@@ -36,6 +53,40 @@ export class MealPlan extends React.Component<MealPlanProps, MealPlanState> {
         });
     }
 
+    addNewToShoppingList() {
+        // find the items that are visible
+        const startDate = this.state.viewSettings.startOfView;
+        const endDate = this.state.viewSettings.endOfView;
+        const visibleItems = this.props.meals
+            .filter((c) => c.date <= endDate && c.date >= startDate)
+            .filter((c) => !c.isOnShoppingList);
+
+        // find those not already added
+
+        // add to shopping list
+        const recipes = visibleItems.map((c) =>
+            GLOBAL_DATA_LAYER.getRecipe(c.recipeId)
+        );
+        console.log("add items", visibleItems, recipes);
+
+        const newShopItems: ShoppingListItem[] = [];
+
+        recipes.forEach((rec) => {
+            rec?.ingredientGroups.forEach((c) =>
+                c.ingredients.forEach((ing) => {
+                    newShopItems.push({
+                        ingredientAmount: ing,
+                        recipeId: rec.id,
+                        isBought: false,
+                        id: getNewId(),
+                    });
+                })
+            );
+        });
+
+        GLOBAL_DATA_LAYER.addItemsToShoppingList(newShopItems);
+    }
+
     render() {
         // by default, show the next 2 weeks and previous 1 week -- allow for scrolling to show more
         // center on today
@@ -47,16 +98,21 @@ export class MealPlan extends React.Component<MealPlanProps, MealPlanState> {
 
         // TODO: cache this stuff out somewhere better
 
-        const msInDay = 24 * 3600 * 1000;
-        const startOfView = new Date(new Date().getTime() - 7 * msInDay);
-        const endOfView = new Date(new Date().getTime() + 14 * msInDay);
-        const today = new Date();
-
-        const daysToShow = getDaysBetween(startOfView, endOfView);
+        const {
+            startOfView,
+            endOfView,
+            today,
+            daysToShow,
+        } = this.state.viewSettings;
 
         return (
             <div>
                 <p>MealPlan</p>
+
+                <Button
+                    text="add to shopping list"
+                    onClick={() => this.addNewToShoppingList()}
+                />
 
                 <div>
                     <p>
@@ -98,8 +154,21 @@ export class MealPlan extends React.Component<MealPlanProps, MealPlanState> {
     }
 }
 
+function createDefaultView(
+    daysBack = 7,
+    daysForward = 14
+): MealPlanViewSettings {
+    const startOfView = new Date(new Date().getTime() - daysBack * msInDay);
+    const endOfView = new Date(new Date().getTime() + daysForward * msInDay);
+    const today = new Date();
+
+    const daysToShow = getDaysBetween(startOfView, endOfView);
+    return { startOfView, endOfView, today, daysToShow };
+}
+
 export function getDaysBetween(start: Date, end: Date) {
     for (
+        // eslint-disable-next-line no-var
         var arr = [], dt = new Date(start);
         dt <= end;
         dt.setDate(dt.getDate() + 1)

@@ -27,8 +27,9 @@ export function createDefaultRecipe(): Recipe {
     };
 }
 
+let idExtra = 0;
 export function getNewId() {
-    return new Date().getTime();
+    return new Date().getTime() - idExtra++;
 }
 
 export interface RecipeStep {
@@ -60,6 +61,7 @@ export interface SavedDb {
     recipes: Recipe[];
     ingredients: Ingredient[];
     plannedMeals: PlannedMeal[];
+    shoppingList: ShoppingListItem[];
 }
 
 export interface PlannedMeal {
@@ -83,4 +85,22 @@ export interface API_RecipeParam {
 
 export interface API_IngredParam {
     ingredient: Ingredient;
+}
+
+export interface ShoppingListItem {
+    id: number;
+    ingredientAmount: IngredientAmount;
+    recipeId: number; // will be -1 if "loose"
+    isBought: boolean;
+}
+
+export interface API_ShoppingAdd {
+    items: ShoppingListItem[];
+}
+export interface API_ShoppingDelete {
+    ids: number[];
+}
+
+export interface API_ShoppingUpdate {
+    item: ShoppingListItem;
 }
