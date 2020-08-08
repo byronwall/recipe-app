@@ -3,22 +3,21 @@ import Fuse from "fuse.js";
 import FuzzySet from "fuzzyset";
 import _ from "lodash";
 import { Container } from "unstated";
-
 import {
     API_IngredParam,
+    API_MealPlanUpdate,
     API_RecipeIngredParam,
     API_RecipeParam,
+    API_ShoppingAdd,
+    API_ShoppingDelete,
+    API_ShoppingUpdate,
     getNewId,
     Ingredient,
     PlannedMeal,
     Recipe,
     SavedDb,
     ShoppingListItem,
-    API_ShoppingAdd,
-    API_ShoppingDelete,
-    API_ShoppingUpdate,
 } from "./models";
-import { ShoppingList } from "./ShoppingList/ShoppingList";
 
 interface DataLayerState {
     ingredients: Ingredient[];
@@ -247,6 +246,15 @@ export class DataLayer extends Container<DataLayerState> {
 
         // 3. Now search!
         return fuse.search(_query).map((c) => c.item);
+    }
+
+    async updateMealPlan(newMeal: PlannedMeal[]) {
+        const postData: API_MealPlanUpdate = {
+            meals: newMeal,
+        };
+        const res = await axios.post("/api/update_meals", postData);
+
+        this.handleResponse(res);
     }
 
     async addMealPlanItem(date: Date | undefined, recipe: Recipe) {

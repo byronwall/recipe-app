@@ -14,6 +14,7 @@ import {
   API_ShoppingAdd,
   API_ShoppingDelete,
   API_ShoppingUpdate,
+  API_MealPlanUpdate,
 } from "./model";
 import _ from "lodash";
 
@@ -284,6 +285,32 @@ export class Server {
 
       // find that type...
     });
+
+    app.post("/api/update_meals", (req: any, res: any) => {
+      console.log(new Date(), "update meals");
+
+      const postData = req.body as API_MealPlanUpdate;
+
+      let didMakeUpdate = false;
+
+      postData.meals.forEach((meal) => {
+        const mealIndex = db.plannedMeals.findIndex((c) => c.id === meal.id);
+        if (mealIndex === -1) {
+          return;
+        }
+        db.plannedMeals[mealIndex] = meal;
+        didMakeUpdate = true;
+      });
+
+      if (didMakeUpdate) {
+        saveDatabase();
+      }
+
+      res.json({ ...db });
+
+      // find that type...
+    });
+
     app.post("/api/delete_meal", (req: any, res: any) => {
       console.log(new Date(), "delete meal");
 
@@ -310,7 +337,7 @@ export class Server {
       // find that type...
     });
 
-    const indexPaths = ["/", "/recipe/:id"];
+    const indexPaths = ["/", "/recipe/:id", "/plan", "/list"];
     app.get(indexPaths, function (req, res) {
       res.sendFile(path.join(staticPath, "index.html"));
     });

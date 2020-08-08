@@ -1,10 +1,10 @@
+import { Button } from "@blueprintjs/core";
+import _ from "lodash";
 import React from "react";
-
-import { PlannedMeal, Recipe, ShoppingListItem, getNewId } from "../models";
+import { GLOBAL_DATA_LAYER } from "..";
+import { getNewId, PlannedMeal, Recipe, ShoppingListItem } from "../models";
 import { MealPlanDay } from "./MealPlanDay";
 import { RecipeChooser } from "./RecipeChooser";
-import { GLOBAL_DATA_LAYER } from "..";
-import { Button } from "@blueprintjs/core";
 
 interface MealPlanProps {
     meals: PlannedMeal[];
@@ -85,6 +85,11 @@ export class MealPlan extends React.Component<MealPlanProps, MealPlanState> {
         });
 
         GLOBAL_DATA_LAYER.addItemsToShoppingList(newShopItems);
+
+        const newMeal = _.cloneDeep(visibleItems);
+        newMeal.forEach((c) => (c.isOnShoppingList = true));
+
+        GLOBAL_DATA_LAYER.updateMealPlan(newMeal);
     }
 
     render() {

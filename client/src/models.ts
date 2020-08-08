@@ -104,3 +104,7 @@ export interface API_ShoppingDelete {
 export interface API_ShoppingUpdate {
     item: ShoppingListItem;
 }
+
+export interface API_MealPlanUpdate {
+    meals: PlannedMeal[];
+}

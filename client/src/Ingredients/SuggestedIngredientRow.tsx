@@ -1,12 +1,11 @@
 import { Button, EditableText } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
-
-import { IngredientAmount, Ingredient } from "../models";
-import { NewIngAmt } from "../Recipes/ingredient_processing";
-import { SuggestedIngredient } from "./SuggestedIngredients";
 import { GLOBAL_DATA_LAYER } from "..";
+import { Ingredient, IngredientAmount } from "../models";
+import { NewIngAmt } from "../Recipes/ingredient_processing";
 import { IngredientChooserOverlay } from "./IngredientChooserOverlay";
+import { SuggestedIngredient } from "./SuggestedIngredients";
 
 interface SuggestedIngredientRowProps {
     sugIngred: SuggestedIngredient;

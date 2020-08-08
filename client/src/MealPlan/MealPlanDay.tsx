@@ -1,8 +1,8 @@
+import { Button, Card, Icon } from "@blueprintjs/core";
 import React from "react";
-import { PlannedMeal } from "../models";
-import { Card, Button } from "@blueprintjs/core";
 import { Subscribe } from "unstated";
 import { DataLayer } from "../DataLayer";
+import { PlannedMeal } from "../models";
 
 interface MealPlanDayProps {
     date: Date;
@@ -48,6 +48,9 @@ export class MealPlanDay extends React.Component<
                                 }
                                 return (
                                     <Card key={index}>
+                                        {meal.isOnShoppingList && (
+                                            <Icon icon="shopping-cart" />
+                                        )}
                                         {recipe.name}
                                         <Button
                                             icon="cross"

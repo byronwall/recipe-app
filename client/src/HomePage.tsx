@@ -1,4 +1,5 @@
 import React from "react";
+import { Redirect } from "react-router-dom";
 
 interface HomePageProps {}
 interface HomePageState {}
@@ -15,10 +16,6 @@ export class HomePage extends React.Component<HomePageProps, HomePageState> {
     componentDidUpdate(prevProps: HomePageProps, prevState: HomePageState) {}
 
     render() {
-        return (
-            <div>
-                <p>HomePage</p>
-            </div>
-        );
+        return <Redirect to="/recipes" />;
     }
 }
