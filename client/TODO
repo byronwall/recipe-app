@@ -1,17 +1,31 @@
+ :
+    Recipes:
+        ☐ Add new recipe needs to open an overlay (and confirm to close) @20m    
+        ☐ On recipe save - clear out previously typed stuff @5m
 
-☐ Provide a standard name for units - convert all in one shot
+    Ingredients:
+        ☐ Hide or remove the `add new` option @10m
+        ☐ Provide a standard name for units - convert all in one shot @10m
 
-UX Cleanup:
-    ☐ Make this list!!
+    Meal Plan:
+        ☐ Put `add new` on same line as date - make minimal @10m
+        ☐ Link to the recipe @5m
+        ☐ Allow recipe to be marked as made - grey out @10m
+        ☐ Delete should confirm @5m
+        ☐ Start the scrolling on today @10m
+        ☐ Add some visual indicator for today @5m
+        ☐ Add ability to change the scale  @30m 
+        ☐ Add scrolling to the search popup @10m
+        ☐ Hitting <ENTER> should select the first search item @10m
 
-Meal planning:
-    ☐ Start the scrolling on today
-    ☐ Add ability to change the scale
-    
-    ☐ Ability to show something as made
-    
-    ☐ Hitting <ENTER> should select the first search item
+    Shopping list:
+        ☐ Group by recipe @15m
+        ☐ Allow recipes to be removed @10m
+        ☐ Figure out better layout for mobile @20m
+        ☐ Aisle selector needs to provide drop down @15m
 
+    UX Cleanup:
+        ☐ Make this list!! @60m
 
-Other items:
-    ☐ Need to reset scroll on the recipe viewer
+    Other items:
+        ☐ Need to reset scroll on the recipe viewer @10m

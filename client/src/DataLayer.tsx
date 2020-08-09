@@ -138,7 +138,7 @@ export class DataLayer extends Container<DataLayerState> {
         this.handleResponse(res);
     }
 
-    async updateShoppingListItem(newItem: ShoppingListItem) {
+    async updateShoppingListItem(newItem: ShoppingListItem[]) {
         const postData: API_ShoppingUpdate = {
             item: newItem,
         };
@@ -239,6 +239,10 @@ export class DataLayer extends Container<DataLayerState> {
     }
 
     fuzzyMatchRecipe(_query: string): Recipe[] {
+        if (_query === "") {
+            return this.state.recipes;
+        }
+
         // 2. Set up the Fuse instance
         const fuse = new Fuse(this.state.recipes, {
             keys: ["name"],

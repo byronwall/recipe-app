@@ -1,7 +1,9 @@
 {
-    "cSpell.words": [
-        "Ingred",
-        "blueprintjs"
-    ],
-    "eslint.enable": true
+    "cSpell.words": ["Ingred", "blueprintjs"],
+    "eslint.enable": true,
+
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true,
+        "source.fixAll.eslint": true
+    }
 }

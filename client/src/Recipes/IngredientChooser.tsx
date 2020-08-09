@@ -1,11 +1,9 @@
 import { MenuItem } from "@blueprintjs/core";
 import { ItemPredicate, ItemRenderer, Suggest } from "@blueprintjs/select";
 import React from "react";
-import { Subscribe, Container } from "unstated";
-
+import { Subscribe } from "unstated";
 import { DataLayer } from "../DataLayer";
-import { Ingredient, getNewId } from "../models";
-import { GLOBAL_DATA_LAYER } from "..";
+import { getNewId, Ingredient } from "../models";
 
 interface IngredientChooserProps {
     chosenItem: Ingredient | undefined;
@@ -33,11 +31,6 @@ export class IngredientChooser extends React.Component<
     ) {}
 
     render() {
-        console.log(
-            "ingred chooser render",
-            GLOBAL_DATA_LAYER.state.newIngredients,
-            this.props.chosenItem
-        );
         return (
             <Subscribe to={[DataLayer]}>
                 {(data: DataLayer) => (

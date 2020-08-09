@@ -2,7 +2,6 @@ import { Card } from "@blueprintjs/core";
 import React from "react";
 import { Route, Switch } from "react-router-dom";
 import { Subscribe } from "unstated";
-
 import { GLOBAL_DATA_LAYER } from ".";
 import { DataLayer } from "./DataLayer";
 import { HomePage } from "./HomePage";
@@ -32,7 +31,7 @@ export class App extends React.Component {
                         <Card style={{ marginTop: 10 }}>
                             <Switch>
                                 <Route path="/recipes">
-                                    <RecipeList />
+                                    <RecipeList recipes={data.state.recipes} />
                                 </Route>
 
                                 <Route

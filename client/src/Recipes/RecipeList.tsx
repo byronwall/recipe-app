@@ -1,10 +1,9 @@
-import { Button, H3, H4, HTMLTable } from "@blueprintjs/core";
+import { Button, H3, HTMLTable, InputGroup } from "@blueprintjs/core";
+import _ from "lodash";
 import React from "react";
 import { Link } from "react-router-dom";
-import { Subscribe } from "unstated";
-
 import { GLOBAL_DATA_LAYER } from "..";
-import { DataLayer } from "../DataLayer";
+import { handleStringChange } from "../helpers";
 import {
     createDefaultRecipe,
     getNewId,
@@ -15,11 +14,16 @@ import {
 import old_recipes from "../recipes.json";
 import { NewRecipe } from "./NewRecipe";
 
-interface RecipeListProps {}
+interface RecipeListProps {
+    recipes: Recipe[];
+}
 interface RecipeListState {
     showNewRecipeForm: boolean;
 
     oldRecipeText: string;
+
+    searchTerm: string;
+    recipesToShow: Recipe[];
 }
 
 export class RecipeList extends React.Component<
@@ -29,87 +33,105 @@ export class RecipeList extends React.Component<
     constructor(props: RecipeListProps) {
         super(props);
 
-        this.state = { showNewRecipeForm: false, oldRecipeText: "" };
+        this.state = {
+            showNewRecipeForm: false,
+            oldRecipeText: "",
+            searchTerm: "",
+            recipesToShow: props.recipes,
+        };
     }
 
     componentDidMount() {}
 
-    componentDidUpdate(
-        prevProps: RecipeListProps,
-        prevState: RecipeListState
-    ) {}
+    componentDidUpdate(prevProps: RecipeListProps, prevState: RecipeListState) {
+        const didSearchChange = this.state.searchTerm !== prevState.searchTerm;
+        const didRecipesChange = !_.isEqual(
+            this.props.recipes,
+            prevProps.recipes
+        );
+
+        if (didRecipesChange || didSearchChange) {
+            // do the search and update visible recipes
+
+            const recipesToShow = GLOBAL_DATA_LAYER.fuzzyMatchRecipe(
+                this.state.searchTerm
+            );
+            this.setState({ recipesToShow });
+        }
+    }
 
     saveNewRecipe(newRecipe: Recipe) {
         GLOBAL_DATA_LAYER.saveNewRecipe(newRecipe);
     }
 
     render() {
+        const recipesToShow = this.state.recipesToShow;
         return (
-            <Subscribe to={[DataLayer]}>
-                {(data: DataLayer) => (
-                    <div>
-                        <p>RecipeList</p>
+            <div>
+                <p>RecipeList</p>
 
-                        <div>
-                            <Button
-                                text="add new recipe"
-                                icon="plus"
-                                intent="primary"
-                                onClick={() =>
-                                    this.setState({ showNewRecipeForm: true })
-                                }
-                            />
+                <div>
+                    <Button
+                        text="add new recipe"
+                        icon="plus"
+                        intent="primary"
+                        onClick={() =>
+                            this.setState({ showNewRecipeForm: true })
+                        }
+                    />
 
-                            {this.state.showNewRecipeForm && (
-                                <NewRecipe
-                                    onSaveRecipe={(newRecipe) =>
-                                        this.saveNewRecipe(newRecipe)
-                                    }
-                                />
-                            )}
+                    {this.state.showNewRecipeForm && (
+                        <NewRecipe
+                            onSaveRecipe={(newRecipe) =>
+                                this.saveNewRecipe(newRecipe)
+                            }
+                        />
+                    )}
 
-                            <H3>recipe list</H3>
+                    <H3>recipe list</H3>
 
-                            <HTMLTable striped condensed bordered>
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th>name</th>
-                                        <th>actions</th>
-                                    </tr>
-                                </thead>
+                    <InputGroup
+                        placeholder="search..."
+                        value={this.state.searchTerm}
+                        onChange={handleStringChange((searchTerm) =>
+                            this.setState({ searchTerm })
+                        )}
+                    />
 
-                                <tbody>
-                                    {data.state.recipes.map((recipe) => (
-                                        <tr key={recipe.id}>
-                                            <td>{recipe.id}</td>
-                                            <td>
-                                                <Link
-                                                    to={"/recipe/" + recipe.id}
-                                                >
-                                                    <div>{recipe.name}</div>
-                                                </Link>
-                                            </td>
-                                            <td>
-                                                <Button
-                                                    icon="cross"
-                                                    intent="danger"
-                                                    onClick={() =>
-                                                        this.removeRecipe(
-                                                            recipe.id
-                                                        )
-                                                    }
-                                                    minimal
-                                                />
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </HTMLTable>
-                        </div>
-                    </div>
-                )}
-            </Subscribe>
+                    <HTMLTable striped condensed bordered>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>name</th>
+                                <th>actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {recipesToShow.map((recipe) => (
+                                <tr key={recipe.id}>
+                                    <td>{recipe.id}</td>
+                                    <td>
+                                        <Link to={"/recipe/" + recipe.id}>
+                                            <div>{recipe.name}</div>
+                                        </Link>
+                                    </td>
+                                    <td>
+                                        <Button
+                                            icon="cross"
+                                            intent="danger"
+                                            onClick={() =>
+                                                this.removeRecipe(recipe.id)
+                                            }
+                                            minimal
+                                        />
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </HTMLTable>
+                </div>
+            </div>
         );
     }
     removeRecipe(id: number) {

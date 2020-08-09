@@ -1,9 +1,9 @@
+import { Button, Checkbox, EditableText, H2, H3 } from "@blueprintjs/core";
+import _ from "lodash";
 import React from "react";
-import { H4, Button, Checkbox, H3, H2, EditableText } from "@blueprintjs/core";
-import { ShoppingListItem, Ingredient } from "../models";
 import { GLOBAL_DATA_LAYER } from "..";
 import { handleBooleanChange } from "../helpers";
-import _ from "lodash";
+import { Ingredient, ShoppingListItem } from "../models";
 
 interface ShoppingListProps {
     shoppingList: ShoppingListItem[];
@@ -53,13 +53,31 @@ export class ShoppingList extends React.Component<
             return;
         }
 
+        const itemsToUpdate = [newItem];
+
+        if (key === "isBought") {
+            // need to update all with that ingredient id
+            const ingId = newItem.ingredientAmount.ingredientId;
+
+            const isBought = value as boolean;
+
+            newItems
+                .filter((c) => c.id !== id)
+                .filter((c) => c.ingredientAmount.ingredientId === ingId)
+                .forEach((c) => {
+                    c.isBought = isBought;
+
+                    itemsToUpdate.push(c);
+                });
+        }
+
         newItem[key] = value;
 
         // update state so changes feel live
         this.setState({ liveShoppingList: newItems });
 
         // update server so changes are saved -- this will send props back through
-        GLOBAL_DATA_LAYER.updateShoppingListItem(newItem);
+        GLOBAL_DATA_LAYER.updateShoppingListItem(itemsToUpdate);
     }
 
     clearBoughtItems() {
@@ -103,6 +121,8 @@ export class ShoppingList extends React.Component<
                     ?.aisle || "unknown"
         );
 
+        const groupNames = Object.keys(listGroups).sort();
+
         console.log("list groups", listGroups);
 
         return (
@@ -125,121 +145,134 @@ export class ShoppingList extends React.Component<
                     onClick={() => this.clearBoughtItems()}
                 />
 
-                {_.map(listGroups, (groupOfItems, key) => (
-                    <div
-                        key={key}
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns: "200px 200px 200px auto",
-                        }}
-                    >
-                        <div style={{ gridColumn: "1/5" }}>
-                            <H3>{key}</H3>
-                        </div>
+                {groupNames.map((key) => {
+                    const groupOfItems = listGroups[key];
 
-                        {_.map(
-                            _.groupBy(
-                                groupOfItems,
-                                (c) => c.ingredientAmount.ingredientId
-                            ),
-                            (_item, ingredientId) => {
-                                // TODO: process subsequent items to combine amounts
-                                // TODO: show the recipe name
-                                // TODO: show the amount and modifier details
-                                const item = _item[0];
-                                const ing = GLOBAL_DATA_LAYER.getIngredient(
-                                    item.ingredientAmount.ingredientId
-                                );
-                                return (
-                                    <React.Fragment key={ingredientId}>
-                                        <Checkbox
-                                            checked={item.isBought}
-                                            onChange={handleBooleanChange(
-                                                (isBought) =>
-                                                    this.handleItemUpdate(
-                                                        item.id,
-                                                        "isBought",
-                                                        isBought
-                                                    )
-                                            )}
-                                            labelElement={
-                                                <span
-                                                    style={{
-                                                        color: item.isBought
-                                                            ? "grey"
-                                                            : undefined,
-                                                        fontWeight: item.isBought
-                                                            ? undefined
-                                                            : "bold",
-                                                    }}
-                                                >
-                                                    {ing?.name}
-                                                </span>
-                                            }
-                                        />
-                                        <div>
-                                            {item.isBought
-                                                ? null
-                                                : _item.map((inAmt) => (
-                                                      <p key={inAmt.id}>
-                                                          {
-                                                              inAmt
-                                                                  .ingredientAmount
-                                                                  .amount
-                                                          }{" "}
-                                                          {
-                                                              inAmt
-                                                                  .ingredientAmount
-                                                                  .unit
-                                                          }{" "}
-                                                          (
-                                                          {
-                                                              inAmt
-                                                                  .ingredientAmount
-                                                                  .modifier
-                                                          }
-                                                          )
-                                                      </p>
-                                                  ))}
-                                        </div>
+                    return (
+                        <div
+                            key={key}
+                            style={{
+                                display: "grid",
+                                gridTemplateColumns: "200px 200px 200px auto",
+                            }}
+                        >
+                            <div style={{ gridColumn: "1/5" }}>
+                                <H3>{key}</H3>
+                            </div>
 
-                                        <div>
-                                            {item.isBought
-                                                ? null
-                                                : _item.map((inAmt) => (
-                                                      <p
-                                                          key={inAmt.id}
-                                                          style={{
-                                                              fontStyle:
-                                                                  "italic",
-                                                          }}
-                                                      >
-                                                          {
-                                                              GLOBAL_DATA_LAYER.getRecipe(
-                                                                  inAmt.recipeId
-                                                              )?.name
-                                                          }
-                                                      </p>
-                                                  ))}
-                                        </div>
-
-                                        <div>
-                                            <EditableText
-                                                defaultValue={ing?.aisle}
-                                                onConfirm={(newAisle) =>
-                                                    this.updateAisle(
-                                                        ing,
-                                                        newAisle
-                                                    )
+                            {_.map(
+                                _.groupBy(
+                                    groupOfItems,
+                                    (c) => c.ingredientAmount.ingredientId
+                                ),
+                                (_item, ingredientId) => {
+                                    // TODO: process subsequent items to combine amounts
+                                    // TODO: show the recipe name
+                                    // TODO: show the amount and modifier details
+                                    const item = _item[0];
+                                    const ing = GLOBAL_DATA_LAYER.getIngredient(
+                                        item.ingredientAmount.ingredientId
+                                    );
+                                    return (
+                                        <React.Fragment key={ingredientId}>
+                                            <Checkbox
+                                                checked={item.isBought}
+                                                onChange={handleBooleanChange(
+                                                    (isBought) =>
+                                                        this.handleItemUpdate(
+                                                            item.id,
+                                                            "isBought",
+                                                            isBought
+                                                        )
+                                                )}
+                                                labelElement={
+                                                    <span
+                                                        style={{
+                                                            color: item.isBought
+                                                                ? "grey"
+                                                                : undefined,
+                                                            fontWeight: item.isBought
+                                                                ? undefined
+                                                                : "bold",
+                                                        }}
+                                                    >
+                                                        {ing?.name}
+                                                    </span>
                                                 }
                                             />
-                                        </div>
-                                    </React.Fragment>
-                                );
-                            }
-                        )}
-                    </div>
-                ))}
+                                            <div>
+                                                {item.isBought
+                                                    ? null
+                                                    : _item.map((inAmt) => (
+                                                          <p key={inAmt.id}>
+                                                              {
+                                                                  inAmt
+                                                                      .ingredientAmount
+                                                                      .amount
+                                                              }{" "}
+                                                              {
+                                                                  inAmt
+                                                                      .ingredientAmount
+                                                                      .unit
+                                                              }{" "}
+                                                              (
+                                                              {
+                                                                  inAmt
+                                                                      .ingredientAmount
+                                                                      .modifier
+                                                              }
+                                                              )
+                                                          </p>
+                                                      ))}
+                                            </div>
+
+                                            <div>
+                                                {item.isBought
+                                                    ? null
+                                                    : _item.map((inAmt) => (
+                                                          <p
+                                                              key={inAmt.id}
+                                                              style={{
+                                                                  fontStyle:
+                                                                      "italic",
+                                                              }}
+                                                          >
+                                                              {
+                                                                  GLOBAL_DATA_LAYER.getRecipe(
+                                                                      inAmt.recipeId
+                                                                  )?.name
+                                                              }
+                                                          </p>
+                                                      ))}
+                                            </div>
+
+                                            <div>
+                                                <EditableText
+                                                    defaultValue={ing?.aisle}
+                                                    onConfirm={(newAisle) =>
+                                                        this.updateAisle(
+                                                            ing,
+                                                            newAisle
+                                                        )
+                                                    }
+                                                />
+
+                                                <a
+                                                    target="_blank"
+                                                    href={`https://www.kroger.com/pl/all/00?query=${encodeURIComponent(
+                                                        ing?.name ?? ""
+                                                    )}&searchType=natural`}
+                                                >
+                                                    ...
+                                                </a>
+                                            </div>
+                                        </React.Fragment>
+                                    );
+                                }
+                            )}
+                        </div>
+                    );
+                })}
             </div>
         );
     }

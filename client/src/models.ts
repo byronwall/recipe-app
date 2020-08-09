@@ -102,7 +102,7 @@ export interface API_ShoppingDelete {
 }
 
 export interface API_ShoppingUpdate {
-    item: ShoppingListItem;
+    item: ShoppingListItem[];
 }
 
 export interface API_MealPlanUpdate {

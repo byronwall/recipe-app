@@ -261,10 +261,17 @@ export class Server {
 
       const postData = req.body as API_ShoppingUpdate;
 
-      const index = db.shoppingList.findIndex((c) => c.id === postData.item.id);
+      let didMakeChange = false;
+      postData.item.forEach((item) => {
+        const index = db.shoppingList.findIndex((c) => c.id === item.id);
 
-      if (index > -1) {
-        db.shoppingList[index] = postData.item;
+        if (index > -1) {
+          db.shoppingList[index] = item;
+          didMakeChange = true;
+        }
+      });
+
+      if (didMakeChange) {
         saveDatabase();
       }
 
