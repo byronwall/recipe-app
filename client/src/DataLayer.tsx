@@ -252,9 +252,9 @@ export class DataLayer extends Container<DataLayerState> {
         return fuse.search(_query).map((c) => c.item);
     }
 
-    async updateMealPlan(newMeal: PlannedMeal[]) {
+    async updateMealPlan(mealsToUpdate: PlannedMeal[]) {
         const postData: API_MealPlanUpdate = {
-            meals: newMeal,
+            meals: mealsToUpdate,
         };
         const res = await axios.post("/api/update_meals", postData);
 

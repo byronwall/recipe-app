@@ -1,6 +1,8 @@
-import { Button, Card, Icon } from "@blueprintjs/core";
+import { Button, Card } from "@blueprintjs/core";
+import _ from "lodash";
 import React from "react";
 import { Subscribe } from "unstated";
+import { GLOBAL_DATA_LAYER } from "..";
 import { DataLayer } from "../DataLayer";
 import { PlannedMeal } from "../models";
 
@@ -30,6 +32,14 @@ export class MealPlanDay extends React.Component<
         prevState: MealPlanDayState
     ) {}
 
+    removeShoppingListTag(meal: PlannedMeal) {
+        const newMeal = _.cloneDeep(meal);
+
+        newMeal.isOnShoppingList = false;
+
+        GLOBAL_DATA_LAYER.updateMealPlan([newMeal]);
+    }
+
     render() {
         return (
             <Subscribe to={[DataLayer]}>
@@ -49,7 +59,18 @@ export class MealPlanDay extends React.Component<
                                 return (
                                     <Card key={index}>
                                         {meal.isOnShoppingList && (
-                                            <Icon icon="shopping-cart" />
+                                            <Button
+                                                icon="shopping-cart"
+                                                onClick={() =>
+                                                    this.removeShoppingListTag(
+                                                        meal
+                                                    )
+                                                }
+                                                intent="primary"
+                                                small
+                                                active
+                                                minimal
+                                            />
                                         )}
                                         {recipe.name}
                                         <Button

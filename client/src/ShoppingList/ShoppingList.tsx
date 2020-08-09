@@ -259,6 +259,7 @@ export class ShoppingList extends React.Component<
 
                                                 <a
                                                     target="_blank"
+                                                    rel="noopener noreferrer"
                                                     href={`https://www.kroger.com/pl/all/00?query=${encodeURIComponent(
                                                         ing?.name ?? ""
                                                     )}&searchType=natural`}
