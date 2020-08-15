@@ -19,8 +19,8 @@ export interface RecipeStepGroup {
 
 export function createDefaultRecipe(): Recipe {
     return {
-        name: "new recipe",
-        description: "desc",
+        name: "",
+        description: "",
         id: getNewId(),
         ingredientGroups: [{ title: "group", ingredients: [] }],
         stepGroups: [{ title: "group", steps: [] }],

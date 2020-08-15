@@ -3,6 +3,7 @@ import _ from "lodash";
 import React from "react";
 import { GLOBAL_DATA_LAYER } from "..";
 import { handleBooleanChange } from "../helpers";
+import { ActionsComp } from "../MealPlan/MealPlan";
 import { Ingredient, Recipe, ShoppingListItem } from "../models";
 
 interface ShoppingListProps {
@@ -133,23 +134,25 @@ export class ShoppingList extends React.Component<
 
         return (
             <div>
-                <H2>add a new item</H2>
+                <ActionsComp>
+                    <Button
+                        text="delete all"
+                        intent="danger"
+                        onClick={() => this.clearAllItems()}
+                        icon="trash"
+                        minimal
+                    />
 
-                <p>some form for adding a loose item</p>
+                    <Button
+                        text="delete checked"
+                        intent="warning"
+                        onClick={() => this.clearBoughtItems()}
+                        icon="small-cross"
+                        minimal
+                    />
+                </ActionsComp>
 
-                <H2>current list</H2>
-
-                <Button
-                    text="delete all"
-                    intent="danger"
-                    onClick={() => this.clearAllItems()}
-                />
-
-                <Button
-                    text="delete checked"
-                    intent="warning"
-                    onClick={() => this.clearBoughtItems()}
-                />
+                <H2>shopping list</H2>
 
                 <H3>recipes included</H3>
 

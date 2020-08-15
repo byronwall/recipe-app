@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { GLOBAL_DATA_LAYER } from "..";
 import { handleStringChange } from "../helpers";
 import { ActionsComp } from "../MealPlan/MealPlan";
-import { Recipe } from "../models";
+import { Ingredient, Recipe } from "../models";
 import { OverlayCenter } from "../OverlayCenter";
 import { NewRecipe } from "./NewRecipe";
 
@@ -55,8 +55,8 @@ export class RecipeList extends React.Component<
         }
     }
 
-    saveNewRecipe(newRecipe: Recipe) {
-        GLOBAL_DATA_LAYER.saveNewRecipe(newRecipe);
+    saveNewRecipe(newRecipe: Recipe, newIngredients: Ingredient[]) {
+        GLOBAL_DATA_LAYER.saveNewRecipe(newRecipe, newIngredients);
     }
 
     removeRecipe(id: number) {
@@ -96,8 +96,8 @@ export class RecipeList extends React.Component<
                         width={800}
                     >
                         <NewRecipe
-                            onSaveRecipe={(newRecipe) =>
-                                this.saveNewRecipe(newRecipe)
+                            onSaveRecipe={(newRecipe, newIngredients) =>
+                                this.saveNewRecipe(newRecipe, newIngredients)
                             }
                         />
                     </OverlayCenter>

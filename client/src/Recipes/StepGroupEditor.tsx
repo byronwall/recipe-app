@@ -1,15 +1,16 @@
-import { Button, EditableText, H4, TextArea } from "@blueprintjs/core";
+import { Button, EditableText, H3, H4, TextArea } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
-
 import { handleStringChange } from "../helpers";
 import { RecipeStepGroup } from "../models";
 import { StepsEditor } from "./StepsEditor";
 
 interface StepGroupEditorProps {
-    stepGroups: RecipeStepGroup[];
+    stepGroups?: RecipeStepGroup[];
+    onGroupChange?(newGroups: RecipeStepGroup[]): void;
 
-    onGroupChange(newGroups: RecipeStepGroup[]): void;
+    textSteps?: string;
+    onTextChange?(newText: string): void; // allow for controlled text version
 }
 interface StepGroupEditorState {
     isTextEditor: boolean;
@@ -38,6 +39,12 @@ export class StepGroupEditor extends React.Component<
         key: K,
         value: RecipeStepGroup[K]
     ) {
+        if (
+            this.props.stepGroups === undefined ||
+            this.props.onGroupChange === undefined
+        ) {
+            return;
+        }
         const newSteps = _.cloneDeep(this.props.stepGroups);
         const newStep = newSteps[index];
 
@@ -46,32 +53,48 @@ export class StepGroupEditor extends React.Component<
         this.props.onGroupChange(newSteps);
     }
 
+    get isControlled() {
+        return this.props.textSteps !== undefined;
+    }
+
     render() {
         // TODO: add options to remove or reorder the groups
+
+        const textToShow = this.isControlled
+            ? this.props.textSteps
+            : this.state.textToShow;
+
+        const stepGroups = this.props.stepGroups ?? [];
         return (
             <div>
-                <p>StepGroupEditor</p>
+                <H3>steps</H3>
 
-                <div>
-                    <Button
-                        active={this.state.isTextEditor}
-                        text="text editor"
-                        onClick={() => this.toggleTextEditor()}
-                    />
-                </div>
-
+                {!this.isControlled && (
+                    <div>
+                        <Button
+                            active={this.state.isTextEditor}
+                            text="text editor"
+                            onClick={() => this.toggleTextEditor()}
+                        />
+                    </div>
+                )}
                 <TextArea
-                    value={this.state.textToShow}
+                    value={textToShow}
                     onChange={handleStringChange((textToShow) =>
-                        this.setState({ textToShow })
+                        this.handleTextChange(textToShow)
                     )}
-                />
-                <Button
-                    text="process text area"
-                    onClick={() => this.processTextToSteps()}
+                    fill
+                    style={{ height: 170 }}
                 />
 
-                {this.props.stepGroups.map((grp, index) => (
+                {!this.isControlled && (
+                    <Button
+                        text="process text area"
+                        onClick={() => this.processTextToSteps()}
+                    />
+                )}
+
+                {stepGroups.map((grp, index) => (
                     <div key={index}>
                         <H4>
                             <EditableText
@@ -96,67 +119,33 @@ export class StepGroupEditor extends React.Component<
             </div>
         );
     }
+    private handleTextChange(textToShow: string): void {
+        if (this.isControlled) {
+            if (this.props.onTextChange !== undefined) {
+                this.props.onTextChange(textToShow);
+            }
+        } else {
+            this.setState({ textToShow });
+        }
+    }
+
     processTextToSteps() {
         // get the text
 
-        const stepsText = this.state.textToShow;
-
-        const lines = stepsText.split("\n");
-
-        console.log("split lines", lines);
-
-        const newStepGroup: RecipeStepGroup[] = [];
-
-        let activeGroup: RecipeStepGroup | undefined = undefined;
-
-        for (let _line of lines) {
-            const line = _line.trim();
-
-            // skip blank
-            if (line.trim() === "") {
-                continue;
-            }
-
-            if (line.startsWith("[")) {
-                // make a new group or create the first
-                activeGroup = {
-                    title: line.substring(1, line.length - 1),
-                    steps: [],
-                };
-
-                newStepGroup.push(activeGroup);
-
-                continue;
-            }
-
-            // this line is a step
-
-            if (activeGroup === undefined) {
-                // create a default group to hold first step
-
-                activeGroup = {
-                    title: "group",
-                    steps: [],
-                };
-                newStepGroup.push(activeGroup);
-            }
-
-            activeGroup.steps.push({ description: line, duration: "0" });
-
-            console.log(line);
+        if (this.props.onGroupChange === undefined) {
+            return;
         }
 
-        // split into groups
+        const stepsText = this.state.textToShow;
 
-        // split into steps per group
-
-        console.log(newStepGroup);
+        const newStepGroup = convertTextToStepGroup(stepsText);
 
         this.props.onGroupChange(newStepGroup);
     }
 
     private toggleTextEditor() {
-        const newText = this.props.stepGroups.map(groupToString).join("\n");
+        const stepGroups = this.props.stepGroups ?? [];
+        const newText = stepGroups.map(groupToString).join("\n");
 
         return this.setState((prevState) => ({
             isTextEditor: !prevState.isTextEditor,
@@ -168,4 +157,59 @@ export class StepGroupEditor extends React.Component<
 export function groupToString(grp: RecipeStepGroup): string {
     const stepsStr = grp.steps.map((step) => step.description).join("\n");
     return `[${grp.title}]\n${stepsStr}\n`;
+}
+
+export function convertTextToStepGroup(stepsText: string) {
+    const lines = stepsText.split("\n");
+
+    console.log("split lines", lines);
+
+    const newStepGroup: RecipeStepGroup[] = [];
+
+    let activeGroup: RecipeStepGroup | undefined = undefined;
+
+    for (const _line of lines) {
+        const line = _line.trim();
+
+        // skip blank
+        if (line.trim() === "") {
+            continue;
+        }
+
+        if (line.startsWith("[")) {
+            // make a new group or create the first
+            activeGroup = {
+                title: line.substring(1, line.length - 1),
+                steps: [],
+            };
+
+            newStepGroup.push(activeGroup);
+
+            continue;
+        }
+
+        // this line is a step
+
+        if (activeGroup === undefined) {
+            // create a default group to hold first step
+
+            activeGroup = {
+                title: "group",
+                steps: [],
+            };
+            newStepGroup.push(activeGroup);
+        }
+
+        activeGroup.steps.push({ description: line, duration: "0" });
+
+        console.log(line);
+    }
+
+    // split into groups
+
+    // split into steps per group
+
+    console.log(newStepGroup);
+
+    return newStepGroup;
 }
