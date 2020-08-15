@@ -1,15 +1,9 @@
-import {
-    Button,
-    Card,
-    FormGroup,
-    InputGroup,
-    Overlay,
-} from "@blueprintjs/core";
+import { Button, FormGroup, H5, InputGroup } from "@blueprintjs/core";
 import React from "react";
-
 import { GLOBAL_DATA_LAYER } from "..";
 import { handleStringChange } from "../helpers";
 import { Recipe } from "../models";
+import { OverlayCenter } from "../OverlayCenter";
 
 interface RecipeChooserProps {
     isOpen: boolean;
@@ -52,61 +46,46 @@ export class RecipeChooser extends React.Component<
             this.state.searchTerm
         );
         return (
-            <Overlay
+            <OverlayCenter
                 onClose={() => {
                     this.handleOverlayClose();
                 }}
                 isOpen={this.props.isOpen}
+                height={400}
+                width={400}
             >
-                <div
-                    style={{
-                        display: "flex",
-                        height: "100vh",
-                        width: "100vw",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        alignItems: "center",
-                    }}
-                    onClick={() => this.handleOverlayClose()}
-                >
-                    <div onClick={(e) => e.stopPropagation()}>
-                        <Card style={{ maxWidth: 400, maxHeight: 400 }}>
-                            <p>search for a recipe</p>
+                <H5>search for a recipe</H5>
+                <div>
+                    <FormGroup>
+                        <InputGroup
+                            value={this.state.searchTerm}
+                            onChange={handleStringChange((searchTerm) =>
+                                this.setState({
+                                    searchTerm,
+                                })
+                            )}
+                            autoFocus
+                        />
+                    </FormGroup>
 
-                            <div>
-                                <FormGroup>
-                                    <InputGroup
-                                        value={this.state.searchTerm}
-                                        onChange={handleStringChange(
-                                            (searchTerm) =>
-                                                this.setState({
-                                                    searchTerm,
-                                                })
-                                        )}
-                                        autoFocus
-                                    />
-                                </FormGroup>
-
-                                <div>
-                                    {possibleRecipes.map((recipe) => (
-                                        <Button
-                                            onClick={() => {
-                                                this.setState({
-                                                    searchTerm: "",
-                                                });
-                                                this.props.onSelect(recipe);
-                                            }}
-                                            minimal
-                                        >
-                                            {recipe.name}
-                                        </Button>
-                                    ))}
-                                </div>
-                            </div>
-                        </Card>
+                    <div>
+                        {possibleRecipes.map((recipe) => (
+                            <Button
+                                key={recipe.id}
+                                onClick={() => {
+                                    this.setState({
+                                        searchTerm: "",
+                                    });
+                                    this.props.onSelect(recipe);
+                                }}
+                                minimal
+                            >
+                                {recipe.name}
+                            </Button>
+                        ))}
                     </div>
                 </div>
-            </Overlay>
+            </OverlayCenter>
         );
     }
 }

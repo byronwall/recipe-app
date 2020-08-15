@@ -24,9 +24,7 @@ module.exports = {
 
         "prettier/@typescript-eslint", // Uses eslint-config-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
 
-        "plugin:prettier/recommended" // Enables eslint-plugin-prettier and eslint-config-prettier. This will display prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
-    
-      
+        "plugin:prettier/recommended", // Enables eslint-plugin-prettier and eslint-config-prettier. This will display prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
     ],
 
     rules: {
@@ -38,5 +36,7 @@ module.exports = {
         "@typescript-eslint/camelcase": "off",
         "@typescript-eslint/class-name-casing": "off",
         "@typescript-eslint/no-use-before-define": "off",
+        "prettier/prettier": "off",
+        "@typescript-eslint/explicit-module-boundary-types":"off"
     },
 };

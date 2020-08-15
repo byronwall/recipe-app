@@ -3,7 +3,7 @@ import _ from "lodash";
 import React from "react";
 import { GLOBAL_DATA_LAYER } from "..";
 import { handleBooleanChange } from "../helpers";
-import { Ingredient, ShoppingListItem } from "../models";
+import { Ingredient, Recipe, ShoppingListItem } from "../models";
 
 interface ShoppingListProps {
     shoppingList: ShoppingListItem[];
@@ -114,6 +114,12 @@ export class ShoppingList extends React.Component<
     render() {
         const shoppingList = this.state.liveShoppingList;
 
+        const activeRecipes = _.uniq(
+            this.state.liveShoppingList.map((c) => c.recipeId)
+        )
+            .map((c) => GLOBAL_DATA_LAYER.getRecipe(c))
+            .filter((c) => c !== undefined) as Recipe[];
+
         const listGroups = _.groupBy(
             shoppingList,
             (c) =>
@@ -144,6 +150,22 @@ export class ShoppingList extends React.Component<
                     intent="warning"
                     onClick={() => this.clearBoughtItems()}
                 />
+
+                <H3>recipes included</H3>
+
+                {activeRecipes.map((recipe) => (
+                    <div key={recipe?.id}>
+                        <Button
+                            minimal
+                            intent="danger"
+                            icon="cross"
+                            onClick={() =>
+                                this.removeRecipeFromShoppingList(recipe?.id)
+                            }
+                        />
+                        {recipe?.name}
+                    </div>
+                ))}
 
                 {groupNames.map((key) => {
                     const groupOfItems = listGroups[key];
@@ -276,6 +298,9 @@ export class ShoppingList extends React.Component<
                 })}
             </div>
         );
+    }
+    removeRecipeFromShoppingList(id: number) {
+        GLOBAL_DATA_LAYER.removeRecipeFromShoppingList(id);
     }
     updateAisle(ing: Ingredient | undefined, newAisle: string): void {
         if (ing === undefined) {

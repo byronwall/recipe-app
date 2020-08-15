@@ -15,6 +15,7 @@ import {
   API_ShoppingDelete,
   API_ShoppingUpdate,
   API_MealPlanUpdate,
+  API_ShoppingRemoveRecipe,
 } from "./model";
 import _ from "lodash";
 
@@ -274,6 +275,21 @@ export class Server {
       if (didMakeChange) {
         saveDatabase();
       }
+
+      res.json({ ...db });
+
+      // find that type...
+    });
+    app.post("/api/shopping_remove_recipe", (req: any, res: any) => {
+      console.log(new Date(), "remove shopping recipe");
+
+      const postData = req.body as API_ShoppingRemoveRecipe;
+
+      // remove recipe based on id
+      db.shoppingList = db.shoppingList.filter(
+        (c) => c.recipeId !== postData.recipeId
+      );
+      saveDatabase();
 
       res.json({ ...db });
 

@@ -1,6 +1,6 @@
-import { Button } from "@blueprintjs/core";
+import { Button, H2, H3 } from "@blueprintjs/core";
 import _ from "lodash";
-import React from "react";
+import React, { FunctionComponent } from "react";
 import { GLOBAL_DATA_LAYER } from "..";
 import { getNewId, PlannedMeal, Recipe, ShoppingListItem } from "../models";
 import { MealPlanDay } from "./MealPlanDay";
@@ -24,6 +24,13 @@ interface MealPlanViewSettings {
 
     daysToShow: Date[];
 }
+
+export const ActionsComp: FunctionComponent = (props) => (
+    <div className="flex" style={{ alignItems: "center" }}>
+        <H3 style={{ marginBottom: 0 }}>actions</H3>
+        <div style={{ marginLeft: 10 }}>{props.children}</div>
+    </div>
+);
 
 const msInDay = 24 * 3600 * 1000;
 
@@ -112,39 +119,46 @@ export class MealPlan extends React.Component<MealPlanProps, MealPlanState> {
 
         return (
             <div>
-                <p>MealPlan</p>
-
-                <Button
-                    text="add to shopping list"
-                    onClick={() => this.addNewToShoppingList()}
-                />
+                <ActionsComp>
+                    <Button
+                        text="add to shopping list"
+                        onClick={() => this.addNewToShoppingList()}
+                        icon="plus"
+                        minimal
+                    />
+                </ActionsComp>
 
                 <div>
-                    <p>
-                        showing meals from {startOfView.toDateString()} to{" "}
-                        {endOfView.toDateString()}
-                    </p>
-                    <p>today is {today.toDateString()}</p>
+                    <H2>meal plan</H2>
 
-                    {daysToShow.map((day) => (
-                        <MealPlanDay
-                            key={day.toDateString()}
-                            date={day}
-                            mealsOnDay={GLOBAL_DATA_LAYER.state.plannedMeals.filter(
-                                (c) =>
-                                    c.date.toDateString() === day.toDateString()
-                            )}
-                            onShowChooserForDay={() => {
-                                this.setState({
-                                    isRecipeChooserOpen: true,
-                                    dateToAddRecipe: day,
-                                });
-                            }}
-                            onRemovePlannedMeal={(meal) =>
-                                GLOBAL_DATA_LAYER.deletePlannedMeal(meal)
-                            }
-                        />
-                    ))}
+                    <div
+                        style={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            flexDirection: "row",
+                        }}
+                    >
+                        {daysToShow.map((day) => (
+                            <MealPlanDay
+                                key={day.toDateString()}
+                                date={day}
+                                mealsOnDay={GLOBAL_DATA_LAYER.state.plannedMeals.filter(
+                                    (c) =>
+                                        c.date.toDateString() ===
+                                        day.toDateString()
+                                )}
+                                onShowChooserForDay={() => {
+                                    this.setState({
+                                        isRecipeChooserOpen: true,
+                                        dateToAddRecipe: day,
+                                    });
+                                }}
+                                onRemovePlannedMeal={(meal) =>
+                                    GLOBAL_DATA_LAYER.deletePlannedMeal(meal)
+                                }
+                            />
+                        ))}
+                    </div>
                 </div>
 
                 <RecipeChooser

@@ -87,6 +87,10 @@ export interface API_IngredParam {
     ingredient: Ingredient;
 }
 
+export interface API_ShoppingRemoveRecipe {
+    recipeId: number;
+}
+
 export interface ShoppingListItem {
     id: number;
     ingredientAmount: IngredientAmount;

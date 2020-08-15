@@ -1,8 +1,6 @@
 import { Button, FormGroup, InputGroup } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
-
-import { GLOBAL_DATA_LAYER } from "..";
 import { handleStringChange } from "../helpers";
 import { createDefaultRecipe, Recipe } from "../models";
 import { IngredientGroupEditor } from "./IngredientGroupEditor";

@@ -10,6 +10,7 @@ import {
     API_RecipeParam,
     API_ShoppingAdd,
     API_ShoppingDelete,
+    API_ShoppingRemoveRecipe,
     API_ShoppingUpdate,
     getNewId,
     Ingredient,
@@ -115,6 +116,38 @@ export class DataLayer extends Container<DataLayerState> {
         // search known ingredients... then new ones
 
         return this.state.recipes.find((c) => c.id === id);
+    }
+
+    async removeRecipeFromShoppingList(_recipe: Recipe | number) {
+        const recipeId = typeof _recipe === "number" ? _recipe : _recipe.id;
+
+        const postData: API_ShoppingRemoveRecipe = { recipeId };
+
+        const res = await axios.post("/api/shopping_remove_recipe", postData);
+
+        this.handleResponse(res);
+    }
+
+    async addRecipesToShoppingList(recipes: (Recipe | number)[]) {
+        // TODO: add a scale parameter
+
+        const newShopItems: ShoppingListItem[] = [];
+
+        recipes.forEach((_rec) => {
+            const rec = typeof _rec === "number" ? this.getRecipe(_rec) : _rec;
+            rec?.ingredientGroups.forEach((c) =>
+                c.ingredients.forEach((ing) => {
+                    newShopItems.push({
+                        ingredientAmount: ing,
+                        recipeId: rec.id,
+                        isBought: false,
+                        id: getNewId(),
+                    });
+                })
+            );
+        });
+
+        return this.addItemsToShoppingList(newShopItems);
     }
 
     async addItemsToShoppingList(newItems: ShoppingListItem[]) {
