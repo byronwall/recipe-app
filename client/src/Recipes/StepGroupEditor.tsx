@@ -24,7 +24,9 @@ export class StepGroupEditor extends React.Component<
     constructor(props: StepGroupEditorProps) {
         super(props);
 
-        this.state = { isTextEditor: false, textToShow: "" };
+        const isTextInput = this.props.textSteps !== undefined;
+
+        this.state = { isTextEditor: isTextInput, textToShow: "" };
     }
 
     componentDidMount() {}
@@ -67,55 +69,71 @@ export class StepGroupEditor extends React.Component<
         const stepGroups = this.props.stepGroups ?? [];
         return (
             <div>
-                <H3>steps</H3>
+                <div className="flex" style={{ alignItems: "center" }}>
+                    <H3 style={{ marginBottom: 0 }}>steps</H3>
+                    <div style={{ marginLeft: 10 }}>
+                        {!this.isControlled && (
+                            <div>
+                                <Button
+                                    active={this.state.isTextEditor}
+                                    text="show text editor"
+                                    onClick={() => this.toggleTextEditor()}
+                                    minimal
+                                    icon="edit"
+                                />
+                            </div>
+                        )}
+                    </div>
+                </div>
 
-                {!this.isControlled && (
+                {this.state.isTextEditor && (
                     <div>
-                        <Button
-                            active={this.state.isTextEditor}
-                            text="text editor"
-                            onClick={() => this.toggleTextEditor()}
+                        <TextArea
+                            value={textToShow}
+                            onChange={handleStringChange((textToShow) =>
+                                this.handleTextChange(textToShow)
+                            )}
+                            fill
+                            style={{ height: 170 }}
                         />
+
+                        {!this.isControlled && (
+                            <Button
+                                text="convert to steps"
+                                onClick={() => this.processTextToSteps()}
+                            />
+                        )}
                     </div>
                 )}
-                <TextArea
-                    value={textToShow}
-                    onChange={handleStringChange((textToShow) =>
-                        this.handleTextChange(textToShow)
-                    )}
-                    fill
-                    style={{ height: 170 }}
-                />
 
-                {!this.isControlled && (
-                    <Button
-                        text="process text area"
-                        onClick={() => this.processTextToSteps()}
-                    />
-                )}
-
-                {stepGroups.map((grp, index) => (
-                    <div key={index}>
-                        <H4>
-                            <EditableText
-                                onChange={(newValue) =>
+                {!this.state.isTextEditor &&
+                    stepGroups.map((grp, index) => (
+                        <div key={index}>
+                            <H4>
+                                <EditableText
+                                    onChange={(newValue) =>
+                                        this.handleGroupEdit(
+                                            index,
+                                            "title",
+                                            newValue
+                                        )
+                                    }
+                                    value={grp.title}
+                                    placeholder="enter group name"
+                                />
+                            </H4>
+                            <StepsEditor
+                                steps={grp.steps}
+                                onStepsChange={(newSteps) =>
                                     this.handleGroupEdit(
                                         index,
-                                        "title",
-                                        newValue
+                                        "steps",
+                                        newSteps
                                     )
                                 }
-                                value={grp.title}
-                            ></EditableText>
-                        </H4>
-                        <StepsEditor
-                            steps={grp.steps}
-                            onStepsChange={(newSteps) =>
-                                this.handleGroupEdit(index, "steps", newSteps)
-                            }
-                        />
-                    </div>
-                ))}
+                            />
+                        </div>
+                    ))}
             </div>
         );
     }
@@ -194,7 +212,7 @@ export function convertTextToStepGroup(stepsText: string) {
             // create a default group to hold first step
 
             activeGroup = {
-                title: "group",
+                title: "",
                 steps: [],
             };
             newStepGroup.push(activeGroup);

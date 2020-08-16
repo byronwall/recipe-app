@@ -37,9 +37,9 @@ export class IngredientChooser extends React.Component<
                     <div>
                         <IngredientSuggest
                             inputValueRenderer={(item) => item.name}
-                            items={data.state.ingredients.concat(
-                                data.state.newIngredients
-                            )}
+                            items={data.state.ingredients
+                                .concat(data.state.newIngredients)
+                                .filter((c) => c.isGoodName)}
                             onItemSelect={(item) =>
                                 this.props.onItemChange(item)
                             }

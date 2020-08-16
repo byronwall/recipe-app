@@ -1,4 +1,4 @@
-import { Button, H2, H3 } from "@blueprintjs/core";
+import { Button, H2, H4 } from "@blueprintjs/core";
 import _ from "lodash";
 import React, { FunctionComponent } from "react";
 import { GLOBAL_DATA_LAYER } from "..";
@@ -27,7 +27,7 @@ interface MealPlanViewSettings {
 
 export const ActionsComp: FunctionComponent = (props) => (
     <div className="flex" style={{ alignItems: "center" }}>
-        <H3 style={{ marginBottom: 0 }}>actions</H3>
+        <H4 style={{ marginBottom: 0, color: "#5C7080" }}>actions</H4>
         <div style={{ marginLeft: 10 }}>{props.children}</div>
     </div>
 );

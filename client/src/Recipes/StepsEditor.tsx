@@ -1,7 +1,6 @@
 import { Button, HTMLTable, InputGroup } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
-
 import { handleStringChange } from "../helpers";
 import { RecipeStep } from "../models";
 
@@ -45,9 +44,7 @@ export class StepsEditor extends React.Component<
     render() {
         return (
             <div>
-                <p>StepsEditor</p>
-
-                <HTMLTable>
+                <HTMLTable striped condensed bordered>
                     <thead>
                         <tr>
                             <th>#</th>

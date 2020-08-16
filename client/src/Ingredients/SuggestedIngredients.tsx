@@ -1,15 +1,13 @@
-import { Button, Card, H4, HTMLTable, InputGroup } from "@blueprintjs/core";
+import { H4, HTMLTable, InputGroup } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
-
-import { IngredientAmount, Recipe, Ingredient } from "../models";
-import {
-    guessIngredientParts,
-    NewIngAmt,
-    getSuggestionsFromLists,
-} from "../Recipes/ingredient_processing";
 import { GLOBAL_DATA_LAYER } from "..";
 import { handleStringChange } from "../helpers";
+import { Ingredient, IngredientAmount, Recipe } from "../models";
+import {
+    getSuggestionsFromLists,
+    NewIngAmt,
+} from "../Recipes/ingredient_processing";
 import { SuggestedIngredientRow } from "./SuggestedIngredientRow";
 
 export type IngredientHash = {
@@ -144,13 +142,13 @@ export class SuggestedIngredients extends React.Component<
     }
 
     render() {
-        const ingredientsToCheck = this.props.ingredients.filter(
-            (c) => !c.isGoodName
-        ).length;
+        if (this.state.suggestions.length === 0) {
+            return null;
+        }
 
         return (
-            <Card>
-                <H4>ingredients to check ({ingredientsToCheck})</H4>
+            <div style={{ marginTop: 10 }}>
+                <H4>new ingredients</H4>
 
                 <p>
                     All of these are ingredients which are only used once and
@@ -187,7 +185,7 @@ export class SuggestedIngredients extends React.Component<
                         ))}
                     </tbody>
                 </HTMLTable>
-            </Card>
+            </div>
         );
     }
 }

@@ -2,11 +2,11 @@ import { Button, Checkbox, H2, H3, H5 } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
 import SplitPane from "react-split-pane";
-
 import { GLOBAL_DATA_LAYER } from "..";
 import { handleBooleanChange } from "../helpers";
-import { Recipe } from "../models";
-import { NewRecipe } from "./NewRecipe";
+import { ActionsComp } from "../MealPlan/MealPlan";
+import { Ingredient, IngredientAmount, Recipe } from "../models";
+import { EditRecipe } from "./EditRecipe";
 
 interface RecipeViewerProps {
     recipe: Recipe | undefined;
@@ -128,7 +128,10 @@ export class RecipeViewer extends React.Component<
                                                 }}
                                             />
                                         ) : (
-                                            `${inAmt.amount} (${inAmt.unit}) ${ingredient?.name}, ${inAmt.modifier}`
+                                            ingredientToString(
+                                                inAmt,
+                                                ingredient
+                                            )
                                         )}
                                     </li>
                                 );
@@ -187,19 +190,24 @@ export class RecipeViewer extends React.Component<
 
         const recipeView = (
             <div>
-                <H2>{recipe.name}</H2>
-
-                <div>
+                <ActionsComp>
+                    <Button text="add to shopping list" minimal />
+                    <Button text="add to meal plan" minimal />
+                    <Button text="delete" minimal />
                     <Button
                         text="edit me"
                         onClick={() => this.setState({ isEditMode: true })}
+                        minimal
                     />
 
                     <Button
                         text="cooking mode"
                         onClick={() => this.setState({ isCookingMode: true })}
+                        minimal
                     />
-                </div>
+                </ActionsComp>
+
+                <H2>{recipe.name}</H2>
 
                 {this.state.isCookingMode ? (
                     <div
@@ -246,16 +254,21 @@ export class RecipeViewer extends React.Component<
 
         const recipeEdit = (
             <div>
-                <Button
-                    text="cancel edit"
-                    onClick={() =>
-                        this.setState({
-                            isEditMode: false,
-                        })
-                    }
-                />
-                <NewRecipe
-                    defaultRecipe={this.props.recipe}
+                <ActionsComp>
+                    <Button
+                        text="cancel edit"
+                        onClick={() =>
+                            this.setState({
+                                isEditMode: false,
+                            })
+                        }
+                        minimal
+                        intent="warning"
+                        icon="undo"
+                    />
+                </ActionsComp>
+                <EditRecipe
+                    recipe={this.props.recipe}
                     onSaveRecipe={(newRecipe) => this.saveEdits(newRecipe)}
                 />
             </div>
@@ -264,8 +277,19 @@ export class RecipeViewer extends React.Component<
         return this.state.isEditMode ? recipeEdit : recipeView;
     }
     saveEdits(newRecipe: Recipe): void {
+        console.log("new recipe", newRecipe);
         GLOBAL_DATA_LAYER.saveNewRecipe(newRecipe);
 
         this.setState({ isEditMode: false });
     }
+}
+export function ingredientToString(
+    inAmt: IngredientAmount,
+    ingredient?: Ingredient
+): string {
+    if (ingredient === undefined) {
+        ingredient = GLOBAL_DATA_LAYER.getIngredient(inAmt.ingredientId);
+    }
+
+    return `${inAmt.amount} (${inAmt.unit}) ${ingredient?.name}, ${inAmt.modifier}`;
 }

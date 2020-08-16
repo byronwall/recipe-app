@@ -5,6 +5,7 @@ import { GLOBAL_DATA_LAYER } from "..";
 import { handleStringChange } from "../helpers";
 import { getNewId, Ingredient, IngredientGroup } from "../models";
 import { IngredientsEditor } from "./IngredientsEditor";
+import { ingredientToString } from "./RecipeViewer";
 
 interface IngredientGroupEditorProps {
     ingredientGroups?: IngredientGroup[];
@@ -27,7 +28,9 @@ export class IngredientGroupEditor extends React.Component<
     constructor(props: IngredientGroupEditorProps) {
         super(props);
 
-        this.state = { textToShow: "", isTextEditor: false };
+        const isControlled = props.textIngredients !== undefined;
+
+        this.state = { textToShow: "", isTextEditor: isControlled };
     }
 
     componentDidMount() {}
@@ -67,6 +70,8 @@ export class IngredientGroupEditor extends React.Component<
 
         const { newIngredientGroup } = convertTextToIngredientGroup(stepsText);
 
+        this.setState({ isTextEditor: false });
+
         this.props.onGroupChange(newIngredientGroup);
     }
 
@@ -80,53 +85,84 @@ export class IngredientGroupEditor extends React.Component<
         const ingredientGroups = this.props.ingredientGroups ?? [];
         return (
             <div>
-                <H3>ingredients</H3>
+                <div className="flex" style={{ alignItems: "center" }}>
+                    <H3 style={{ marginBottom: 0 }}>ingredients</H3>
+                    <div style={{ marginLeft: 10 }}>
+                        {!isControlled && (
+                            <Button
+                                text="show text editor"
+                                active={this.state.isTextEditor}
+                                onClick={() => this.toggleTextEditor()}
+                                icon="edit"
+                                minimal
+                            />
+                        )}
+                    </div>
+                </div>
 
-                <TextArea
-                    value={textToShow}
-                    onChange={handleStringChange((textToShow) =>
-                        this.handleTextChange(textToShow)
-                    )}
-                    fill
-                    style={{ height: 170 }}
-                />
+                {this.state.isTextEditor && (
+                    <div>
+                        <TextArea
+                            value={textToShow}
+                            onChange={handleStringChange((textToShow) =>
+                                this.handleTextChange(textToShow)
+                            )}
+                            fill
+                            style={{ height: 170 }}
+                        />
 
-                {!isControlled && (
-                    <Button
-                        text="process text area"
-                        onClick={() => this.processTextToSteps()}
-                    />
+                        {!isControlled && (
+                            <Button
+                                text="convert text"
+                                onClick={() => this.processTextToSteps()}
+                            />
+                        )}
+                    </div>
                 )}
 
-                {ingredientGroups.map((grp, index) => (
-                    <div key={index}>
-                        <H4>
-                            <EditableText
-                                onChange={(newValue) =>
+                {!this.state.isTextEditor &&
+                    ingredientGroups.map((grp, index) => (
+                        <div key={index}>
+                            <H4>
+                                <EditableText
+                                    onChange={(newValue) =>
+                                        this.handleGroupEdit(
+                                            index,
+                                            "title",
+                                            newValue
+                                        )
+                                    }
+                                    value={grp.title}
+                                    placeholder="group name"
+                                ></EditableText>
+                            </H4>
+
+                            <IngredientsEditor
+                                ingredientsList={grp.ingredients}
+                                onIngredientsChange={(newSteps) =>
                                     this.handleGroupEdit(
                                         index,
-                                        "title",
-                                        newValue
+                                        "ingredients",
+                                        newSteps
                                     )
                                 }
-                                value={grp.title}
-                            ></EditableText>
-                        </H4>
-
-                        <IngredientsEditor
-                            ingredientsList={grp.ingredients}
-                            onIngredientsChange={(newSteps) =>
-                                this.handleGroupEdit(
-                                    index,
-                                    "ingredients",
-                                    newSteps
-                                )
-                            }
-                        />
-                    </div>
-                ))}
+                            />
+                        </div>
+                    ))}
             </div>
         );
+    }
+
+    private toggleTextEditor() {
+        this.setState((prevState) => {
+            // get the current ingredients and convert to string
+
+            const textToShow = convertIngredientGroupsToString(
+                this.props.ingredientGroups ?? []
+            );
+
+            return { isTextEditor: !prevState.isTextEditor, textToShow };
+        });
     }
 
     private handleTextChange(textToShow: string): void {
@@ -136,6 +172,19 @@ export class IngredientGroupEditor extends React.Component<
             this.setState({ textToShow });
         }
     }
+}
+
+export function convertIngredientGroupsToString(
+    ingGroups: IngredientGroup[]
+): string {
+    return ingGroups
+        .map((grp) => {
+            const ingStr = grp.ingredients
+                .map((ing) => ingredientToString(ing))
+                .join("\n");
+            return `[${grp.title}]\n${ingStr}`;
+        })
+        .join("\n");
 }
 
 export function convertTextToIngredientGroup(stepsText: string) {
@@ -174,7 +223,7 @@ export function convertTextToIngredientGroup(stepsText: string) {
             // create a default group to hold first step
 
             activeGroup = {
-                title: "group",
+                title: "",
                 ingredients: [],
             };
             newIngredientGroup.push(activeGroup);

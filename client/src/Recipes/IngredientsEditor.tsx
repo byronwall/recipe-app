@@ -1,11 +1,10 @@
 import { Button, HTMLTable, InputGroup, NumericInput } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
-
+import { GLOBAL_DATA_LAYER } from "..";
 import { handleStringChange } from "../helpers";
 import { IngredientAmount } from "../models";
 import { IngredientChooser } from "./IngredientChooser";
-import { GLOBAL_DATA_LAYER } from "..";
 
 interface IngredientsEditorProps {
     ingredientsList: IngredientAmount[];
@@ -64,12 +63,9 @@ export class IngredientsEditor extends React.Component<
     }
 
     render() {
-        const newIngredient = this.state.newIngredient;
         return (
             <div>
-                <p>IngredientsEditor</p>
-
-                <HTMLTable>
+                <HTMLTable striped condensed bordered>
                     <thead>
                         <tr>
                             <th>amount</th>
@@ -82,7 +78,7 @@ export class IngredientsEditor extends React.Component<
                     <tbody>
                         {this.props.ingredientsList.map((inAmt, index) => (
                             <tr key={index}>
-                                <td>
+                                <td style={{ width: 120 }}>
                                     <NumericInput
                                         value={inAmt.amount}
                                         onValueChange={(newVal) =>
@@ -92,6 +88,7 @@ export class IngredientsEditor extends React.Component<
                                                 newVal
                                             )
                                         }
+                                        fill
                                     />
                                 </td>
 
@@ -105,6 +102,7 @@ export class IngredientsEditor extends React.Component<
                                                 unit
                                             )
                                         )}
+                                        fill
                                     />
                                 </td>
                                 <td>
@@ -135,6 +133,7 @@ export class IngredientsEditor extends React.Component<
                                                     modifier
                                                 )
                                         )}
+                                        fill
                                     />
                                 </td>
                                 <td>
@@ -144,31 +143,23 @@ export class IngredientsEditor extends React.Component<
                                         onClick={() =>
                                             this.removeIngredient(index)
                                         }
+                                        minimal
                                     />
                                 </td>
                             </tr>
                         ))}
                         <tr>
-                            <td>
-                                <NumericInput
-                                    value={newIngredient.amount}
-                                    onValueChange={(newVal) =>
-                                        this.handleNewIngredientAmountEdit(
-                                            "amount",
-                                            newVal
-                                        )
-                                    }
-                                />
-                            </td>
+                            <td></td>
                             <td></td>
                             <td></td>
                             <td></td>
                             <td>
                                 <Button
                                     icon="plus"
-                                    text="add"
+                                    text="add blank"
                                     intent="primary"
                                     onClick={() => this.addNewToRecipe()}
+                                    minimal
                                 />
                             </td>
                         </tr>

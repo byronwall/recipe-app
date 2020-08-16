@@ -1,19 +1,11 @@
-import {
-    Button,
-    Card,
-    FormGroup,
-    InputGroup,
-    H4,
-    HTMLTable,
-} from "@blueprintjs/core";
+import { H3, H4, HTMLTable, InputGroup } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
-
+import { GLOBAL_DATA_LAYER } from ".";
 import { handleStringChange } from "./helpers";
+import { IngredientViewEdit } from "./Ingredients/IngredientViewEdit";
 import { SuggestedIngredients } from "./Ingredients/SuggestedIngredients";
 import { Ingredient, Recipe } from "./models";
-import { IngredientViewEdit } from "./Ingredients/IngredientViewEdit";
-import { GLOBAL_DATA_LAYER } from ".";
 
 interface IngredientsProps {
     ingredients: Ingredient[];
@@ -92,54 +84,17 @@ export class Ingredients extends React.Component<
     }
 
     render() {
-        console.log("ingred render", this.state.filteredIngredients);
         return (
             <div>
-                <p>Ingredients</p>
-
-                <Card>
-                    <b>add new ingredient</b>
-
-                    <FormGroup label="name">
-                        <InputGroup
-                            placeholder="name"
-                            value={this.state.newIngredient.name}
-                            onChange={handleStringChange((name) =>
-                                this.handleIngredientEdit("name", name)
-                            )}
-                        />
-                    </FormGroup>
-
-                    <FormGroup label="PLU">
-                        <InputGroup
-                            placeholder="plu"
-                            value={this.state.newIngredient.plu}
-                            onChange={handleStringChange((plu) =>
-                                this.handleIngredientEdit("plu", plu)
-                            )}
-                        />
-                    </FormGroup>
-
-                    <Button
-                        text="save"
-                        intent="primary"
-                        onClick={() =>
-                            this.props.onSaveNewIngredient(
-                                this.state.newIngredient
-                            )
-                        }
-                    />
-                </Card>
+                <H3>ingredients</H3>
 
                 <SuggestedIngredients
                     ingredients={this.props.ingredients}
                     recipes={this.props.recipes}
                 />
 
-                <Card>
-                    <H4>
-                        current ingredients ({this.props.ingredients.length})
-                    </H4>
+                <div style={{ marginTop: 10 }}>
+                    <H4>all ingredients</H4>
 
                     <InputGroup
                         value={this.state.searchText}
@@ -179,7 +134,7 @@ export class Ingredients extends React.Component<
                             </tbody>
                         </HTMLTable>
                     </div>
-                </Card>
+                </div>
             </div>
         );
     }

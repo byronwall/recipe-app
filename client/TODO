@@ -2,11 +2,9 @@
     Recipes:
         ☐ Close recipe overlay on save @5m
         ☐ Resolve performance issue with ingredients @20m
-        ☐ Hide the non-text inputs initially - do the process automatically @20m
         ☐ Allow recipe list to sort by date (or name) @20m
 
     Ingredients:
-        ☐ Hide or remove the `add new` option @10m
         ☐ Provide a standard name for units - convert all in one shot @10m
 
     Meal Plan:        
@@ -19,9 +17,6 @@
         ☐ Group by recipe @15m
         ☐ Figure out better layout for mobile @20m
         ☐ Aisle selector needs to provide drop down @15m
-
-    UX Cleanup:
-        ☐ Make this list!! @60m
 
     Other items:
         ☐ Need to reset scroll on the recipe viewer @10m
