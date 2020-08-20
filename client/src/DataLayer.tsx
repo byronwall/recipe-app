@@ -203,7 +203,10 @@ export class DataLayer extends Container<DataLayerState> {
         newDb.recipes.forEach((rec) =>
             rec.ingredientGroups.forEach((grp) =>
                 grp.ingredients.forEach((ing) => {
-                    goodMods.push(ing.modifier);
+                    // prevent really long modifiers from breaking things
+                    if (ing.modifier.length < 10) {
+                        goodMods.push(ing.modifier);
+                    }
                     goodUnits.push(ing.unit);
                 })
             )

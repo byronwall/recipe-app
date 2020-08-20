@@ -7417,6 +7417,11 @@ normalize.css@^8.0.1:
   resolved "https://registry.yarnpkg.com/normalize.css/-/normalize.css-8.0.1.tgz#9b98a208738b9cc2634caacbc42d131c97487bf3"
   integrity sha512-qizSNPO93t1YUuUhP22btGOo3chcvDFqFaj2TRybP0DMxkHOCTYwp3n34fel4a31ORXy4m1Xq0Gyqpb5m33qIg==
 
+nosleep.js@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/nosleep.js/-/nosleep.js-0.11.0.tgz#4e03af6751d7a969ceade0c45a1b481887b2b0c2"
+  integrity sha512-Ewb7YpPJ6t1IAiMoXM5vWBMomqVFD0wUXXzUfE+kGftXxXFXqLPV3Aq6Iggxxm568tMVptrlXLw5BPMzEgOK6A==
+
 npm-run-path@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/npm-run-path/-/npm-run-path-2.0.2.tgz#35a9232dfa35d7067b4cb2ddf2357b1871536c5f"

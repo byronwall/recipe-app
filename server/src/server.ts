@@ -360,7 +360,14 @@ export class Server {
       // find that type...
     });
 
-    const indexPaths = ["/", "/recipe/:id", "/plan", "/list"];
+    const indexPaths = [
+      "/",
+      "/recipe/:id",
+      "/plan",
+      "/list",
+      "/recipes",
+      "/ingredients",
+    ];
     app.get(indexPaths, function (req, res) {
       res.sendFile(path.join(staticPath, "index.html"));
     });

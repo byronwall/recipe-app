@@ -1,5 +1,6 @@
 import { Button, Checkbox, H2, H3, H5 } from "@blueprintjs/core";
 import _ from "lodash";
+import NoSleep from "nosleep.js";
 import React from "react";
 import SplitPane from "react-split-pane";
 import { GLOBAL_DATA_LAYER } from "..";
@@ -18,6 +19,7 @@ interface RecipeViewerState {
     isEditMode: boolean;
 
     isCookingMode: boolean;
+    isScreenLockedOn: boolean;
 
     stepsComplete: StringHash;
     ingredientsComplete: StringHash;
@@ -27,6 +29,8 @@ export class RecipeViewer extends React.Component<
     RecipeViewerProps,
     RecipeViewerState
 > {
+    noSleep = new NoSleep();
+
     constructor(props: RecipeViewerProps) {
         super(props);
 
@@ -35,10 +39,15 @@ export class RecipeViewer extends React.Component<
             isCookingMode: false,
             ingredientsComplete: {},
             stepsComplete: {},
+            isScreenLockedOn: false,
         };
     }
 
     componentDidMount() {}
+
+    componentWillUnmount() {
+        this.noSleep.disable();
+    }
 
     componentDidUpdate(
         prevProps: RecipeViewerProps,
@@ -107,11 +116,15 @@ export class RecipeViewer extends React.Component<
                                     index,
                                     idx
                                 );
+                                const ingredientText = ingredientToString(
+                                    inAmt,
+                                    ingredient
+                                );
                                 return (
                                     <li key={idx}>
                                         {this.state.isCookingMode ? (
                                             <Checkbox
-                                                label={ingredient?.name}
+                                                label={ingredientText}
                                                 checked={isComplete}
                                                 onChange={handleBooleanChange(
                                                     (newValue) =>
@@ -128,10 +141,7 @@ export class RecipeViewer extends React.Component<
                                                 }}
                                             />
                                         ) : (
-                                            ingredientToString(
-                                                inAmt,
-                                                ingredient
-                                            )
+                                            ingredientText
                                         )}
                                     </li>
                                 );
@@ -235,6 +245,13 @@ export class RecipeViewer extends React.Component<
                         >
                             <Button
                                 minimal
+                                icon="flash"
+                                active={this.state.isScreenLockedOn}
+                                onClick={() => this.toggleLockedScreen()}
+                            />
+
+                            <Button
+                                minimal
                                 icon="cross"
                                 intent="danger"
                                 onClick={() =>
@@ -276,6 +293,18 @@ export class RecipeViewer extends React.Component<
 
         return this.state.isEditMode ? recipeEdit : recipeView;
     }
+    toggleLockedScreen() {
+        this.setState((prevState) => {
+            const newLock = !prevState.isScreenLockedOn;
+
+            if (newLock) {
+                this.noSleep.enable();
+            } else {
+                this.noSleep.disable();
+            }
+            return { isScreenLockedOn: newLock };
+        });
+    }
     saveEdits(newRecipe: Recipe): void {
         console.log("new recipe", newRecipe);
         GLOBAL_DATA_LAYER.saveNewRecipe(newRecipe);
@@ -291,5 +320,9 @@ export function ingredientToString(
         ingredient = GLOBAL_DATA_LAYER.getIngredient(inAmt.ingredientId);
     }
 
-    return `${inAmt.amount} (${inAmt.unit}) ${ingredient?.name}, ${inAmt.modifier}`;
+    const unit = inAmt.unit === "" ? "" : " " + inAmt.unit;
+
+    const modifier = inAmt.modifier === "" ? "" : ", " + inAmt.modifier;
+
+    return `${inAmt.amount}${unit} ${ingredient?.name}${modifier}`;
 }
