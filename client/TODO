@@ -1,11 +1,16 @@
  :
+    General:
+        ☐ Add some auth to prevent unintended access @20m
+
     Recipes:
         ☐ Close recipe overlay on save @5m
         ☐ Resolve performance issue with ingredients @20m
         ☐ Allow recipe list to sort by date (or name) @20m
+        ☐ Prompt for the ingredient fixer after creating a new recipe @20m
 
     Ingredients:
         ☐ Provide a standard name for units - convert all in one shot @10m
+        ☐ If the name contains "ground" don't suggest that modifier (and similar) @20m
 
     Meal Plan:        
         ☐ Allow recipe to be marked as made - grey out @10m        
@@ -17,6 +22,7 @@
         ☐ Group by recipe @15m
         ☐ Figure out better layout for mobile @20m
         ☐ Aisle selector needs to provide drop down @15m
+        ☐ Need to remove from shopping list when an ingredient is deleted @10m
 
     Other items:
         ☐ Need to reset scroll on the recipe viewer @10m

@@ -32,6 +32,8 @@ interface DataLayerState {
     fuzzyIngredientNames: FuzzySet;
     fuzzyIngredientMods: FuzzySet;
     fuzzyIngredientUnits: FuzzySet;
+
+    hasKrogerAuth: boolean;
 }
 
 export class DataLayer extends Container<DataLayerState> {
@@ -47,6 +49,7 @@ export class DataLayer extends Container<DataLayerState> {
             fuzzyIngredientNames: FuzzySet(),
             fuzzyIngredientMods: FuzzySet(),
             fuzzyIngredientUnits: FuzzySet(),
+            hasKrogerAuth: false,
         };
 
         // after init-- fire off db query
@@ -227,6 +230,9 @@ export class DataLayer extends Container<DataLayerState> {
             fuzzyIngredientNames: ingredFuzzy,
             fuzzyIngredientMods: modFuzzy,
             fuzzyIngredientUnits: unitsFuzzy,
+            hasKrogerAuth:
+                newDb.userAccessToken !== undefined &&
+                newDb.userAccessToken !== "",
         });
     }
 

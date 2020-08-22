@@ -90,6 +90,25 @@ export class RecipeViewer extends React.Component<
         return items[key] ?? false;
     }
 
+    toggleLockedScreen() {
+        this.setState((prevState) => {
+            const newLock = !prevState.isScreenLockedOn;
+
+            if (newLock) {
+                this.noSleep.enable();
+            } else {
+                this.noSleep.disable();
+            }
+            return { isScreenLockedOn: newLock };
+        });
+    }
+    saveEdits(newRecipe: Recipe): void {
+        console.log("new recipe", newRecipe);
+        GLOBAL_DATA_LAYER.saveNewRecipe(newRecipe);
+
+        this.setState({ isEditMode: false });
+    }
+
     render() {
         const recipe = this.props.recipe;
 
@@ -292,24 +311,6 @@ export class RecipeViewer extends React.Component<
         );
 
         return this.state.isEditMode ? recipeEdit : recipeView;
-    }
-    toggleLockedScreen() {
-        this.setState((prevState) => {
-            const newLock = !prevState.isScreenLockedOn;
-
-            if (newLock) {
-                this.noSleep.enable();
-            } else {
-                this.noSleep.disable();
-            }
-            return { isScreenLockedOn: newLock };
-        });
-    }
-    saveEdits(newRecipe: Recipe): void {
-        console.log("new recipe", newRecipe);
-        GLOBAL_DATA_LAYER.saveNewRecipe(newRecipe);
-
-        this.setState({ isEditMode: false });
     }
 }
 export function ingredientToString(

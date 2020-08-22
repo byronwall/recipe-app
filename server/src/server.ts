@@ -1,30 +1,42 @@
+import axios, { AxiosRequestConfig } from "axios";
+import * as dotenv from "dotenv";
 import express from "express";
 import { existsSync, readFileSync, writeFileSync } from "fs";
+import _ from "lodash";
 import * as path from "path";
 
 import {
-  Ingredient,
-  Recipe,
-  SavedDb,
-  PlannedMeal,
+  API_IngredParam,
+  API_KrogerSearch,
+  API_MealPlanUpdate,
   API_RecipeIngredParam,
   API_RecipeParam,
-  API_IngredParam,
-  ShoppingListItem,
   API_ShoppingAdd,
   API_ShoppingDelete,
-  API_ShoppingUpdate,
-  API_MealPlanUpdate,
   API_ShoppingRemoveRecipe,
+  API_ShoppingUpdate,
+  Ingredient,
+  PlannedMeal,
+  Recipe,
+  SavedDb,
+  KrogerAuthResponse,
+  API_KrogerAddCart,
+  KrogerProduct,
 } from "./model";
-import _ from "lodash";
+
+dotenv.config();
+
+console.log("ENV", process.env);
 
 let db: SavedDb = {
   recipes: [],
   ingredients: [],
   plannedMeals: [],
   shoppingList: [],
+  userAccessToken: "",
+  userRefreshToken: "",
 };
+
 const dbPath = "db.json";
 
 let idIngredient = 1;
@@ -90,8 +102,90 @@ interface NewRecipeReq {
   newIngredients: Ingredient[];
 }
 
+function formUrlEncoded(x: any) {
+  return Object.keys(x).reduce(
+    (p, c) => p + `&${c}=${encodeURIComponent(x[c])}`,
+    ""
+  );
+}
+
 export class Server {
-  static start() {
+  async doOAuth(isRefresh: boolean, accessCode?: string) {
+    const config = {
+      client: {
+        id: process.env["client_id"] ?? "",
+        secret: process.env["client_secret"] ?? "",
+      },
+      auth: {
+        tokenHost: "https://api.kroger.com/v1/connect/oauth2/token",
+      },
+    };
+
+    const code = Buffer.from(
+      config.client.id + ":" + config.client.secret
+    ).toString("base64");
+
+    interface KrogerAuthRequest {
+      scope: string;
+      grant_type: string;
+
+      code?: string;
+      refresh_token?: string;
+      redirect_uri?: string;
+    }
+
+    const dataObj: KrogerAuthRequest = {
+      scope: "product.compact cart.basic:write",
+      grant_type: "",
+    };
+
+    if (isRefresh) {
+      dataObj.grant_type = "refresh_token";
+      dataObj.refresh_token = db.userRefreshToken;
+    } else {
+      dataObj.grant_type = "authorization_code";
+      dataObj.code = accessCode;
+      dataObj.redirect_uri = process.env["redirect_uri"];
+    }
+
+    const postConfig: AxiosRequestConfig = {
+      method: "post",
+      url: "https://api.kroger.com/v1/connect/oauth2/token",
+      data: formUrlEncoded(dataObj),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${code}`,
+      },
+    };
+    try {
+      const postRes = await axios.post<KrogerAuthResponse>(
+        postConfig.url ?? "",
+        postConfig.data,
+        postConfig
+      );
+
+      console.log("post res", postRes);
+
+      if (postRes.data !== undefined) {
+        db.userAccessToken = postRes.data.access_token;
+        db.userRefreshToken = postRes.data.refresh_token;
+
+        saveDatabase();
+
+        return true;
+      }
+    } catch (error) {
+      console.log("***** error happened");
+      console.log(accessCode, isRefresh);
+      console.error(error.response.status);
+      console.error(error.response.statusText);
+      console.error(error.response.data);
+    }
+
+    return false;
+  }
+
+  start() {
     const app = express();
 
     app.use(express.json());
@@ -360,6 +454,76 @@ export class Server {
       // find that type...
     });
 
+    app.post("/api/kroger_search", async (req: any, res: any) => {
+      console.log(new Date(), "kroger search", req.body);
+
+      const results = await this.doKrogerSearch(
+        req.body as API_KrogerSearch,
+        true
+      );
+
+      res.json(results);
+
+      // find that type...
+    });
+
+    app.post("/api/kroger_add_cart", async (req: any, res: any) => {
+      console.log(new Date(), "kroger add to cart", req.body);
+
+      const postData = req.body as API_KrogerAddCart;
+
+      const url = `https://api.kroger.com/v1/cart/add`;
+
+      // pass the data straight through
+      try {
+        const addResponse = await axios.put(url, postData, {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${db.userAccessToken}`,
+          },
+        });
+
+        res.json({ result: true });
+        return;
+      } catch (error) {
+        console.log(
+          error.response.status,
+          error.response.statusText,
+          error.response.data,
+          db.userAccessToken
+        );
+      }
+
+      res.json({ result: false });
+
+      // find that type...
+    });
+
+    interface AuthParams {
+      code: string;
+    }
+
+    app.get("/auth", async (req: any, res: any) => {
+      // this handles the incoming OAuth request
+      console.log(new Date(), "kroger auth", req.query);
+
+      const postData = req.query as AuthParams;
+
+      // turn that code into an access token
+
+      const code = postData.code;
+
+      console.log("auth code", code);
+
+      const didAuth = await this.doOAuth(false, code);
+
+      if (didAuth) {
+        res.redirect(req.protocol + "://" + req.get("host") + "/list");
+      } else {
+        res.send("error occurred during auth");
+      }
+    });
+
     const indexPaths = [
       "/",
       "/recipe/:id",
@@ -378,6 +542,45 @@ export class Server {
     // set up the auto download
 
     console.log("server is running on port: " + port);
+  }
+
+  private async doKrogerSearch(
+    postData: API_KrogerSearch,
+    shouldRetry: boolean
+  ): Promise<KrogerProduct[]> {
+    const url = encodeURI(
+      `https://api.kroger.com/v1/products?filter.term=${postData.filterTerm}&filter.locationId=02100086`
+    );
+
+    try {
+      const search = await axios.get<KrogerProduct[]>(url, {
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${db.userAccessToken}`,
+        },
+      });
+
+      if (search.data) {
+        console.log("data", search.data);
+      }
+      return search.data;
+    } catch (error) {
+      console.log("**** error on search");
+      console.log(error.response.status);
+      console.log(error.response.statusText);
+      console.log(error.response.data);
+
+      if (error.response.data.error === "invalid_token" && shouldRetry) {
+        // attempt 1 retry after a refresh
+        const isAuth = await this.doOAuth(true);
+
+        if (isAuth) {
+          return await this.doKrogerSearch(postData, false);
+        }
+      }
+
+      return [];
+    }
   }
 }
 function addIngredientWithNewId(ingredient: Ingredient) {

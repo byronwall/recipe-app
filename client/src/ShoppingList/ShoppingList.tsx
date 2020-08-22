@@ -4,13 +4,32 @@ import React from "react";
 import { GLOBAL_DATA_LAYER } from "..";
 import { handleBooleanChange } from "../helpers";
 import { ActionsComp } from "../MealPlan/MealPlan";
-import { Ingredient, Recipe, ShoppingListItem } from "../models";
+import {
+    Ingredient,
+    KrogerAuthStatus,
+    Recipe,
+    ShoppingListItem,
+} from "../models";
+import { OverlayCenter } from "../OverlayCenter";
+import { KrogerSearch } from "./KrogerSearch";
 
 interface ShoppingListProps {
     shoppingList: ShoppingListItem[];
 }
 interface ShoppingListState {
     liveShoppingList: ShoppingListItem[];
+
+    krogerAuthStatus: KrogerAuthStatus;
+
+    isCartAddOpen: boolean;
+    addCartSearchTerm: string;
+    addCartItem: ShoppingListItem | undefined;
+}
+
+function getDefaultKrogerAuthStatus(): KrogerAuthStatus {
+    return {
+        isAuthorized: false,
+    };
 }
 
 export class ShoppingList extends React.Component<
@@ -20,10 +39,18 @@ export class ShoppingList extends React.Component<
     constructor(props: ShoppingListProps) {
         super(props);
 
-        this.state = { liveShoppingList: this.props.shoppingList };
+        this.state = {
+            liveShoppingList: this.props.shoppingList,
+            krogerAuthStatus: getDefaultKrogerAuthStatus(),
+            isCartAddOpen: false,
+            addCartSearchTerm: "",
+            addCartItem: undefined,
+        };
     }
 
-    componentDidMount() {}
+    componentDidMount() {
+        // TODO: get auth status from server
+    }
 
     componentDidUpdate(
         prevProps: ShoppingListProps,
@@ -134,6 +161,18 @@ export class ShoppingList extends React.Component<
 
         return (
             <div>
+                <OverlayCenter
+                    isOpen={this.state.isCartAddOpen}
+                    onClose={() => this.setState({ isCartAddOpen: false })}
+                    height={400}
+                    width={600}
+                >
+                    <KrogerSearch
+                        initialSearch={this.state.addCartSearchTerm}
+                        onMarkComplete={() => this.handleCartComplete()}
+                    />
+                </OverlayCenter>
+
                 <ActionsComp>
                     <Button
                         text="delete all"
@@ -151,6 +190,15 @@ export class ShoppingList extends React.Component<
                         minimal
                     />
                 </ActionsComp>
+
+                {!GLOBAL_DATA_LAYER.state.hasKrogerAuth && (
+                    <div>
+                        <Button
+                            text="authorize with Kroger"
+                            onClick={() => this.handleKrogerAuthReq()}
+                        />
+                    </div>
+                )}
 
                 <H2>shopping list</H2>
 
@@ -272,25 +320,33 @@ export class ShoppingList extends React.Component<
                                             </div>
 
                                             <div>
-                                                <EditableText
-                                                    defaultValue={ing?.aisle}
-                                                    onConfirm={(newAisle) =>
-                                                        this.updateAisle(
-                                                            ing,
-                                                            newAisle
-                                                        )
-                                                    }
-                                                />
+                                                {item.isBought ? null : (
+                                                    <>
+                                                        <EditableText
+                                                            defaultValue={
+                                                                ing?.aisle
+                                                            }
+                                                            onConfirm={(
+                                                                newAisle
+                                                            ) =>
+                                                                this.updateAisle(
+                                                                    ing,
+                                                                    newAisle
+                                                                )
+                                                            }
+                                                        />
 
-                                                <a
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    href={`https://www.kroger.com/pl/all/00?query=${encodeURIComponent(
-                                                        ing?.name ?? ""
-                                                    )}&searchType=natural`}
-                                                >
-                                                    ...
-                                                </a>
+                                                        <Button
+                                                            icon="shopping-cart"
+                                                            onClick={() =>
+                                                                this.handleSearchUpdate(
+                                                                    ing?.name,
+                                                                    item
+                                                                )
+                                                            }
+                                                        />
+                                                    </>
+                                                )}
                                             </div>
                                         </React.Fragment>
                                     );
@@ -301,6 +357,51 @@ export class ShoppingList extends React.Component<
                 })}
             </div>
         );
+    }
+    handleCartComplete(): void {
+        // take the active item and mark it bought
+
+        if (this.state.addCartItem === undefined) {
+            return;
+        }
+
+        const newActiveItem = _.cloneDeep(this.state.addCartItem);
+
+        newActiveItem.isBought = true;
+
+        GLOBAL_DATA_LAYER.updateShoppingListItem([newActiveItem]);
+
+        this.setState({ isCartAddOpen: false });
+    }
+    handleSearchUpdate(name: string | undefined, item: ShoppingListItem) {
+        if (name === undefined) {
+            return;
+        }
+
+        this.setState({
+            addCartSearchTerm: name,
+            isCartAddOpen: true,
+            addCartItem: item,
+        });
+    }
+    handleKrogerAuthReq() {
+        const SCOPES = "product.compact cart.basic:write";
+
+        const CLIENT_ID =
+            "wallfamilyrecipes-2bfdb9e9acc3f08e8b36969f52705be43361553067000321029";
+
+        const REDIRECT_URI =
+            window.location.protocol + "//" + window.location.host + "/auth";
+
+        const url =
+            "https://api.kroger.com/v1/connect/oauth2/authorize?scope=" +
+            encodeURIComponent(SCOPES) +
+            "&response_type=code&client_id=" +
+            encodeURIComponent(CLIENT_ID) +
+            "&redirect_uri=" +
+            encodeURIComponent(REDIRECT_URI);
+
+        window.open(url);
     }
     removeRecipeFromShoppingList(id: number) {
         GLOBAL_DATA_LAYER.removeRecipeFromShoppingList(id);
