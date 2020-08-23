@@ -47,14 +47,16 @@ export class AisleChooser extends React.Component<
                     your edits will be saved when you hit enter or click off the
                     text box
                 </p>
-                <EditableText
-                    defaultValue={ing?.aisle}
-                    onConfirm={(newAisle) =>
-                        this.props.onNewAisle(ing, newAisle)
-                    }
-                    selectAllOnFocus
-                    isEditing={true}
-                />
+                <H5>
+                    <EditableText
+                        defaultValue={ing?.aisle}
+                        onConfirm={(newAisle) =>
+                            this.props.onNewAisle(ing, newAisle)
+                        }
+                        selectAllOnFocus
+                        isEditing={true}
+                    />
+                </H5>
             </div>
         );
     }

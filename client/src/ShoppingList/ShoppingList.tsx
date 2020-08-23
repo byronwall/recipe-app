@@ -183,7 +183,7 @@ export class ShoppingList extends React.Component<
                     isOpen={this.state.isAisleEditOpen}
                     onClose={() => this.setState({ isAisleEditOpen: false })}
                     height={200}
-                    width={300}
+                    width={250}
                 >
                     <AisleChooser
                         item={this.state.itemEditAisle}
@@ -229,16 +229,16 @@ export class ShoppingList extends React.Component<
                 <H3>recipes included</H3>
 
                 {activeRecipes.map((recipe) => (
-                    <div key={recipe?.id}>
+                    <div key={recipe.id}>
                         <Button
                             minimal
                             intent="danger"
                             icon="cross"
                             onClick={() =>
-                                this.removeRecipeFromShoppingList(recipe?.id)
+                                this.removeRecipeFromShoppingList(recipe.id)
                             }
                         />
-                        {recipe?.name}
+                        {recipe.name}
                     </div>
                 ))}
 
@@ -320,6 +320,12 @@ export class ShoppingList extends React.Component<
                                                               style={{
                                                                   fontStyle:
                                                                       "italic",
+                                                                  textOverflow:
+                                                                      "ellipsis",
+                                                                  overflow:
+                                                                      "hidden",
+                                                                  whiteSpace:
+                                                                      "nowrap",
                                                               }}
                                                           >
                                                               {
