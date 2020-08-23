@@ -18,12 +18,12 @@
     "@types/nedb": "^1.8.10",
     "@types/node": "^14.0.23",
     "@types/request-promise": "^4.1.46",
+    "@types/lodash": "^4.14.159",
     "nodemon": "^2.0.4",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.6"
   },
   "dependencies": {
-    "@types/lodash": "^4.14.159",
     "axios": "^0.19.2",
     "concurrently": "^5.2.0",
     "dotenv": "^8.2.0",
