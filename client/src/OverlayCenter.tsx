@@ -43,6 +43,7 @@ export class OverlayCenter extends React.Component<
                         flexDirection: "column",
                         justifyContent: "center",
                         alignItems: "center",
+                        padding: 10,
                     }}
                     onClick={() => this.props.onClose()}
                 >
@@ -50,6 +51,8 @@ export class OverlayCenter extends React.Component<
                         style={{
                             width: this.props.width,
                             height: this.props.height,
+                            maxWidth: "calc(100vw - 20px)",
+                            maxHeight: "calc(100vh - 20px)",
 
                             overflow: "auto",
                         }}

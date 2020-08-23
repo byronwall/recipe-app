@@ -99,19 +99,30 @@ export class KrogerItemDisplay extends React.Component<
                             }
                         />
                     </div>
-                    {prod.description} | {prod.items[0].size} |{prod.productId}{" "}
-                    | {prod.items[0].price?.regular ?? ""}|{" "}
-                    {prod.items[0].price?.promo ?? ""}
+                    {getProductString(prod)}
                 </div>
 
                 <img
                     style={{ flexShrink: 0 }}
                     src={
-                        prod.images[0].sizes.find((c) => c.size === "small")
-                            ?.url
+                        prod.images
+                            .filter((c) => c.featured)[0]
+                            .sizes.find((c) => c.size === "small")?.url
                     }
                 />
             </div>
         );
     }
+}
+
+function getProductString(prod: KrogerProduct) {
+    let price: number | undefined = prod.items[0].price?.promo ?? 0;
+
+    if (price <= 0) {
+        price = prod.items[0].price?.regular ?? undefined;
+    }
+
+    const priceStr = price === undefined ? "" : " | $" + price.toFixed(2);
+
+    return `${prod.description} | ${prod.items[0].size}${priceStr}`;
 }

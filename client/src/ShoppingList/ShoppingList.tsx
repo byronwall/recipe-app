@@ -1,4 +1,4 @@
-import { Button, Checkbox, EditableText, H2, H3 } from "@blueprintjs/core";
+import { Button, Checkbox, H2, H3 } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
 import { GLOBAL_DATA_LAYER } from "..";
@@ -11,6 +11,7 @@ import {
     ShoppingListItem,
 } from "../models";
 import { OverlayCenter } from "../OverlayCenter";
+import { AisleChooser } from "./AisleChooser";
 import { KrogerSearch } from "./KrogerSearch";
 
 interface ShoppingListProps {
@@ -24,6 +25,9 @@ interface ShoppingListState {
     isCartAddOpen: boolean;
     addCartSearchTerm: string;
     addCartItem: ShoppingListItem | undefined;
+
+    isAisleEditOpen: boolean;
+    itemEditAisle: ShoppingListItem | undefined;
 }
 
 function getDefaultKrogerAuthStatus(): KrogerAuthStatus {
@@ -45,6 +49,8 @@ export class ShoppingList extends React.Component<
             isCartAddOpen: false,
             addCartSearchTerm: "",
             addCartItem: undefined,
+            isAisleEditOpen: false,
+            itemEditAisle: undefined,
         };
     }
 
@@ -173,6 +179,24 @@ export class ShoppingList extends React.Component<
                     />
                 </OverlayCenter>
 
+                <OverlayCenter
+                    isOpen={this.state.isAisleEditOpen}
+                    onClose={() => this.setState({ isAisleEditOpen: false })}
+                    height={200}
+                    width={300}
+                >
+                    <AisleChooser
+                        item={this.state.itemEditAisle}
+                        onNewAisle={(ing, newAisle) => {
+                            this.setState({
+                                isAisleEditOpen: false,
+                                itemEditAisle: undefined,
+                            });
+                            this.updateAisle(ing, newAisle);
+                        }}
+                    />
+                </OverlayCenter>
+
                 <ActionsComp>
                     <Button
                         text="delete all"
@@ -183,7 +207,7 @@ export class ShoppingList extends React.Component<
                     />
 
                     <Button
-                        text="delete checked"
+                        text="delete bought"
                         intent="warning"
                         onClick={() => this.clearBoughtItems()}
                         icon="small-cross"
@@ -226,7 +250,9 @@ export class ShoppingList extends React.Component<
                             key={key}
                             style={{
                                 display: "grid",
-                                gridTemplateColumns: "200px 200px 200px auto",
+                                gridTemplateColumns:
+                                    "repeat(4,minmax(0px,1fr))",
+                                gridGap: "1rem",
                             }}
                         >
                             <div style={{ gridColumn: "1/5" }}>
@@ -278,23 +304,9 @@ export class ShoppingList extends React.Component<
                                                     ? null
                                                     : _item.map((inAmt) => (
                                                           <p key={inAmt.id}>
-                                                              {
+                                                              {getIngredientText(
                                                                   inAmt
-                                                                      .ingredientAmount
-                                                                      .amount
-                                                              }{" "}
-                                                              {
-                                                                  inAmt
-                                                                      .ingredientAmount
-                                                                      .unit
-                                                              }{" "}
-                                                              (
-                                                              {
-                                                                  inAmt
-                                                                      .ingredientAmount
-                                                                      .modifier
-                                                              }
-                                                              )
+                                                              )}
                                                           </p>
                                                       ))}
                                             </div>
@@ -322,28 +334,27 @@ export class ShoppingList extends React.Component<
                                             <div>
                                                 {item.isBought ? null : (
                                                     <>
-                                                        <EditableText
-                                                            defaultValue={
-                                                                ing?.aisle
-                                                            }
-                                                            onConfirm={(
-                                                                newAisle
-                                                            ) =>
-                                                                this.updateAisle(
-                                                                    ing,
-                                                                    newAisle
+                                                        <Button
+                                                            icon="edit"
+                                                            onClick={() =>
+                                                                this.handleNewAisle(
+                                                                    item
                                                                 )
                                                             }
+                                                            minimal
+                                                            small
                                                         />
-
                                                         <Button
-                                                            icon="shopping-cart"
+                                                            icon="search"
                                                             onClick={() =>
                                                                 this.handleSearchUpdate(
                                                                     ing?.name,
                                                                     item
                                                                 )
                                                             }
+                                                            intent="primary"
+                                                            minimal
+                                                            small
                                                         />
                                                     </>
                                                 )}
@@ -357,6 +368,12 @@ export class ShoppingList extends React.Component<
                 })}
             </div>
         );
+    }
+    handleNewAisle(item: ShoppingListItem) {
+        this.setState({
+            isAisleEditOpen: true,
+            itemEditAisle: item,
+        });
     }
     handleCartComplete(): void {
         // take the active item and mark it bought
@@ -407,13 +424,27 @@ export class ShoppingList extends React.Component<
         GLOBAL_DATA_LAYER.removeRecipeFromShoppingList(id);
     }
     updateAisle(ing: Ingredient | undefined, newAisle: string): void {
-        if (ing === undefined) {
+        if (ing === undefined || ing.aisle === newAisle) {
             return;
         }
 
         const newIng = _.cloneDeep(ing);
+
         newIng.aisle = newAisle;
 
         GLOBAL_DATA_LAYER.updateIngredient(newIng);
     }
+}
+
+function getIngredientText(inAmt: ShoppingListItem) {
+    const amount = inAmt.ingredientAmount.amount;
+    let unit = inAmt.ingredientAmount.unit;
+    if (unit !== "") {
+        unit = " " + unit;
+    }
+    let modifier = inAmt.ingredientAmount.modifier;
+    if (modifier !== "") {
+        modifier = " (" + modifier + ")";
+    }
+    return `${amount}${unit}${modifier}`;
 }
