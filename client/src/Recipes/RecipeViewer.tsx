@@ -220,9 +220,12 @@ export class RecipeViewer extends React.Component<
         const recipeView = (
             <div>
                 <ActionsComp>
-                    <Button text="add to shopping list" minimal />
-                    <Button text="add to meal plan" minimal />
-                    <Button text="delete" minimal />
+                    <Button
+                        text="add to shopping list"
+                        minimal
+                        onClick={() => this.handleAddToShopping()}
+                    />
+
                     <Button
                         text="edit me"
                         onClick={() => this.setState({ isEditMode: true })}
@@ -311,6 +314,22 @@ export class RecipeViewer extends React.Component<
         );
 
         return this.state.isEditMode ? recipeEdit : recipeView;
+    }
+    handleAddToShopping() {
+        // take the current recipe id and add to shopping list
+        if (this.props.recipe === undefined) {
+            return;
+        }
+
+        const shouldAdd = window.confirm(
+            "Do you want to add to shopping list?"
+        );
+
+        if (!shouldAdd) {
+            return;
+        }
+
+        GLOBAL_DATA_LAYER.addRecipesToShoppingList([this.props.recipe]);
     }
 }
 export function ingredientToString(

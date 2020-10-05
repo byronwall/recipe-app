@@ -5,7 +5,9 @@ import { GLOBAL_DATA_LAYER } from "..";
 import { handleBooleanChange } from "../helpers";
 import { ActionsComp } from "../MealPlan/MealPlan";
 import {
+    getNewId,
     Ingredient,
+    IngredientAmount,
     KrogerAuthStatus,
     Recipe,
     ShoppingListItem,
@@ -33,6 +35,15 @@ interface ShoppingListState {
 function getDefaultKrogerAuthStatus(): KrogerAuthStatus {
     return {
         isAuthorized: false,
+    };
+}
+
+export function getLooseIngredientAmount(): IngredientAmount {
+    return {
+        amount: 1,
+        ingredientId: -getNewId(),
+        modifier: "",
+        unit: "",
     };
 }
 
@@ -213,6 +224,13 @@ export class ShoppingList extends React.Component<
                         icon="small-cross"
                         minimal
                     />
+
+                    <Button
+                        text="add loose item"
+                        onClick={() => this.handleLooseAdd()}
+                        icon="plus"
+                        minimal
+                    />
                 </ActionsComp>
 
                 {!GLOBAL_DATA_LAYER.state.hasKrogerAuth && (
@@ -295,7 +313,8 @@ export class ShoppingList extends React.Component<
                                                                 : "bold",
                                                         }}
                                                     >
-                                                        {ing?.name}
+                                                        {item.textOnly ??
+                                                            ing?.name}
                                                     </span>
                                                 }
                                             />
@@ -354,7 +373,8 @@ export class ShoppingList extends React.Component<
                                                             icon="search"
                                                             onClick={() =>
                                                                 this.handleSearchUpdate(
-                                                                    ing?.name,
+                                                                    item.textOnly ??
+                                                                        ing?.name,
                                                                     item
                                                                 )
                                                             }
@@ -374,6 +394,27 @@ export class ShoppingList extends React.Component<
                 })}
             </div>
         );
+    }
+
+    /**
+     * Method to add a single "loose" item to the shopping list
+     */
+    handleLooseAdd() {
+        const name = window.prompt("What item do you want to add?");
+
+        if (!name) {
+            return;
+        }
+
+        const newItem: ShoppingListItem = {
+            id: getNewId(),
+            ingredientAmount: getLooseIngredientAmount(),
+            isBought: false,
+            recipeId: -1,
+            textOnly: name,
+        };
+
+        GLOBAL_DATA_LAYER.addItemsToShoppingList([newItem]);
     }
     handleNewAisle(item: ShoppingListItem) {
         this.setState({

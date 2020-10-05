@@ -1,230 +1,233 @@
 export interface Recipe {
-    name: string;
-    description: string;
-    id: number;
+  name: string;
+  description: string;
+  id: number;
 
-    ingredientGroups: IngredientGroup[];
-    stepGroups: RecipeStepGroup[];
+  ingredientGroups: IngredientGroup[];
+  stepGroups: RecipeStepGroup[];
 }
 
 export interface IngredientGroup {
-    title: string;
-    ingredients: IngredientAmount[];
+  title: string;
+  ingredients: IngredientAmount[];
 }
 
 export interface RecipeStepGroup {
-    title: string;
-    steps: RecipeStep[];
+  title: string;
+  steps: RecipeStep[];
 }
 
 export function createDefaultRecipe(): Recipe {
-    return {
-        name: "",
-        description: "",
-        id: getNewId(),
-        ingredientGroups: [{ title: "group", ingredients: [] }],
-        stepGroups: [{ title: "group", steps: [] }],
-    };
+  return {
+    name: "",
+    description: "",
+    id: getNewId(),
+    ingredientGroups: [{ title: "group", ingredients: [] }],
+    stepGroups: [{ title: "group", steps: [] }],
+  };
 }
 
 let idExtra = 0;
 export function getNewId() {
-    return new Date().getTime() - idExtra++;
+  return new Date().getTime() - idExtra++;
 }
 
 export interface RecipeStep {
-    description: string;
-    duration: string;
+  description: string;
+  duration: string;
 }
 
 export interface IngredientAmount {
-    ingredientId: number;
-    amount: string | number;
-    unit: string;
-    modifier: string;
+  ingredientId: number;
+  amount: string | number;
+  unit: string;
+  modifier: string;
 }
 
 export interface Ingredient {
-    name: string;
+  name: string;
 
-    comments: string; // meant to hold extra detail beyond the name
+  comments: string; // meant to hold extra detail beyond the name
 
-    plu: string;
-    id: number;
+  plu: string;
+  id: number;
 
-    aisle: string;
+  aisle: string;
 
-    isGoodName: boolean;
+  isGoodName: boolean;
 }
 
 export interface SavedDb {
-    recipes: Recipe[];
-    ingredients: Ingredient[];
-    plannedMeals: PlannedMeal[];
-    shoppingList: ShoppingListItem[];
+  recipes: Recipe[];
+  ingredients: Ingredient[];
+  plannedMeals: PlannedMeal[];
+  shoppingList: ShoppingListItem[];
 
-    userAccessToken: string;
-    userRefreshToken: string;
+  userAccessToken: string;
+  userRefreshToken: string;
 }
 
 export interface PlannedMeal {
-    date: Date;
-    recipeId: number;
-    scale: number;
+  date: Date;
+  recipeId: number;
+  scale: number;
 
-    isMade: boolean;
-    isOnShoppingList: boolean;
+  isMade: boolean;
+  isOnShoppingList: boolean;
 
-    id: number;
+  id: number;
 }
 
 export interface API_RecipeIngredParam {
-    recipe: Recipe;
-    ingredient: Ingredient;
+  recipe: Recipe;
+  ingredient: Ingredient;
 }
 export interface API_RecipeParam {
-    recipe: Recipe;
+  recipe: Recipe;
 }
 
 export interface API_IngredParam {
-    ingredient: Ingredient;
+  ingredient: Ingredient;
 }
 
 export interface API_ShoppingRemoveRecipe {
-    recipeId: number;
+  recipeId: number;
 }
 
 export interface API_KrogerSearch {
-    filterTerm: string;
+  filterTerm: string;
 }
 
 export interface API_KrogerAddCart {
-    items: KrogerAddCartItem[];
+  items: KrogerAddCartItem[];
 }
 
 export interface API_KrogerAddCartResponse {
-    result: boolean;
+  result: boolean;
 }
 
 export interface KrogerAddCartItem {
-    upc: string;
-    quantity: number;
+  upc: string;
+  quantity: number;
 }
 
 export interface ShoppingListItem {
-    id: number;
-    ingredientAmount: IngredientAmount;
-    recipeId: number; // will be -1 if "loose"
-    isBought: boolean;
+  id: number;
+  ingredientAmount: IngredientAmount;
+  recipeId: number; // will be -1 if "loose"
+  isBought: boolean;
+
+  /** Field used when there is not corresponding ingredient or recipe */
+  textOnly?: string;
 }
 
 export interface API_ShoppingAdd {
-    items: ShoppingListItem[];
+  items: ShoppingListItem[];
 }
 export interface API_ShoppingDelete {
-    ids: number[];
+  ids: number[];
 }
 
 export interface API_ShoppingUpdate {
-    item: ShoppingListItem[];
+  item: ShoppingListItem[];
 }
 
 export interface API_MealPlanUpdate {
-    meals: PlannedMeal[];
+  meals: PlannedMeal[];
 }
 
 export interface API_KrogerAccessRes {
-    expires_in: number;
-    access_token: string;
-    token_type: string;
+  expires_in: number;
+  access_token: string;
+  token_type: string;
 }
 
 export interface AisleLocation {
-    bayNumber: string;
-    description: string;
-    number: string;
-    numberOfFacings: string;
-    sequenceNumber: string;
-    side: string;
-    shelfNumber: string;
-    shelfPositionInBay: string;
+  bayNumber: string;
+  description: string;
+  number: string;
+  numberOfFacings: string;
+  sequenceNumber: string;
+  side: string;
+  shelfNumber: string;
+  shelfPositionInBay: string;
 }
 
 export interface ItemInformation {
-    depth: string;
-    height: string;
-    width: string;
+  depth: string;
+  height: string;
+  width: string;
 }
 
 export interface Temperature {
-    indicator: string;
-    heatSensitive: string;
+  indicator: string;
+  heatSensitive: string;
 }
 export interface Size {
-    size: string;
-    url: string;
+  size: string;
+  url: string;
 }
 
 export interface Image {
-    perspective: string;
-    sizes: Size[];
-    featured?: boolean;
+  perspective: string;
+  sizes: Size[];
+  featured?: boolean;
 }
 
 export interface KrogerProduct {
-    productId: string;
-    upc: string;
-    aisleLocations: any[];
-    brand: string;
-    categories: string[];
-    description: string;
-    images: Image[];
-    items: Item[];
-    itemInformation: ItemInformation;
-    temperature: Temperature;
+  productId: string;
+  upc: string;
+  aisleLocations: any[];
+  brand: string;
+  categories: string[];
+  description: string;
+  images: Image[];
+  items: Item[];
+  itemInformation: ItemInformation;
+  temperature: Temperature;
 }
 export interface Fulfillment {
-    curbside: boolean;
-    delivery: boolean;
-    inStore: boolean;
-    shipToHome: boolean;
+  curbside: boolean;
+  delivery: boolean;
+  inStore: boolean;
+  shipToHome: boolean;
 }
 export interface Price {
-    regular: number;
-    promo: number;
+  regular: number;
+  promo: number;
 }
 
 export interface Item {
-    itemId: string;
-    favorite: boolean;
-    fulfillment: Fulfillment;
-    price?: Price;
-    size: string;
-    soldBy: string;
+  itemId: string;
+  favorite: boolean;
+  fulfillment: Fulfillment;
+  price?: Price;
+  size: string;
+  soldBy: string;
 }
 export interface Pagination {
-    total: string;
-    start: string;
-    limit: string;
+  total: string;
+  start: string;
+  limit: string;
 }
 
 export interface Meta {
-    pagination: Pagination;
-    warnings: string[];
+  pagination: Pagination;
+  warnings: string[];
 }
 
 export interface API_KrogerProdRes {
-    data: KrogerProduct[];
-    meta: Meta;
+  data: KrogerProduct[];
+  meta: Meta;
 }
 
 export interface KrogerAuthStatus {
-    isAuthorized: boolean;
+  isAuthorized: boolean;
 }
 
 export interface KrogerAuthResponse {
-    expires_in: number;
-    access_token: string;
-    token_type: string;
-    refresh_token: string;
+  expires_in: number;
+  access_token: string;
+  token_type: string;
+  refresh_token: string;
 }

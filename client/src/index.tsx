@@ -1,18 +1,19 @@
-import "./index.css";
+import { Toaster } from "@blueprintjs/core";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 import "@blueprintjs/select/lib/css/blueprint-select.css";
-
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "unstated";
-
 import { App } from "./App";
 import { DataLayer } from "./DataLayer";
+import "./index.css";
 import * as serviceWorker from "./serviceWorker";
 
 export const GLOBAL_DATA_LAYER = new DataLayer();
+
+export const toastHolder = Toaster.create({ maxToasts: 1 });
 
 ReactDOM.render(
     <React.StrictMode>

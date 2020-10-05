@@ -3,6 +3,7 @@ import Fuse from "fuse.js";
 import FuzzySet from "fuzzyset";
 import _ from "lodash";
 import { Container } from "unstated";
+import { toastHolder } from ".";
 import {
     API_IngredParam,
     API_MealPlanUpdate,
@@ -158,6 +159,11 @@ export class DataLayer extends Container<DataLayerState> {
         const postData: API_ShoppingAdd = {
             items: newItems,
         };
+
+        toastHolder.show({
+            message: "Shopping list updated",
+            intent: "success",
+        });
 
         const res = await axios.post("/api/add_shopping", postData);
 
