@@ -1,6 +1,6 @@
 # Family Recipe App
 
-This is a simple web app for tracking family recipes. Built using Node.JS and React with TypeScript. App is used regularly by family to simplify our lives in the kitchen. App was built after repeated frustration and up-sells by other commercial offerings.
+This is a simple web app for tracking family recipes. Built using Node.JS and React with TypeScript. App is used regularly by family to simplify our lives in the kitchen. Integrates with the Kroger API to support item searches and adding to a shopping cart.
 
 Features:
 
