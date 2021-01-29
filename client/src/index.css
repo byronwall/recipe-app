@@ -1,3 +1,7 @@
+.list-group-item > div {
+    margin: 5px;
+    min-width: 100px;
+}
 .flex {
     display: flex;
 }

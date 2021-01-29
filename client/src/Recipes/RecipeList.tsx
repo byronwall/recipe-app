@@ -4,7 +4,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { GLOBAL_DATA_LAYER } from "..";
 import { handleStringChange } from "../helpers";
-import { ActionsComp } from "../MealPlan/MealPlan";
+import { ActionsComp } from "../MealPlan/ActionsComp";
 import { Ingredient, Recipe } from "../models";
 import { OverlayCenter } from "../OverlayCenter";
 import { NewRecipe } from "./NewRecipe";

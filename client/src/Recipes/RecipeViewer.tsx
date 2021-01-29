@@ -5,7 +5,7 @@ import React from "react";
 import SplitPane from "react-split-pane";
 import { GLOBAL_DATA_LAYER } from "..";
 import { handleBooleanChange } from "../helpers";
-import { ActionsComp } from "../MealPlan/MealPlan";
+import { ActionsComp } from "../MealPlan/ActionsComp";
 import { Ingredient, IngredientAmount, Recipe } from "../models";
 import { EditRecipe } from "./EditRecipe";
 

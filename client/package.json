@@ -28,7 +28,7 @@
         "react-dom": "^16.13.1",
         "react-json-view": "^1.19.1",
         "react-router-dom": "^5.2.0",
-        "react-scripts": "3.4.1",
+        "react-scripts": "4.0.1",
         "react-split-pane": "^0.1.91",
         "typescript": "~3.7.2",
         "unstated": "^2.1.1"

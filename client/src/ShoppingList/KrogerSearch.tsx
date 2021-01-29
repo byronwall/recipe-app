@@ -1,4 +1,4 @@
-import { Button, FormGroup, InputGroup, Spinner } from "@blueprintjs/core";
+import { Button, InputGroup, Spinner } from "@blueprintjs/core";
 import axios from "axios";
 import React from "react";
 import { handleStringChange } from "../helpers";
@@ -72,16 +72,16 @@ export class KrogerSearch extends React.Component<
 
     render() {
         return (
-            <div>
-                <div>
-                    <Button
-                        text="mark item purchased"
-                        onClick={() => this.props.onMarkComplete()}
-                    />
-                </div>
+            <div style={{ display: "flex" }}>
+                <div style={{ flexShrink: 0 }}>
+                    <div>
+                        <Button
+                            text="mark purchased"
+                            onClick={() => this.props.onMarkComplete()}
+                        />
+                    </div>
 
-                <div className="flex">
-                    <FormGroup>
+                    <div style={{ maxWidth: 130 }}>
                         <InputGroup
                             placeholder="search term"
                             value={this.state.searchTerm}
@@ -89,14 +89,18 @@ export class KrogerSearch extends React.Component<
                                 this.setState({ searchTerm })
                             )}
                         />
-                    </FormGroup>
+                    </div>
 
-                    <Button text="search" onClick={() => this.handleSearch()} />
+                    <Button
+                        text="search"
+                        onClick={() => this.handleSearch()}
+                        icon="search"
+                    />
                 </div>
 
                 {this.state.isLoading && <Spinner />}
 
-                <div className="flex" style={{ flexWrap: "wrap" }}>
+                <div className="flex">
                     {this.state.searchResults.map((prod) => (
                         <KrogerItemDisplay key={prod.upc} product={prod} />
                     ))}

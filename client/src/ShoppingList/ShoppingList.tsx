@@ -1,9 +1,8 @@
-import { Button, Checkbox, H2, H3 } from "@blueprintjs/core";
+import { Button, H2, H3 } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
 import { GLOBAL_DATA_LAYER } from "..";
-import { handleBooleanChange } from "../helpers";
-import { ActionsComp } from "../MealPlan/MealPlan";
+import { ActionsComp } from "../MealPlan/ActionsComp";
 import {
     getNewId,
     Ingredient,
@@ -15,6 +14,7 @@ import {
 import { OverlayCenter } from "../OverlayCenter";
 import { AisleChooser } from "./AisleChooser";
 import { KrogerSearch } from "./KrogerSearch";
+import { ShoppingListGroup } from "./ShoppingListGroup";
 
 interface ShoppingListProps {
     shoppingList: ShoppingListItem[];
@@ -63,6 +63,10 @@ export class ShoppingList extends React.Component<
             isAisleEditOpen: false,
             itemEditAisle: undefined,
         };
+
+        this.handleItemUpdate = this.handleItemUpdate.bind(this);
+        this.handleNewAisle = this.handleNewAisle.bind(this);
+        this.handleSearchUpdate = this.handleSearchUpdate.bind(this);
     }
 
     componentDidMount() {
@@ -264,132 +268,14 @@ export class ShoppingList extends React.Component<
                     const groupOfItems = listGroups[key];
 
                     return (
-                        <div
+                        <ShoppingListGroup
                             key={key}
-                            style={{
-                                display: "grid",
-                                gridTemplateColumns:
-                                    "repeat(4,minmax(0px,1fr))",
-                                gridGap: "1rem",
-                            }}
-                        >
-                            <div style={{ gridColumn: "1/5" }}>
-                                <H3>{key}</H3>
-                            </div>
-
-                            {_.map(
-                                _.groupBy(
-                                    groupOfItems,
-                                    (c) => c.ingredientAmount.ingredientId
-                                ),
-                                (_item, ingredientId) => {
-                                    // TODO: process subsequent items to combine amounts
-                                    // TODO: show the recipe name
-                                    // TODO: show the amount and modifier details
-                                    const item = _item[0];
-                                    const ing = GLOBAL_DATA_LAYER.getIngredient(
-                                        item.ingredientAmount.ingredientId
-                                    );
-                                    return (
-                                        <React.Fragment key={ingredientId}>
-                                            <Checkbox
-                                                checked={item.isBought}
-                                                onChange={handleBooleanChange(
-                                                    (isBought) =>
-                                                        this.handleItemUpdate(
-                                                            item.id,
-                                                            "isBought",
-                                                            isBought
-                                                        )
-                                                )}
-                                                labelElement={
-                                                    <span
-                                                        style={{
-                                                            color: item.isBought
-                                                                ? "grey"
-                                                                : undefined,
-                                                            fontWeight: item.isBought
-                                                                ? undefined
-                                                                : "bold",
-                                                        }}
-                                                    >
-                                                        {item.textOnly ??
-                                                            ing?.name}
-                                                    </span>
-                                                }
-                                            />
-                                            <div>
-                                                {item.isBought
-                                                    ? null
-                                                    : _item.map((inAmt) => (
-                                                          <p key={inAmt.id}>
-                                                              {getIngredientText(
-                                                                  inAmt
-                                                              )}
-                                                          </p>
-                                                      ))}
-                                            </div>
-
-                                            <div>
-                                                {item.isBought
-                                                    ? null
-                                                    : _item.map((inAmt) => (
-                                                          <p
-                                                              key={inAmt.id}
-                                                              style={{
-                                                                  fontStyle:
-                                                                      "italic",
-                                                                  textOverflow:
-                                                                      "ellipsis",
-                                                                  overflow:
-                                                                      "hidden",
-                                                                  whiteSpace:
-                                                                      "nowrap",
-                                                              }}
-                                                          >
-                                                              {
-                                                                  GLOBAL_DATA_LAYER.getRecipe(
-                                                                      inAmt.recipeId
-                                                                  )?.name
-                                                              }
-                                                          </p>
-                                                      ))}
-                                            </div>
-
-                                            <div>
-                                                {item.isBought ? null : (
-                                                    <>
-                                                        <Button
-                                                            icon="edit"
-                                                            onClick={() =>
-                                                                this.handleNewAisle(
-                                                                    item
-                                                                )
-                                                            }
-                                                            minimal
-                                                            small
-                                                        />
-                                                        <Button
-                                                            icon="search"
-                                                            onClick={() =>
-                                                                this.handleSearchUpdate(
-                                                                    item.textOnly ??
-                                                                        ing?.name,
-                                                                    item
-                                                                )
-                                                            }
-                                                            intent="primary"
-                                                            minimal
-                                                            small
-                                                        />
-                                                    </>
-                                                )}
-                                            </div>
-                                        </React.Fragment>
-                                    );
-                                }
-                            )}
-                        </div>
+                            groupOfItems={groupOfItems}
+                            sectionName={key}
+                            handleItemUpdate={this.handleItemUpdate}
+                            handleNewAisle={this.handleNewAisle}
+                            handleSearchUpdate={this.handleSearchUpdate}
+                        />
                     );
                 })}
             </div>
@@ -483,7 +369,7 @@ export class ShoppingList extends React.Component<
     }
 }
 
-function getIngredientText(inAmt: ShoppingListItem) {
+export function getIngredientText(inAmt: ShoppingListItem) {
     const amount = inAmt.ingredientAmount.amount;
     let unit = inAmt.ingredientAmount.unit;
     if (unit !== "") {

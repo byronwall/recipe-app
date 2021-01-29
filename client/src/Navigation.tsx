@@ -1,10 +1,6 @@
-import { Alignment, H5 as _H5, Navbar, NavbarGroup } from "@blueprintjs/core";
-import React, { FunctionComponent } from "react";
+import { Alignment, H5, Navbar, NavbarGroup } from "@blueprintjs/core";
+import React from "react";
 import { NavLink } from "react-router-dom";
-
-const H5: FunctionComponent = (props) => (
-    <_H5 style={{ marginBottom: 0 }}>{props.children}</_H5>
-);
 
 export class Navigation extends React.Component {
     render() {

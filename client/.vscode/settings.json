@@ -1,5 +1,14 @@
 {
-    "cSpell.words": ["Ingred", "blueprintjs"],
+    "cSpell.words": [
+        "Ingred",
+        "blueprintjs",
+        "browserslist",
+        "fontawesome",
+        "fortawesome",
+        "fuzzyset",
+        "nosleep",
+        "rsync"
+    ],
     "eslint.enable": true,
 
     "editor.codeActionsOnSave": {

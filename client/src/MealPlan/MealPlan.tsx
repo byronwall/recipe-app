@@ -1,8 +1,9 @@
-import { Button, H2, H4 } from "@blueprintjs/core";
+import { Button, H2 } from "@blueprintjs/core";
 import _ from "lodash";
-import React, { FunctionComponent } from "react";
+import React from "react";
 import { GLOBAL_DATA_LAYER } from "..";
 import { getNewId, PlannedMeal, Recipe, ShoppingListItem } from "../models";
+import { ActionsComp } from "./ActionsComp";
 import { MealPlanDay } from "./MealPlanDay";
 import { RecipeChooser } from "./RecipeChooser";
 
@@ -24,13 +25,6 @@ interface MealPlanViewSettings {
 
     daysToShow: Date[];
 }
-
-export const ActionsComp: FunctionComponent = (props) => (
-    <div className="flex" style={{ alignItems: "center" }}>
-        <H4 style={{ marginBottom: 0, color: "#5C7080" }}>actions</H4>
-        <div style={{ marginLeft: 10 }}>{props.children}</div>
-    </div>
-);
 
 const msInDay = 24 * 3600 * 1000;
 
