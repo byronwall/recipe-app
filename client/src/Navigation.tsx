@@ -36,6 +36,13 @@ export class Navigation extends React.Component {
                     >
                         <H5>list</H5>
                     </NavLink>
+                    <NavLink
+                        to="/browse"
+                        className="bp3-button bp3-minimal  header-link"
+                        activeClassName="bp3-active bp3-intent-primary"
+                    >
+                        <H5>browse</H5>
+                    </NavLink>
                 </NavbarGroup>
             </Navbar>
         );

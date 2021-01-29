@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "server": "nodemon --watch 'src/*.ts' -e ts --exec \"yarn build_run\"",
+    "server": "DEBUG=recipe:* nodemon --watch 'src/*.ts' -e ts --exec \"yarn build_run\"",
     "client": "cd ../client && yarn start",
     "dev": "concurrently \"yarn server\" \"yarn client\"",
     "start": "node build/index.js",
@@ -15,17 +15,21 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.7",
+    "@types/lodash": "^4.14.159",
     "@types/nedb": "^1.8.10",
     "@types/node": "^14.0.23",
     "@types/request-promise": "^4.1.46",
-    "@types/lodash": "^4.14.159",
     "nodemon": "^2.0.4",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.6"
   },
   "dependencies": {
+    "@types/cheerio": "^0.22.23",
+    "@types/debug": "^4.1.5",
     "axios": "^0.19.2",
+    "cheerio": "^1.0.0-rc.5",
     "concurrently": "^5.2.0",
+    "debug": "^4.3.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "lodash": "^4.17.19",

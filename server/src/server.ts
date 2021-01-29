@@ -1,4 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios";
+import debug from "debug";
+
 import * as dotenv from "dotenv";
 import express from "express";
 import { existsSync, readFileSync, writeFileSync } from "fs";
@@ -22,11 +24,15 @@ import {
   KrogerAuthResponse,
   API_KrogerAddCart,
   KrogerProduct,
+  RecipeSearchParams,
 } from "./model";
+import { getRecipeDataForQuery } from "./recipe_search";
 
 dotenv.config();
 
-console.log("ENV", process.env);
+const log = debug("recipe:server");
+
+log("ENV", process.env);
 
 let db: SavedDb = {
   recipes: [],
@@ -85,7 +91,7 @@ function removeMissingIngredientsFromDb() {
   db.ingredients = db.ingredients.filter((c) => {
     const wasFound = goodIngIds[c.id];
     if (!wasFound) {
-      console.log("missing ingred", c);
+      log("missing ingred", c);
     }
     return wasFound;
   });
@@ -164,7 +170,7 @@ export class Server {
         postConfig
       );
 
-      console.log("post res", postRes);
+      log("post res", postRes);
 
       if (postRes.data !== undefined) {
         db.userAccessToken = postRes.data.access_token;
@@ -175,8 +181,8 @@ export class Server {
         return true;
       }
     } catch (error) {
-      console.log("***** error happened");
-      console.log(accessCode, isRefresh);
+      log("***** error happened");
+      log(accessCode, isRefresh);
       console.error(error.response.status);
       console.error(error.response.statusText);
       console.error(error.response.data);
@@ -195,19 +201,19 @@ export class Server {
     const staticPath = path.join(__dirname, "static");
     // this assumes that the app is running in server/build
 
-    console.log("static path", staticPath);
+    log("static path", staticPath);
 
     app.use(express.static(staticPath));
 
     app.get("/api/db", (req: any, res: any) => {
-      console.log(new Date(), "db");
+      log(new Date(), "db");
       res.json({ ...db });
 
       // find that type...
     });
 
     app.post("/api/add_recipe", (req: any, res: any) => {
-      console.log(new Date(), "add recipe");
+      log(new Date(), "add recipe");
 
       const { recipe, newIngredients } = req.body as NewRecipeReq;
 
@@ -252,7 +258,7 @@ export class Server {
 
     app.post("/api/update_recipe_ingredient", (req: any, res: any) => {
       const postData = req.body as API_RecipeIngredParam;
-      console.log(new Date(), "update recipe and ingredient", postData);
+      log(new Date(), "update recipe and ingredient", postData);
 
       const recipeIndex = db.recipes.findIndex(
         (c) => c.id === postData.recipe.id
@@ -281,7 +287,7 @@ export class Server {
 
     app.post("/api/update_ingredient", (req: any, res: any) => {
       const postData = req.body as API_IngredParam;
-      console.log(new Date(), "update recipe and ingredient", postData);
+      log(new Date(), "update recipe and ingredient", postData);
 
       const ingredientIndex = db.ingredients.findIndex(
         (c) => c.id === postData.ingredient.id
@@ -298,7 +304,7 @@ export class Server {
 
     app.post("/api/update_recipe", (req: any, res: any) => {
       const postData = req.body as API_RecipeParam;
-      console.log(new Date(), "update recipe and ingredient", postData);
+      log(new Date(), "update recipe and ingredient", postData);
 
       const recipeIndex = db.recipes.findIndex(
         (c) => c.id === postData.recipe.id
@@ -313,7 +319,7 @@ export class Server {
     });
 
     app.post("/api/add_ingredient", (req: any, res: any) => {
-      console.log(new Date(), "add ingredient");
+      log(new Date(), "add ingredient");
 
       const ingredient = req.body as Ingredient;
 
@@ -326,7 +332,7 @@ export class Server {
     });
 
     app.post("/api/add_shopping", (req: any, res: any) => {
-      console.log(new Date(), "add shopping items");
+      log(new Date(), "add shopping items");
 
       const list = req.body as API_ShoppingAdd;
 
@@ -339,7 +345,7 @@ export class Server {
     });
 
     app.post("/api/delete_shopping", (req: any, res: any) => {
-      console.log(new Date(), "delete shopping items");
+      log(new Date(), "delete shopping items");
 
       const list = req.body as API_ShoppingDelete;
 
@@ -352,7 +358,7 @@ export class Server {
     });
 
     app.post("/api/update_shopping", (req: any, res: any) => {
-      console.log(new Date(), "update shopping items");
+      log(new Date(), "update shopping items");
 
       const postData = req.body as API_ShoppingUpdate;
 
@@ -375,7 +381,7 @@ export class Server {
       // find that type...
     });
     app.post("/api/shopping_remove_recipe", (req: any, res: any) => {
-      console.log(new Date(), "remove shopping recipe");
+      log(new Date(), "remove shopping recipe");
 
       const postData = req.body as API_ShoppingRemoveRecipe;
 
@@ -391,7 +397,7 @@ export class Server {
     });
 
     app.post("/api/add_meal", (req: any, res: any) => {
-      console.log(new Date(), "add meal");
+      log(new Date(), "add meal");
 
       const meal = req.body.meal as PlannedMeal;
 
@@ -404,7 +410,7 @@ export class Server {
     });
 
     app.post("/api/update_meals", (req: any, res: any) => {
-      console.log(new Date(), "update meals");
+      log(new Date(), "update meals");
 
       const postData = req.body as API_MealPlanUpdate;
 
@@ -429,7 +435,7 @@ export class Server {
     });
 
     app.post("/api/delete_meal", (req: any, res: any) => {
-      console.log(new Date(), "delete meal");
+      log(new Date(), "delete meal");
 
       const meal = req.body.meal as PlannedMeal;
 
@@ -442,7 +448,7 @@ export class Server {
     });
 
     app.post("/api/delete_recipe", (req: any, res: any) => {
-      console.log(new Date(), "delete meal");
+      log(new Date(), "delete meal");
 
       const id = req.body.id as number;
 
@@ -455,7 +461,7 @@ export class Server {
     });
 
     app.post("/api/kroger_search", async (req: any, res: any) => {
-      console.log(new Date(), "kroger search", req.body);
+      log(new Date(), "kroger search", req.body);
 
       const results = await this.doKrogerSearch(
         req.body as API_KrogerSearch,
@@ -468,7 +474,7 @@ export class Server {
     });
 
     app.post("/api/kroger_add_cart", async (req: any, res: any) => {
-      console.log(new Date(), "kroger add to cart", req.body);
+      log(new Date(), "kroger add to cart", req.body);
 
       const postData = req.body as API_KrogerAddCart;
 
@@ -486,7 +492,7 @@ export class Server {
         res.json({ result: true });
         return;
       } catch (error) {
-        console.log(
+        log(
           error.response.status,
           error.response.statusText,
           error.response.data,
@@ -505,7 +511,7 @@ export class Server {
 
     app.get("/auth", async (req: any, res: any) => {
       // this handles the incoming OAuth request
-      console.log(new Date(), "kroger auth", req.query);
+      log(new Date(), "kroger auth", req.query);
 
       const postData = req.query as AuthParams;
 
@@ -513,7 +519,7 @@ export class Server {
 
       const code = postData.code;
 
-      console.log("auth code", code);
+      log("auth code", code);
 
       const didAuth = await this.doOAuth(false, code);
 
@@ -522,6 +528,18 @@ export class Server {
       } else {
         res.send("error occurred during auth");
       }
+    });
+
+    app.post("/api/recipe_search", async (req: any, res: any) => {
+      log("processing recipe search");
+
+      const postData = req.body as RecipeSearchParams;
+
+      const results = await getRecipeDataForQuery(postData.query);
+
+      log("recipe search results", results);
+
+      res.send(results);
     });
 
     const indexPaths = [
@@ -541,7 +559,7 @@ export class Server {
 
     // set up the auto download
 
-    console.log("server is running on port: " + port);
+    log("server is running on port: " + port);
   }
 
   private async doKrogerSearch(
@@ -561,14 +579,14 @@ export class Server {
       });
 
       if (search.data) {
-        console.log("data", search.data);
+        log("data", search.data);
       }
       return search.data;
     } catch (error) {
-      console.log("**** error on search");
-      console.log(error.response.status);
-      console.log(error.response.statusText);
-      console.log(error.response.data);
+      log("**** error on search");
+      log(error.response.status);
+      log(error.response.statusText);
+      log(error.response.data);
 
       if (error.response.data.error === "invalid_token" && shouldRetry) {
         // attempt 1 retry after a refresh

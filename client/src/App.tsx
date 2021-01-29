@@ -3,6 +3,7 @@ import React from "react";
 import { Route, Switch } from "react-router-dom";
 import { Subscribe } from "unstated";
 import { GLOBAL_DATA_LAYER } from ".";
+import { BrowseRecipes } from "./BrowseRecipes";
 import { DataLayer } from "./DataLayer";
 import { HomePage } from "./HomePage";
 import { Ingredients } from "./Ingredients";
@@ -65,6 +66,9 @@ export class App extends React.Component {
                                     <ShoppingList
                                         shoppingList={data.state.shoppingList}
                                     />
+                                </Route>
+                                <Route path="/browse">
+                                    <BrowseRecipes />
                                 </Route>
 
                                 <Route path="/" exact>
