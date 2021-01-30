@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.2 - 2021-01-29 21:53:29
+
+-   Add support for saving recipes from All Recipes
+
 ## 1.0.1 - 2020-10-04 21:34:21
 
 -   Add support for adding a "loose" item to the shopping list - allows for Kroger search

@@ -6,6 +6,12 @@
     display: flex;
 }
 
+.dotdotdot {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 .grid-center {
     display: grid;
     justify-items: center;

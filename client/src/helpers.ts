@@ -14,3 +14,11 @@ export function handleStringChange(handler: (value: string) => void) {
 export function handleNumberChange(handler: (value: number) => void) {
     return handleStringChange((value) => handler(+value));
 }
+
+export function toPrecisionIfNumber(input: string | number, precision = 2) {
+    if (typeof input === "number") {
+        return input.toPrecision(precision);
+    }
+
+    return input;
+}

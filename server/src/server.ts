@@ -25,8 +25,12 @@ import {
   API_KrogerAddCart,
   KrogerProduct,
   RecipeSearchParams,
+  RecipeDataParams,
 } from "./model";
-import { getRecipeDataForQuery } from "./recipe_search";
+import {
+  getRecipeDataForQuery,
+  getRecipeDataForSingleUrl,
+} from "./recipe_search";
 
 dotenv.config();
 
@@ -538,6 +542,18 @@ export class Server {
       const results = await getRecipeDataForQuery(postData.query);
 
       log("recipe search results", results);
+
+      res.send(results);
+    });
+
+    app.post("/api/recipe_data", async (req: any, res: any) => {
+      log("processing recipe data");
+
+      const postData = req.body as RecipeDataParams;
+
+      const results = await getRecipeDataForSingleUrl(postData.url);
+
+      log("recipe load results", results);
 
       res.send(results);
     });
