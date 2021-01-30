@@ -541,8 +541,6 @@ export class Server {
 
       const results = await getRecipeDataForQuery(postData.query);
 
-      log("recipe search results", results);
-
       res.send(results);
     });
 
@@ -552,8 +550,6 @@ export class Server {
       const postData = req.body as RecipeDataParams;
 
       const results = await getRecipeDataForSingleUrl(postData.url);
-
-      log("recipe load results", results);
 
       res.send(results);
     });
@@ -565,6 +561,7 @@ export class Server {
       "/list",
       "/recipes",
       "/ingredients",
+      "/browse",
     ];
     app.get(indexPaths, function (req, res) {
       res.sendFile(path.join(staticPath, "index.html"));
