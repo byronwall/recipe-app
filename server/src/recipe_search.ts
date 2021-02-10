@@ -3,8 +3,48 @@ import cheerio from "cheerio";
 import debug from "debug";
 
 import { ParsedRecipeData, RecipeSearchData } from "./model";
+import random_recipes from "./random_recipes.json";
+import _ from "lodash";
 
 const log = debug("recipe:search");
+
+const allRecipesWeighted = _.uniqBy(
+  _.shuffle(random_recipes).map((rec) => {
+    return {
+      ...rec,
+      score: Math.log10(Math.max(1, +rec.reviewCount)) * rec.stars,
+    };
+  }),
+  (c) => c.imageUrl
+);
+
+export function getRandomRecipes() {
+  return weighted_random(allRecipesWeighted, "score", 20);
+}
+
+function weighted_random<T>(items: T[], weight_field: keyof T, count: number) {
+  const cumulative_weights: number[] = [];
+  let i = 0;
+  for (i = 0; i < items.length; i++) {
+    const curWeight = +items[i][weight_field];
+    cumulative_weights[i] = curWeight + (cumulative_weights[i - 1] || 0);
+  }
+
+  const results = [];
+  for (let j = 0; j < count; j++) {
+    const random =
+      Math.random() * cumulative_weights[cumulative_weights.length - 1];
+
+    for (i = 0; i < cumulative_weights.length; i++) {
+      if (cumulative_weights[i] > random) {
+        break;
+      }
+    }
+    results.push(items[i]);
+  }
+
+  return results;
+}
 
 export async function getRecipeDataForQuery(
   query: string

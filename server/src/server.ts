@@ -28,6 +28,7 @@ import {
   RecipeDataParams,
 } from "./model";
 import {
+  getRandomRecipes,
   getRecipeDataForQuery,
   getRecipeDataForSingleUrl,
 } from "./recipe_search";
@@ -542,6 +543,14 @@ export class Server {
       const results = await getRecipeDataForQuery(postData.query);
 
       res.send(results);
+    });
+
+    app.get("/api/recipe_search_random", (req: any, res: any) => {
+      log("processing recipe random choices");
+
+      const results = getRandomRecipes();
+
+      res.json(results);
     });
 
     app.post("/api/recipe_data", async (req: any, res: any) => {

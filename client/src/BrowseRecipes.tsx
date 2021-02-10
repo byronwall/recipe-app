@@ -5,8 +5,9 @@ import {
     H2,
     H3,
     H4,
+    Icon,
     InputGroup,
-    Spinner,
+    Spinner
 } from "@blueprintjs/core";
 import axios from "axios";
 import debug from "debug";
@@ -67,6 +68,11 @@ export class BrowseRecipes extends React.Component<
                         />
                     </FormGroup>
                     <Button icon="search" onClick={() => this.handleSearch()} />
+                    <Button
+                    text="20 random items"
+                        icon="random"
+                        onClick={() => this.handleRandomSearch()}
+                    />
                 </div>
 
                 {this.state.isSearching && <Spinner />}
@@ -82,10 +88,17 @@ export class BrowseRecipes extends React.Component<
                                 {item.name}
                             </H3>
 
-                            <H4>
-                                {item.reviewCount} |{" "}
-                                {toPrecisionIfNumber(item.stars)}
+                            <H4
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                }}
+                            >
+                                {item.reviewCount} <Icon icon="comment" /> |{" "}
+                                {toPrecisionIfNumber(item.stars)}{" "}
+                                <Icon icon="star" />
                             </H4>
+
                             <img
                                 src={item.imageUrl}
                                 style={{ maxWidth: "100%" }}
@@ -125,6 +138,19 @@ export class BrowseRecipes extends React.Component<
         };
 
         const res = await axios.post("/api/recipe_search", postData);
+
+        const data = res.data as RecipeSearchData[];
+        log("results", data);
+
+        this.setState({ searchData: data, isSearching: false });
+    }
+    /** handle the search button click */
+    async handleRandomSearch() {
+        // fire off a post to the serve
+
+        this.setState({ isSearching: true });
+
+        const res = await axios.get("/api/recipe_search_random");
 
         const data = res.data as RecipeSearchData[];
         log("results", data);
