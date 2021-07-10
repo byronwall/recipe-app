@@ -1,6 +1,7 @@
 import { Button, InputGroup, Spinner } from "@blueprintjs/core";
 import axios from "axios";
 import React from "react";
+import { globalLog } from "..";
 import { handleStringChange } from "../helpers";
 import { API_KrogerProdRes, API_KrogerSearch, KrogerProduct } from "../models";
 import { KrogerItemDisplay } from "./KrogerItemDisplay";
@@ -16,7 +17,7 @@ interface KrogerSearchState {
     isLoading: boolean;
 }
 
-export class KrogerSearch extends React.Component<
+export class KrogerSearch extends React.PureComponent<
     KrogerSearchProps,
     KrogerSearchState
 > {
@@ -31,29 +32,29 @@ export class KrogerSearch extends React.Component<
     }
 
     componentDidMount() {
-        if (this.state.searchTerm !== "") {
+        const { searchTerm } = this.state;
+        if (searchTerm !== "") {
             this.handleSearch();
         }
     }
 
-    componentDidUpdate(
-        prevProps: KrogerSearchProps,
-        prevState: KrogerSearchState
-    ) {
-        if (this.props.initialSearch !== prevProps.initialSearch) {
-            this.setState({ searchTerm: this.props.initialSearch }, () =>
+    componentDidUpdate(prevProps: KrogerSearchProps) {
+        const { initialSearch } = this.props;
+        if (initialSearch !== prevProps.initialSearch) {
+            this.setState({ searchTerm: initialSearch }, () =>
                 this.handleSearch()
             );
         }
     }
 
-    async handleSearch() {
+    private handleSearch = async () => {
+        const { searchTerm } = this.state;
         // get the search term and hit the api
 
         this.setState({ isLoading: true });
 
         const postData: API_KrogerSearch = {
-            filterTerm: this.state.searchTerm,
+            filterTerm: searchTerm,
         };
 
         const res = await axios.post<API_KrogerProdRes>(
@@ -61,30 +62,34 @@ export class KrogerSearch extends React.Component<
             postData
         );
 
-        if (res.data) {
-            console.log("kroger return", res.data);
+        if (res.data?.data) {
+            globalLog("kroger return", res.data);
 
             this.setState({ searchResults: res.data.data });
+        } else {
+            globalLog("did not receive any search results");
         }
 
         this.setState({ isLoading: false });
-    }
+    };
 
     render() {
+        const { onMarkComplete } = this.props;
+        const { searchTerm, isLoading, searchResults } = this.state;
         return (
             <div style={{ display: "flex" }}>
                 <div style={{ flexShrink: 0 }}>
                     <div>
                         <Button
                             text="mark purchased"
-                            onClick={() => this.props.onMarkComplete()}
+                            onClick={onMarkComplete}
                         />
                     </div>
 
                     <div style={{ maxWidth: 130 }}>
                         <InputGroup
                             placeholder="search term"
-                            value={this.state.searchTerm}
+                            value={searchTerm}
                             onChange={handleStringChange((searchTerm) =>
                                 this.setState({ searchTerm })
                             )}
@@ -93,15 +98,15 @@ export class KrogerSearch extends React.Component<
 
                     <Button
                         text="search"
-                        onClick={() => this.handleSearch()}
+                        onClick={this.handleSearch}
                         icon="search"
                     />
                 </div>
 
-                {this.state.isLoading && <Spinner />}
+                {isLoading && <Spinner />}
 
                 <div className="flex">
-                    {this.state.searchResults.map((prod) => (
+                    {searchResults.map((prod) => (
                         <KrogerItemDisplay key={prod.upc} product={prod} />
                     ))}
                 </div>

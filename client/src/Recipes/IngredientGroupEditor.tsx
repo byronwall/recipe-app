@@ -1,7 +1,7 @@
 import { Button, EditableText, H3, H4, TextArea } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
-import { GLOBAL_DATA_LAYER } from "..";
+import { globalLog, GLOBAL_DATA_LAYER } from "..";
 import { handleStringChange } from "../helpers";
 import { getNewId, Ingredient, IngredientGroup } from "../models";
 import { IngredientsEditor } from "./IngredientsEditor";
@@ -190,7 +190,7 @@ export function convertIngredientGroupsToString(
 export function convertTextToIngredientGroup(stepsText: string) {
     const lines = stepsText.split("\n");
 
-    console.log("split line", lines);
+    globalLog("split line", lines);
 
     const newIngredientGroup: IngredientGroup[] = [];
     const newIngredients: Ingredient[] = [];
@@ -248,7 +248,7 @@ export function convertTextToIngredientGroup(stepsText: string) {
             unit: "",
         });
 
-        console.log(line);
+        globalLog(line);
     }
 
     return { newIngredientGroup, newIngredients };

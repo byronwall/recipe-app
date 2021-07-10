@@ -1,7 +1,7 @@
 import { Button, H2 } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
-import { GLOBAL_DATA_LAYER } from "..";
+import { globalLog, GLOBAL_DATA_LAYER } from "..";
 import { getNewId, PlannedMeal, Recipe, ShoppingListItem } from "../models";
 import { ActionsComp } from "./ActionsComp";
 import { MealPlanDay } from "./MealPlanDay";
@@ -68,7 +68,7 @@ export class MealPlan extends React.Component<MealPlanProps, MealPlanState> {
         const recipes = visibleItems.map((c) =>
             GLOBAL_DATA_LAYER.getRecipe(c.recipeId)
         );
-        console.log("add items", visibleItems, recipes);
+        globalLog("add items", visibleItems, recipes);
 
         const newShopItems: ShoppingListItem[] = [];
 

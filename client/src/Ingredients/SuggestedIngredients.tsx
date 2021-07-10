@@ -1,7 +1,7 @@
 import { H4, HTMLTable, InputGroup } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
-import { GLOBAL_DATA_LAYER } from "..";
+import { globalLog, GLOBAL_DATA_LAYER } from "..";
 import { handleStringChange } from "../helpers";
 import { Ingredient, IngredientAmount, Recipe } from "../models";
 import {
@@ -126,7 +126,7 @@ export class SuggestedIngredients extends React.Component<
             });
         });
 
-        console.log(suggestion, ingredId, recipe);
+        globalLog(suggestion, ingredId, recipe);
 
         if (suggestion.suggestions.newName === undefined) {
             GLOBAL_DATA_LAYER.updateRecipe(newRecipe);

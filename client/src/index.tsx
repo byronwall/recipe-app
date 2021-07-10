@@ -2,6 +2,7 @@ import { Toaster } from "@blueprintjs/core";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 import "@blueprintjs/select/lib/css/blueprint-select.css";
+import debug from "debug";
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
@@ -14,6 +15,8 @@ import * as serviceWorker from "./serviceWorker";
 export const GLOBAL_DATA_LAYER = new DataLayer();
 
 export const toastHolder = Toaster.create({ maxToasts: 1 });
+
+export const globalLog = debug("global");
 
 ReactDOM.render(
     <React.StrictMode>

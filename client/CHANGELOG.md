@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3 - 2021-07-10 07:46:36
+
+-   Resolve error related to no search results
+-   Remove `console.log` calls and replace with `globalLog`
+
 ## 1.0.2 - 2021-01-29 21:53:29
 
 -   Add support for saving recipes from All Recipes

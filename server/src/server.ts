@@ -610,7 +610,7 @@ export class Server {
       log(error.response.statusText);
       log(error.response.data);
 
-      if (error.response.data.error === "invalid_token" && shouldRetry) {
+      if (error.response.data.error === "API-401: Invalid Access Token" && shouldRetry) {
         // attempt 1 retry after a refresh
         const isAuth = await this.doOAuth(true);
 

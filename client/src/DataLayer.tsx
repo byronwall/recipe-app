@@ -3,7 +3,7 @@ import Fuse from "fuse.js";
 import FuzzySet from "fuzzyset";
 import _ from "lodash";
 import { Container } from "unstated";
-import { toastHolder } from ".";
+import { globalLog, toastHolder } from ".";
 import {
     API_IngredParam,
     API_MealPlanUpdate,
@@ -93,7 +93,7 @@ export class DataLayer extends Container<DataLayerState> {
             this.state.ingredients.find((c) => c.id === newIngredient.id) ??
             this.state.newIngredients.find((c) => c.id === newIngredient.id);
 
-        console.log("add new ingred", newIngredient, isExisting);
+        globalLog("add new ingred", newIngredient, isExisting);
 
         // don't need to add if existing
         if (isExisting) {
@@ -155,7 +155,7 @@ export class DataLayer extends Container<DataLayerState> {
     }
 
     async addItemsToShoppingList(newItems: ShoppingListItem[]) {
-        console.log("add new items", newItems);
+        globalLog("add new items", newItems);
         const postData: API_ShoppingAdd = {
             items: newItems,
         };
@@ -191,7 +191,7 @@ export class DataLayer extends Container<DataLayerState> {
     }
 
     reloadFromServer(newDb: SavedDb) {
-        console.log("new datA", newDb);
+        globalLog("new datA", newDb);
 
         // force all dates to be dates
 
@@ -223,7 +223,7 @@ export class DataLayer extends Container<DataLayerState> {
         goodMods = _.uniq(goodMods);
         goodUnits = _.uniq(goodUnits);
 
-        console.log("modifiers", goodMods);
+        globalLog("modifiers", goodMods);
 
         const modFuzzy = FuzzySet(goodMods, false, 3, 9);
         const unitsFuzzy = FuzzySet(goodUnits, false, 3, 9);
@@ -249,7 +249,7 @@ export class DataLayer extends Container<DataLayerState> {
     }
 
     async saveNewRecipe(newRecipe: Recipe, newIngredients?: Ingredient[]) {
-        console.log("save new", this.state.newIngredients);
+        globalLog("save new", this.state.newIngredients);
         const res = await axios.post("/api/add_recipe", {
             recipe: newRecipe,
             newIngredients: newIngredients ?? this.state.newIngredients,
@@ -280,7 +280,7 @@ export class DataLayer extends Container<DataLayerState> {
     private handleResponse(res: AxiosResponse<SavedDb>) {
         const newDb = res.data;
 
-        console.log("new data", newDb);
+        globalLog("new data", newDb);
 
         // this will fire off state updates
         this.reloadFromServer(newDb);

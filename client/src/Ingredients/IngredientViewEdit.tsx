@@ -1,9 +1,9 @@
 import { Button, EditableText, Icon } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
-
-import { Ingredient, Recipe } from "../models";
 import { Link } from "react-router-dom";
+import { globalLog } from "..";
+import { Ingredient, Recipe } from "../models";
 
 interface IngredientViewEditProps {
     ingredient: Ingredient;
@@ -81,7 +81,7 @@ export class IngredientViewEdit extends React.Component<
     }
 
     saveChanges(): void {
-        console.log("save changes", this.state.editIngredient);
+        globalLog("save changes", this.state.editIngredient);
         this.props.onSaveChanges(this.state.editIngredient);
     }
 

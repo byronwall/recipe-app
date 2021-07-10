@@ -1,12 +1,10 @@
-import FuzzySet from "fuzzyset";
 import _ from "lodash";
-
-import { GLOBAL_DATA_LAYER } from "..";
-import { IngredientAmount, Recipe, Ingredient } from "../models";
+import { globalLog, GLOBAL_DATA_LAYER } from "..";
 import {
-    SuggestedIngredient,
     IngredientHash,
+    SuggestedIngredient,
 } from "../Ingredients/SuggestedIngredients";
+import { Ingredient, IngredientAmount, Recipe } from "../models";
 
 export interface NewIngAmt {
     newName: string | undefined;
@@ -27,7 +25,7 @@ export function guessIngredientParts(
 
     // amount is based on the first numbers(s)
 
-    const numberRegex = /(\d+(?:(?: \d+)*[\/.]\d+)?)/;
+    const numberRegex = /(\d+(?:(?: \d+)*[/.]\d+)?)/;
 
     const allIngredients = GLOBAL_DATA_LAYER.state.ingredients;
 
@@ -40,7 +38,7 @@ export function guessIngredientParts(
     }
 
     const match = ingredient.name.match(numberRegex);
-    // console.log("number test", ingredient.name, match);
+    // globalLog("number test", ingredient.name, match);
     if (match) {
         newIngredient.amount = match[0];
     }
@@ -58,7 +56,7 @@ export function guessIngredientParts(
         newIngredient.unit = unitSearch[0][1];
     }
 
-    // console.log("new name", newName, unitSearch);
+    // globalLog("new name", newName, unitSearch);
 
     // now remove the unit from the name
 
@@ -68,7 +66,7 @@ export function guessIngredientParts(
         ""
     ).trim();
 
-    console.log("test unit removal", { newName, newNameWithoutUnit });
+    globalLog("test unit removal", { newName, newNameWithoutUnit });
 
     // process the modifier
 
@@ -95,7 +93,7 @@ export function guessIngredientParts(
             .trim();
     }
 
-    // console.log("ingred search", newNameWithoutUnit);
+    // globalLog("ingred search", newNameWithoutUnit);
 
     // TODO: create a second fuzzy set of known ingredients with good names -- search those
 
@@ -105,7 +103,7 @@ export function guessIngredientParts(
 
     // modifier will be guessed after matching other text to know ingredients?
 
-    // console.log("final ingredient", newIngredient);
+    // globalLog("final ingredient", newIngredient);
 
     const fuzzyIngred = GLOBAL_DATA_LAYER.state.fuzzyIngredientNames;
     const nameSearch =
@@ -191,7 +189,7 @@ export function strReplaceAll(
     strWith: string
 ) {
     // See http://stackoverflow.com/a/3561711/556609
-    const esc = strReplace.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
+    const esc = strReplace.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
     const reg = new RegExp(esc, "ig");
     return input.replace(reg, strWith);
 }

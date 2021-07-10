@@ -2,6 +2,7 @@ import { MenuItem } from "@blueprintjs/core";
 import { ItemPredicate, ItemRenderer, Suggest } from "@blueprintjs/select";
 import React from "react";
 import { Subscribe } from "unstated";
+import { globalLog } from "..";
 import { DataLayer } from "../DataLayer";
 import { getNewId, Ingredient } from "../models";
 
@@ -121,7 +122,7 @@ function createIngredient(name: string): Ingredient {
         comments: "",
     };
 
-    console.log("new ingred", newIngredient);
+    globalLog("new ingred", newIngredient);
 
     // GLOBAL_DATA_LAYER.addNewIngredient(newIngredient);
 
@@ -160,5 +161,5 @@ function highlightText(text: string, query: string) {
 }
 
 function escapeRegExpChars(text: string) {
-    return text.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+    return text.replace(/([.*+?^=!:${}()|[\]/\\])/g, "\\$1");
 }

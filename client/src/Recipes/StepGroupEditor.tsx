@@ -1,6 +1,7 @@
 import { Button, EditableText, H3, H4, TextArea } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
+import { globalLog } from "..";
 import { handleStringChange } from "../helpers";
 import { RecipeStepGroup } from "../models";
 import { StepsEditor } from "./StepsEditor";
@@ -180,7 +181,7 @@ export function groupToString(grp: RecipeStepGroup): string {
 export function convertTextToStepGroup(stepsText: string) {
     const lines = stepsText.split("\n");
 
-    console.log("split lines", lines);
+    globalLog("split lines", lines);
 
     const newStepGroup: RecipeStepGroup[] = [];
 
@@ -220,14 +221,14 @@ export function convertTextToStepGroup(stepsText: string) {
 
         activeGroup.steps.push({ description: line, duration: "0" });
 
-        console.log(line);
+        globalLog(line);
     }
 
     // split into groups
 
     // split into steps per group
 
-    console.log(newStepGroup);
+    globalLog(newStepGroup);
 
     return newStepGroup;
 }

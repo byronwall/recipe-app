@@ -1,13 +1,12 @@
 import { Button, H2, H3 } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
-import { GLOBAL_DATA_LAYER } from "..";
+import { globalLog, GLOBAL_DATA_LAYER } from "..";
 import { ActionsComp } from "../MealPlan/ActionsComp";
 import {
     getNewId,
     Ingredient,
     IngredientAmount,
-    KrogerAuthStatus,
     Recipe,
     ShoppingListItem,
 } from "../models";
@@ -22,20 +21,12 @@ interface ShoppingListProps {
 interface ShoppingListState {
     liveShoppingList: ShoppingListItem[];
 
-    krogerAuthStatus: KrogerAuthStatus;
-
     isCartAddOpen: boolean;
     addCartSearchTerm: string;
     addCartItem: ShoppingListItem | undefined;
 
     isAisleEditOpen: boolean;
     itemEditAisle: ShoppingListItem | undefined;
-}
-
-function getDefaultKrogerAuthStatus(): KrogerAuthStatus {
-    return {
-        isAuthorized: false,
-    };
 }
 
 export function getLooseIngredientAmount(): IngredientAmount {
@@ -55,8 +46,8 @@ export class ShoppingList extends React.Component<
         super(props);
 
         this.state = {
-            liveShoppingList: this.props.shoppingList,
-            krogerAuthStatus: getDefaultKrogerAuthStatus(),
+            liveShoppingList: props.shoppingList,
+
             isCartAddOpen: false,
             addCartSearchTerm: "",
             addCartItem: undefined,
@@ -73,10 +64,7 @@ export class ShoppingList extends React.Component<
         // TODO: get auth status from server
     }
 
-    componentDidUpdate(
-        prevProps: ShoppingListProps,
-        prevState: ShoppingListState
-    ) {
+    componentDidUpdate(prevProps: ShoppingListProps) {
         // push new props into this list
         const didPropsListChange = !_.isEqual(
             this.props.shoppingList,
@@ -142,7 +130,7 @@ export class ShoppingList extends React.Component<
             .filter((c) => c.isBought)
             .map((c) => c.id);
 
-        console.log("bought IDs", idsBoughtItems);
+        globalLog("bought IDs", idsBoughtItems);
 
         GLOBAL_DATA_LAYER.deleteShoppingListItems(idsBoughtItems);
     }
@@ -178,7 +166,7 @@ export class ShoppingList extends React.Component<
 
         const groupNames = Object.keys(listGroups).sort();
 
-        console.log("list groups", listGroups);
+        globalLog("list groups", listGroups);
 
         return (
             <div>

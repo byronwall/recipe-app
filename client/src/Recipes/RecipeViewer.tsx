@@ -3,7 +3,7 @@ import _ from "lodash";
 import NoSleep from "nosleep.js";
 import React from "react";
 import SplitPane from "react-split-pane";
-import { GLOBAL_DATA_LAYER } from "..";
+import { globalLog, GLOBAL_DATA_LAYER } from "..";
 import { handleBooleanChange } from "../helpers";
 import { ActionsComp } from "../MealPlan/ActionsComp";
 import { Ingredient, IngredientAmount, Recipe } from "../models";
@@ -103,7 +103,7 @@ export class RecipeViewer extends React.Component<
         });
     }
     saveEdits(newRecipe: Recipe): void {
-        console.log("new recipe", newRecipe);
+        globalLog("new recipe", newRecipe);
         GLOBAL_DATA_LAYER.saveNewRecipe(newRecipe);
 
         this.setState({ isEditMode: false });

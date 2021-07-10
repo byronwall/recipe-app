@@ -1,6 +1,7 @@
 import { Button, NumericInput } from "@blueprintjs/core";
 import axios from "axios";
 import React from "react";
+import { globalLog } from "..";
 import {
     API_KrogerAddCart,
     API_KrogerAddCartResponse,
@@ -56,7 +57,7 @@ export class KrogerItemDisplay extends React.Component<
             url,
             postData
         );
-        console.log("add cart response", result);
+        globalLog("add cart response", result);
 
         if (result.data.result) {
             this.setState({ addCartState: AddToCartState.ADDED });

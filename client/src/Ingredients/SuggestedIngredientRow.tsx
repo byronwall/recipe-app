@@ -1,7 +1,7 @@
 import { Button, EditableText } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
-import { GLOBAL_DATA_LAYER } from "..";
+import { globalLog, GLOBAL_DATA_LAYER } from "..";
 import { Ingredient, IngredientAmount } from "../models";
 import { NewIngAmt } from "../Recipes/ingredient_processing";
 import { IngredientChooserOverlay } from "./IngredientChooserOverlay";
@@ -170,7 +170,7 @@ export class SuggestedIngredientRow extends React.Component<
         );
     }
     updateIngredientFromOverlay(newIngred: Ingredient): void {
-        console.log("chosen from chooser", newIngred);
+        globalLog("chosen from chooser", newIngred);
         // update the edit ingredient
         const newSug = _.cloneDeep(this.state.editSugIngred);
 
