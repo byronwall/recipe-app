@@ -4,14 +4,14 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "server": "DEBUG=recipe:* nodemon --watch 'src/*.ts' -e ts --exec \"yarn build_run\"",
-    "client": "cd ../client && yarn start",
-    "dev": "concurrently \"yarn server\" \"yarn client\"",
+    "server": "DEBUG=recipe:* nodemon --watch 'src/*.ts' -e ts --exec \"npm run build_run\"",
+    "client": "cd ../client && npm run start",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
     "start": "node build/index.js",
-    "build": "tsc && cd ../client && yarn deploy",
-    "build_run": "tsc && yarn start",
+    "build": "tsc && cd ../client && npm run deploy",
+    "build_run": "tsc && npm run start",
     "deploy-copy": "rsync -rvz --include='build/***' --include='node_modules/***' --include='package.json' --exclude='*' ./ root@byroni.us:/root/recipe-app",
-    "deploy": "yarn build && yarn deploy-copy"
+    "deploy": "npm run build && npm run deploy-copy"
   },
   "devDependencies": {
     "@types/express": "^4.17.7",

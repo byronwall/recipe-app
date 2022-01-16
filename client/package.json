@@ -5,6 +5,7 @@
     "dependencies": {
         "@babel/runtime": "^7.10.4",
         "@blueprintjs/core": "^3.29.0",
+        "@blueprintjs/datetime": "^3.23.19",
         "@blueprintjs/select": "^3.13.4",
         "@fortawesome/fontawesome-svg-core": "^1.2.30",
         "@fortawesome/free-solid-svg-icons": "^5.14.0",
@@ -41,7 +42,7 @@
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "copy-build": "rsync -ruv ./build/ ../server/build/static",
-        "deploy": "yarn build && yarn copy-build",
+        "deploy": "npm run build && npm run copy-build",
         "pretty": "npx prettier --write src/**",
         "lint": "eslint 'src/**/*.{js,ts,tsx}' --fix"
     },

@@ -54,5 +54,7 @@ module.exports = {
         "prefer-rest-params": 1,
         "react/display-name": 1,
         "react/prop-types": 1,
+        "@typescript-eslint/explicit-member-accessibility": "warn",
+        "@typescript-eslint/member-ordering": "warn",
     },
 };

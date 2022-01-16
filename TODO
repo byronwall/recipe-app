@@ -1,6 +1,15 @@
-First Version:
-    ☐ Create the main pages
-    ☐ Create the Nav
-    ☐ Add some recipes
-    ☐ Add known ingredients based on Kroger purchases
-    ☐ Deploy to real server
+
+Feedback from users:
+    ☐ Recipes:
+      ☐ Ability to add to plan from the recipe page -- pop up a calendar of future dates
+        ☐ <https://blueprintjs.com/docs/#datetime/datepicker>
+    ☐ Browse
+      ☐ Figure out why the search is not working (from the browse page)
+    ☐ List
+      ☐ Loose items should be able to get a category
+      ☐ When all items are completed hide the category
+      ☐ Use a switch so that groups can be collapsed
+    ☐ Ingredients
+      ☐ Store the raw/original text from the recipe and do not edit it
+      ☐ Provide a mechanism to see or revert back to the raw text if needed
+    

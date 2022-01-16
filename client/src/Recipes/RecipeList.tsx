@@ -1,13 +1,14 @@
 import { Button, H2, HTMLTable, InputGroup } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
-import { Link } from "react-router-dom";
+
 import { GLOBAL_DATA_LAYER } from "..";
 import { handleStringChange } from "../helpers";
 import { ActionsComp } from "../MealPlan/ActionsComp";
 import { Ingredient, Recipe } from "../models";
 import { OverlayCenter } from "../OverlayCenter";
 import { NewRecipe } from "./NewRecipe";
+import { RecipeListRow } from "./RecipeListRow";
 
 interface RecipeListProps {
     recipes: Recipe[];
@@ -25,7 +26,7 @@ export class RecipeList extends React.Component<
     RecipeListProps,
     RecipeListState
 > {
-    constructor(props: RecipeListProps) {
+    public constructor(props: RecipeListProps) {
         super(props);
 
         this.state = {
@@ -36,9 +37,10 @@ export class RecipeList extends React.Component<
         };
     }
 
-    componentDidMount() {}
-
-    componentDidUpdate(prevProps: RecipeListProps, prevState: RecipeListState) {
+    public componentDidUpdate(
+        prevProps: RecipeListProps,
+        prevState: RecipeListState
+    ) {
         const didSearchChange = this.state.searchTerm !== prevState.searchTerm;
         const didRecipesChange = !_.isEqual(
             this.props.recipes,
@@ -55,22 +57,7 @@ export class RecipeList extends React.Component<
         }
     }
 
-    saveNewRecipe(newRecipe: Recipe, newIngredients: Ingredient[]) {
-        GLOBAL_DATA_LAYER.saveNewRecipe(newRecipe, newIngredients);
-    }
-
-    removeRecipe(id: number) {
-        const shouldDelete = window.confirm(
-            "Are you sure you want to delete recipe?"
-        );
-
-        if (!shouldDelete) {
-            return;
-        }
-        GLOBAL_DATA_LAYER.deleteRecipe(id);
-    }
-
-    render() {
+    public render() {
         const recipesToShow = this.state.recipesToShow;
         return (
             <div>
@@ -123,29 +110,19 @@ export class RecipeList extends React.Component<
 
                         <tbody>
                             {recipesToShow.map((recipe) => (
-                                <tr key={recipe.id}>
-                                    <td>{recipe.id}</td>
-                                    <td>
-                                        <Link to={"/recipe/" + recipe.id}>
-                                            <div>{recipe.name}</div>
-                                        </Link>
-                                    </td>
-                                    <td>
-                                        <Button
-                                            icon="cross"
-                                            intent="danger"
-                                            onClick={() =>
-                                                this.removeRecipe(recipe.id)
-                                            }
-                                            minimal
-                                        />
-                                    </td>
-                                </tr>
+                                <RecipeListRow
+                                    key={recipe.id}
+                                    recipe={recipe}
+                                />
                             ))}
                         </tbody>
                     </HTMLTable>
                 </div>
             </div>
         );
+    }
+
+    private saveNewRecipe(newRecipe: Recipe, newIngredients: Ingredient[]) {
+        GLOBAL_DATA_LAYER.saveNewRecipe(newRecipe, newIngredients);
     }
 }

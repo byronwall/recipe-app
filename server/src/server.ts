@@ -185,7 +185,7 @@ export class Server {
 
         return true;
       }
-    } catch (error) {
+    } catch (error: any) {
       log("***** error happened");
       log(accessCode, isRefresh);
       console.error(error.response.status);
@@ -496,7 +496,7 @@ export class Server {
 
         res.json({ result: true });
         return;
-      } catch (error) {
+      } catch (error: any) {
         log(
           error.response.status,
           error.response.statusText,
@@ -604,13 +604,16 @@ export class Server {
         log("data", search.data);
       }
       return search.data;
-    } catch (error) {
+    } catch (error: any) {
       log("**** error on search");
       log(error.response.status);
       log(error.response.statusText);
       log(error.response.data);
 
-      if (error.response.data.error === "API-401: Invalid Access Token" && shouldRetry) {
+      if (
+        error.response.data.error === "API-401: Invalid Access Token" &&
+        shouldRetry
+      ) {
         // attempt 1 retry after a refresh
         const isAuth = await this.doOAuth(true);
 
