@@ -6,6 +6,7 @@ import express from "express";
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import _ from "lodash";
 import * as path from "path";
+import { logError } from "./errors";
 
 import {
   API_IngredParam,
@@ -185,13 +186,8 @@ export class Server {
 
         return true;
       }
-    } catch (_error) {
-      const error = _error as any;
-      log("***** error happened");
-      log(accessCode, isRefresh);
-      console.error(error.response.status);
-      console.error(error.response.statusText);
-      console.error(error.response.data);
+    } catch (error) {
+      logError(error);
     }
 
     return false;
@@ -497,14 +493,8 @@ export class Server {
 
         res.json({ result: true });
         return;
-      } catch (_error) {
-        const error = _error as any;
-        log(
-          error.response.status,
-          error.response.statusText,
-          error.response.data,
-          db.userAccessToken
-        );
+      } catch (error) {
+        logError(error);
       }
 
       res.json({ result: false });
@@ -606,15 +596,11 @@ export class Server {
         log("data", search.data);
       }
       return search.data;
-    } catch (_error) {
-      const error = _error as any;
-      log("**** error on search");
-      log(error.response.status);
-      log(error.response.statusText);
-      log(error.response.data);
-
+    } catch (error) {
+      logError(error, "**** error on search");
       if (
-        error.response.data.error === "API-401: Invalid Access Token" &&
+        (error as any).response.data.error ===
+          "API-401: Invalid Access Token" &&
         shouldRetry
       ) {
         // attempt 1 retry after a refresh

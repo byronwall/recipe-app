@@ -5,6 +5,7 @@ import debug from "debug";
 import { ParsedRecipeData, RecipeSearchData } from "./model";
 import random_recipes from "./random_recipes.json";
 import _ from "lodash";
+import { logError } from "./errors";
 
 const log = debug("recipe:search");
 
@@ -51,7 +52,7 @@ export async function getRecipeDataForQuery(
 ): Promise<RecipeSearchData[]> {
   // take the query and search for it
   const queryEnc = encodeURIComponent(query);
-  const searchUrl = `https://www.allrecipes.com/search/results/?wt=${queryEnc}`;
+  const searchUrl = `https://www.allrecipes.com/search/results/?search=${queryEnc}`;
 
   log("grabbing search from:", searchUrl);
   try {
@@ -60,7 +61,7 @@ export async function getRecipeDataForQuery(
     if (search.data) {
       const $ = cheerio.load(search.data);
       //<article class="fixed-recipe-card">
-      const recipeCards = $("article");
+      const recipeCards = $(".card__recipe");
 
       const recipes: RecipeSearchData[] = [];
 
@@ -68,13 +69,11 @@ export async function getRecipeDataForQuery(
         log("recipe card", idx);
 
         const name = $(
-          "span.fixed-recipe-card__title-link",
+          ".card__detailsContainer .card__titleLink",
           recipeElement
         ).text();
 
-        const url =
-          $("a.fixed-recipe-card__title-link", recipeElement).attr("href") ??
-          "";
+        const url = $("a.card__titleLink", recipeElement).attr("href") ?? "";
 
         log("url", url);
 
@@ -88,25 +87,16 @@ export async function getRecipeDataForQuery(
           return;
         }
 
-        const stars = +(
-          $("div.fixed-recipe-card__ratings span.stars", recipeElement).attr(
-            "data-ratingstars"
-          ) ?? ""
-        );
+        const stars = +$(".review-star-text", recipeElement)
+          .text()
+          .replace("Rating: ", "")
+          .replace("stars", "")
+          .trim();
 
-        const reviewCount =
-          $(
-            "span.fixed-recipe-card__reviews format-large-number",
-            recipeElement
-          ).attr("number") ?? "";
-
-        // TODO: grab the stars and ratings
-        // TODO: parse the recipe on next step
+        const reviewCount = $(".card__ratingCount", recipeElement).text();
 
         const imageUrl =
-          $("div.grid-card-image-container img", recipeElement).attr(
-            "data-original-src"
-          ) ?? "";
+          $("div.lazy-image", recipeElement).attr("data-src") ?? "";
 
         if (url === "") {
           return;
@@ -130,11 +120,7 @@ export async function getRecipeDataForQuery(
       return recipes;
     }
   } catch (error) {
-    console.log("**** error on search");
-    console.log(error.response.status);
-    console.log(error.response.statusText);
-    console.log(error.response.data);
-
+    logError(error, "**** error on search");
     return [];
   }
 
@@ -190,10 +176,7 @@ export async function getRecipeDataForSingleUrl(
       };
     }
   } catch (error) {
-    console.log("**** error on search");
-    console.log(error.response.status);
-    console.log(error.response.statusText);
-    console.log(error.response.data);
+    logError(error, "**** error on search");
   }
 
   return undefined;

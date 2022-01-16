@@ -87,7 +87,10 @@ export class BrowseRecipeViewer extends React.Component<
                 <div className="flex" style={{ alignItems: "center" }}>
                     <H2>{this.props.activeItem.name}</H2>
                 </div>
-                <img src={this.props.activeItem.imageUrl} />
+                <img
+                    style={{ maxWidth: "100%" }}
+                    src={this.props.activeItem.imageUrl}
+                />
 
                 {this.state.recipeData === undefined && <Spinner />}
 
