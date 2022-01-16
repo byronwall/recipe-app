@@ -42,7 +42,7 @@ export class ShoppingList extends React.Component<
     ShoppingListProps,
     ShoppingListState
 > {
-    constructor(props: ShoppingListProps) {
+    public constructor(props: ShoppingListProps) {
         super(props);
 
         this.state = {
@@ -60,108 +60,41 @@ export class ShoppingList extends React.Component<
         this.handleSearchUpdate = this.handleSearchUpdate.bind(this);
     }
 
-    componentDidMount() {
-        // TODO: get auth status from server
-    }
-
-    componentDidUpdate(prevProps: ShoppingListProps) {
+    public componentDidUpdate(prevProps: ShoppingListProps) {
+        const { shoppingList } = this.props;
         // push new props into this list
         const didPropsListChange = !_.isEqual(
-            this.props.shoppingList,
+            shoppingList,
             prevProps.shoppingList
         );
 
         if (didPropsListChange) {
-            this.setState({ liveShoppingList: this.props.shoppingList });
+            this.setState({ liveShoppingList: shoppingList });
         }
     }
 
-    handleItemUpdate<K extends keyof ShoppingListItem>(
-        id: number,
-        key: K,
-        value: ShoppingListItem[K]
-    ) {
-        const newItems = _.cloneDeep(this.state.liveShoppingList);
+    public render() {
+        const {
+            liveShoppingList,
+            addCartSearchTerm,
+            isAisleEditOpen,
+            isCartAddOpen,
+            itemEditAisle,
+        } = this.state;
 
-        const newItem = newItems.find((c) => c.id === id);
+        const shoppingList = liveShoppingList;
 
-        if (newItem === undefined) {
-            console.error("could not find ID?");
-            return;
-        }
-
-        const itemsToUpdate = [newItem];
-
-        if (key === "isBought") {
-            // need to update all with that ingredient id
-            const ingId = newItem.ingredientAmount.ingredientId;
-
-            const isBought = value as boolean;
-
-            newItems
-                .filter((c) => c.id !== id)
-                .filter((c) => c.ingredientAmount.ingredientId === ingId)
-                .forEach((c) => {
-                    c.isBought = isBought;
-
-                    itemsToUpdate.push(c);
-                });
-        }
-
-        newItem[key] = value;
-
-        // update state so changes feel live
-        this.setState({ liveShoppingList: newItems });
-
-        // update server so changes are saved -- this will send props back through
-        GLOBAL_DATA_LAYER.updateShoppingListItem(itemsToUpdate);
-    }
-
-    clearBoughtItems() {
-        const shouldDelete = window.confirm(
-            "Sure you want to remove all checked items?"
-        );
-
-        if (!shouldDelete) {
-            return;
-        }
-
-        const idsBoughtItems = this.props.shoppingList
-            .filter((c) => c.isBought)
-            .map((c) => c.id);
-
-        globalLog("bought IDs", idsBoughtItems);
-
-        GLOBAL_DATA_LAYER.deleteShoppingListItems(idsBoughtItems);
-    }
-    clearAllItems() {
-        const shouldDelete = window.confirm(
-            "Sure you want to remove all items?"
-        );
-
-        if (!shouldDelete) {
-            return;
-        }
-
-        const idsAllItems = this.props.shoppingList.map((c) => c.id);
-
-        GLOBAL_DATA_LAYER.deleteShoppingListItems(idsAllItems);
-    }
-
-    render() {
-        const shoppingList = this.state.liveShoppingList;
-
-        const activeRecipes = _.uniq(
-            this.state.liveShoppingList.map((c) => c.recipeId)
-        )
+        const activeRecipes = _.uniq(liveShoppingList.map((c) => c.recipeId))
             .map((c) => GLOBAL_DATA_LAYER.getRecipe(c))
             .filter((c) => c !== undefined) as Recipe[];
 
         const listGroups = _.groupBy(
             shoppingList,
             (c) =>
+                c.forcedAisle ??
                 GLOBAL_DATA_LAYER.getIngredient(c.ingredientAmount.ingredientId)
-                    ?.aisle || "unknown"
+                    ?.aisle ??
+                "unknown"
         );
 
         const groupNames = Object.keys(listGroups).sort();
@@ -171,31 +104,31 @@ export class ShoppingList extends React.Component<
         return (
             <div>
                 <OverlayCenter
-                    isOpen={this.state.isCartAddOpen}
+                    isOpen={isCartAddOpen}
                     onClose={() => this.setState({ isCartAddOpen: false })}
                     height={400}
                     width={600}
                 >
                     <KrogerSearch
-                        initialSearch={this.state.addCartSearchTerm}
+                        initialSearch={addCartSearchTerm}
                         onMarkComplete={() => this.handleCartComplete()}
                     />
                 </OverlayCenter>
 
                 <OverlayCenter
-                    isOpen={this.state.isAisleEditOpen}
+                    isOpen={isAisleEditOpen}
                     onClose={() => this.setState({ isAisleEditOpen: false })}
                     height={200}
                     width={250}
                 >
                     <AisleChooser
-                        item={this.state.itemEditAisle}
-                        onNewAisle={(ing, newAisle) => {
+                        item={itemEditAisle}
+                        onNewAisle={(ing, newAisle, item) => {
                             this.setState({
                                 isAisleEditOpen: false,
                                 itemEditAisle: undefined,
                             });
-                            this.updateAisle(ing, newAisle);
+                            this.updateAisle(ing, newAisle, item);
                         }}
                     />
                 </OverlayCenter>
@@ -260,6 +193,9 @@ export class ShoppingList extends React.Component<
                             key={key}
                             groupOfItems={groupOfItems}
                             sectionName={key}
+                            defaultIsCollapsed={groupOfItems.every(
+                                (c) => c.isBought
+                            )}
                             handleItemUpdate={this.handleItemUpdate}
                             handleNewAisle={this.handleNewAisle}
                             handleSearchUpdate={this.handleSearchUpdate}
@@ -270,10 +206,85 @@ export class ShoppingList extends React.Component<
         );
     }
 
+    private handleItemUpdate<K extends keyof ShoppingListItem>(
+        id: number,
+        key: K,
+        value: ShoppingListItem[K]
+    ) {
+        const { liveShoppingList } = this.state;
+        const newItems = _.cloneDeep(liveShoppingList);
+
+        const newItem = newItems.find((c) => c.id === id);
+
+        if (newItem === undefined) {
+            console.error("could not find ID?");
+            return;
+        }
+
+        const itemsToUpdate = [newItem];
+
+        if (key === "isBought") {
+            // need to update all with that ingredient id
+            const ingId = newItem.ingredientAmount.ingredientId;
+
+            const isBought = value as boolean;
+
+            newItems
+                .filter((c) => c.id !== id)
+                .filter((c) => c.ingredientAmount.ingredientId === ingId)
+                .forEach((c) => {
+                    c.isBought = isBought;
+
+                    itemsToUpdate.push(c);
+                });
+        }
+
+        newItem[key] = value;
+
+        // update state so changes feel live
+        this.setState({ liveShoppingList: newItems });
+
+        // update server so changes are saved -- this will send props back through
+        GLOBAL_DATA_LAYER.updateShoppingListItem(itemsToUpdate);
+    }
+
+    private clearBoughtItems() {
+        const { shoppingList } = this.props;
+        const shouldDelete = window.confirm(
+            "Sure you want to remove all checked items?"
+        );
+
+        if (!shouldDelete) {
+            return;
+        }
+
+        const idsBoughtItems = shoppingList
+            .filter((c) => c.isBought)
+            .map((c) => c.id);
+
+        globalLog("bought IDs", idsBoughtItems);
+
+        GLOBAL_DATA_LAYER.deleteShoppingListItems(idsBoughtItems);
+    }
+    private clearAllItems() {
+        const { shoppingList } = this.props;
+        const shouldDelete = window.confirm(
+            "Sure you want to remove all items?"
+        );
+
+        if (!shouldDelete) {
+            return;
+        }
+
+        const idsAllItems = shoppingList.map((c) => c.id);
+
+        GLOBAL_DATA_LAYER.deleteShoppingListItems(idsAllItems);
+    }
+
     /**
      * Method to add a single "loose" item to the shopping list
      */
-    handleLooseAdd() {
+    private handleLooseAdd() {
         const name = window.prompt("What item do you want to add?");
 
         if (!name) {
@@ -290,20 +301,21 @@ export class ShoppingList extends React.Component<
 
         GLOBAL_DATA_LAYER.addItemsToShoppingList([newItem]);
     }
-    handleNewAisle(item: ShoppingListItem) {
+    private handleNewAisle(item: ShoppingListItem) {
         this.setState({
             isAisleEditOpen: true,
             itemEditAisle: item,
         });
     }
-    handleCartComplete(): void {
+    private handleCartComplete(): void {
         // take the active item and mark it bought
+        const { addCartItem } = this.state;
 
-        if (this.state.addCartItem === undefined) {
+        if (addCartItem === undefined) {
             return;
         }
 
-        const newActiveItem = _.cloneDeep(this.state.addCartItem);
+        const newActiveItem = _.cloneDeep(addCartItem);
 
         newActiveItem.isBought = true;
 
@@ -311,7 +323,10 @@ export class ShoppingList extends React.Component<
 
         this.setState({ isCartAddOpen: false });
     }
-    handleSearchUpdate(name: string | undefined, item: ShoppingListItem) {
+    private handleSearchUpdate(
+        name: string | undefined,
+        item: ShoppingListItem
+    ) {
         if (name === undefined) {
             return;
         }
@@ -322,7 +337,7 @@ export class ShoppingList extends React.Component<
             addCartItem: item,
         });
     }
-    handleKrogerAuthReq() {
+    private handleKrogerAuthReq() {
         const SCOPES = "product.compact cart.basic:write";
 
         const CLIENT_ID =
@@ -341,10 +356,22 @@ export class ShoppingList extends React.Component<
 
         window.open(url);
     }
-    removeRecipeFromShoppingList(id: number) {
+    private removeRecipeFromShoppingList(id: number) {
         GLOBAL_DATA_LAYER.removeRecipeFromShoppingList(id);
     }
-    updateAisle(ing: Ingredient | undefined, newAisle: string): void {
+    private updateAisle(
+        ing: Ingredient | undefined,
+        newAisle: string,
+        item: ShoppingListItem
+    ): void {
+        // handle case where the shopping list item is loose
+        if (item.textOnly !== undefined) {
+            const newItem = _.cloneDeep(item);
+            newItem.forcedAisle = newAisle;
+            GLOBAL_DATA_LAYER.updateShoppingListItem([newItem]);
+            return;
+        }
+
         if (ing === undefined || ing.aisle === newAisle) {
             return;
         }

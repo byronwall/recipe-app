@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.4 - 2022-01-16 15:47:54
+
+-   Add support for creating a meal plan entry from the recipe list
+-   Allow for an aisle to be assigned to loose items
+-   Allow shopping list groups to be hidden -- default to hidden when all items are bought
+
 ## 1.0.3 - 2021-07-10 07:46:36
 
 -   Resolve error related to no search results

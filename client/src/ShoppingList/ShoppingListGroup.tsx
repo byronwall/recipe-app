@@ -1,69 +1,95 @@
-import { H3 } from "@blueprintjs/core";
+import { H3, Icon, Switch } from "@blueprintjs/core";
 import _ from "lodash";
 import React from "react";
+import { handleBooleanChange } from "../helpers";
 import { ShoppingListItem } from "../models";
+import { ShoppingList } from "./ShoppingList";
 import { ShoppingListGroupItem } from "./ShoppingListGroupItem";
 
 interface ShoppingListGroupProps {
     sectionName: string;
     groupOfItems: ShoppingListItem[];
 
+    defaultIsCollapsed: boolean;
+
+    handleItemUpdate: ShoppingList["handleItemUpdate"];
+
     handleSearchUpdate(name: string | undefined, item: ShoppingListItem): void;
-    handleItemUpdate<K extends keyof ShoppingListItem>(
-        id: number,
-        key: K,
-        value: ShoppingListItem[K]
-    ): void;
 
     handleNewAisle(item: ShoppingListItem): void;
 }
-interface ShoppingListGroupState {}
+interface ShoppingListGroupState {
+    isCollapsed: boolean;
+}
 
 export class ShoppingListGroup extends React.Component<
     ShoppingListGroupProps,
     ShoppingListGroupState
 > {
-    constructor(props: ShoppingListGroupProps) {
+    public constructor(props: ShoppingListGroupProps) {
         super(props);
 
-        this.state = {};
+        this.state = { isCollapsed: false };
     }
 
-    componentDidMount() {}
+    public componentDidUpdate(prevProps: ShoppingListGroupProps) {
+        const { defaultIsCollapsed } = this.props;
 
-    componentDidUpdate(
-        prevProps: ShoppingListGroupProps,
-        prevState: ShoppingListGroupState
-    ) {}
+        const didPropCollapseChange =
+            prevProps.defaultIsCollapsed !== defaultIsCollapsed;
 
-    render() {
-        const { sectionName, groupOfItems } = this.props;
+        if (didPropCollapseChange) {
+            this.setState({ isCollapsed: defaultIsCollapsed });
+        }
+    }
+
+    public render() {
+        const {
+            sectionName,
+            groupOfItems,
+            handleItemUpdate,
+            handleNewAisle,
+        } = this.props;
+
+        const { isCollapsed } = this.state;
 
         return (
             <div key={sectionName} style={{}}>
                 <div style={{ gridColumn: "1/5" }}>
-                    <H3>{sectionName}</H3>
+                    <div style={{ display: "flex", gap: 10 }}>
+                        <H3>{sectionName}</H3>
+                        <div style={{ display: "flex", gap: 2 }}>
+                            <Switch
+                                checked={isCollapsed}
+                                onChange={handleBooleanChange((isCollapsed) =>
+                                    this.setState({ isCollapsed })
+                                )}
+                            />
+                            <Icon icon={isCollapsed ? "eye-off" : "eye-open"} />
+                        </div>
+                    </div>
                 </div>
 
-                {_.map(
-                    _.groupBy(
-                        groupOfItems,
-                        (c) => c.ingredientAmount.ingredientId
-                    ),
-                    (_item, ingredientId) => {
-                        // TODO: process subsequent items to combine amounts
+                {!isCollapsed &&
+                    _.map(
+                        _.groupBy(
+                            groupOfItems,
+                            (c) => c.ingredientAmount.ingredientId
+                        ),
+                        (_item, ingredientId) => {
+                            // TODO: process subsequent items to combine amounts
 
-                        // TODO: show the modifier details
-                        return (
-                            <ShoppingListGroupItem
-                                handleItemUpdate={this.props.handleItemUpdate}
-                                handleNewAisle={this.props.handleNewAisle}
-                                items={_item}
-                                key={ingredientId}
-                            />
-                        );
-                    }
-                )}
+                            // TODO: show the modifier details
+                            return (
+                                <ShoppingListGroupItem
+                                    handleItemUpdate={handleItemUpdate}
+                                    handleNewAisle={handleNewAisle}
+                                    items={_item}
+                                    key={ingredientId}
+                                />
+                            );
+                        }
+                    )}
             </div>
         );
     }

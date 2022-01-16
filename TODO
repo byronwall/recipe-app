@@ -1,14 +1,13 @@
 
 Feedback from users:
     ☐ Recipes:
-      ☐ Ability to add to plan from the recipe page -- pop up a calendar of future dates
-        ☐ <https://blueprintjs.com/docs/#datetime/datepicker>
+      ✔ Ability to add to plan from the recipe page -- pop up a calendar of future dates @done(22-01-16 15:12)
     ☐ Browse
       ☐ Figure out why the search is not working (from the browse page)
-    ☐ List
-      ☐ Loose items should be able to get a category
-      ☐ When all items are completed hide the category
-      ☐ Use a switch so that groups can be collapsed
+    ✔ List @done(22-01-16 15:48)
+      ✔ Loose items should be able to get a category @done(22-01-16 15:48)
+      ✔ When all items are completed hide the category @done(22-01-16 15:48)
+      ✔ Use a switch so that groups can be collapsed @done(22-01-16 15:48)
     ☐ Ingredients
       ☐ Store the raw/original text from the recipe and do not edit it
       ☐ Provide a mechanism to see or revert back to the raw text if needed

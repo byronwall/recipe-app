@@ -119,6 +119,7 @@ export interface ShoppingListItem {
 
   /** Field used when there is not corresponding ingredient or recipe */
   textOnly?: string;
+  forcedAisle?: string;
 }
 
 export interface API_ShoppingAdd {

@@ -185,7 +185,8 @@ export class Server {
 
         return true;
       }
-    } catch (error: any) {
+    } catch (_error) {
+      const error = _error as any;
       log("***** error happened");
       log(accessCode, isRefresh);
       console.error(error.response.status);
@@ -496,7 +497,8 @@ export class Server {
 
         res.json({ result: true });
         return;
-      } catch (error: any) {
+      } catch (_error) {
+        const error = _error as any;
         log(
           error.response.status,
           error.response.statusText,
@@ -604,7 +606,8 @@ export class Server {
         log("data", search.data);
       }
       return search.data;
-    } catch (error: any) {
+    } catch (_error) {
+      const error = _error as any;
       log("**** error on search");
       log(error.response.status);
       log(error.response.statusText);
