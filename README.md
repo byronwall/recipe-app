@@ -1,5 +1,8 @@
 # Family Recipe App
 
+> [!CAUTION]
+> This repo is archived and replaced by [byronwall/recipes-modern](https://github.com/byronwall/recipes-modern).  The new repo is a NextJS app with SSR and self-hostable docker compose.
+
 This is a simple web app for tracking family recipes. Built using Node.JS and React with TypeScript. App is used regularly by family to simplify our lives in the kitchen. Integrates with the Kroger API to support item searches and adding to a shopping cart.
 
 Features:
